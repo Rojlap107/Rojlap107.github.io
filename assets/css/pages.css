@@ -1,0 +1,112 @@
+/* TransHimalaya — interior pages
+   About, Our Team, Career and Contact share this layout. */
+
+.pg{ max-width:1200px; margin:0 auto; padding:0 clamp(16px,4vw,40px) clamp(48px,6vw,76px); }
+.pg-head{ max-width:46rem; margin:0 auto; padding:clamp(34px,5vw,58px) 0 clamp(26px,4vw,40px);
+  text-align:center; }
+.pg-head .k{ font-size:12px; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--orange); font-weight:700; margin:0; }
+.pg-head h1{ font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  font-size:clamp(32px,5vw,52px); line-height:1.06; font-weight:600; color:var(--ink);
+  margin:12px 0 0; text-wrap:balance; }
+.pg-head .lede{ font-size:18px; line-height:1.65; color:#4b5a63; margin:16px auto 0; max-width:56ch; }
+
+/* ---- prose ---- */
+.pg-prose{ max-width:44rem; margin:0 auto; font-size:17px; line-height:1.75; color:#3a464d; }
+.pg-prose > p{ margin:0 0 1.3em; }
+.pg-prose h2{ font-family:"Iowan Old Style",Palatino,Georgia,serif; font-size:27px;
+  line-height:1.2; color:var(--ink); font-weight:600; margin:2em 0 .55em; }
+.pg-prose a{ color:var(--teal); }
+.pg-prose a:hover{ color:var(--orange); }
+.pg-prose strong{ color:var(--ink); }
+
+/* a lead statement, set larger */
+.pg-lead{ font-family:"Iowan Old Style",Palatino,Georgia,serif;
+  font-size:clamp(20px,2.4vw,25px); line-height:1.45; color:var(--navy);
+  border-left:3px solid var(--orange); padding-left:22px; margin:0 0 1.6em; }
+
+/* ---- what we do ---- */
+.pg-do{ list-style:none; margin:1.4em 0 0; padding:0; display:grid;
+  grid-template-columns:repeat(2,1fr); gap:2px 30px; }
+.pg-do li{ padding:11px 0; border-top:1px solid var(--line); font-size:15.5px; line-height:1.5; }
+.pg-do li b{ display:block; color:var(--ink); font-size:15px; }
+
+/* ---- facts strip ---- */
+.pg-facts{ background:var(--sand); border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line); margin:clamp(34px,5vw,54px) 0; }
+.pg-facts .in{ max-width:1000px; margin:0 auto; padding:clamp(26px,3vw,36px) clamp(16px,4vw,40px);
+  display:grid; grid-template-columns:repeat(4,1fr); gap:24px; text-align:center; }
+.pg-facts b{ display:block; font-family:"Iowan Old Style",Palatino,Georgia,serif;
+  font-size:clamp(26px,3vw,34px); color:var(--ink); font-weight:600; line-height:1; }
+.pg-facts span{ display:block; font-size:12.5px; color:var(--muted); margin-top:7px;
+  letter-spacing:.04em; }
+
+/* ---- people ---- */
+.pg-group{ max-width:1000px; margin:0 auto clamp(34px,5vw,52px); }
+.pg-group > h2{ font-size:14px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--ink); font-weight:700; margin:0 0 4px; }
+.pg-group > p{ font-size:14.5px; color:var(--muted); margin:0 0 20px; max-width:60ch; }
+.pg-people{ list-style:none; margin:0; padding:0; display:grid;
+  grid-template-columns:repeat(3,1fr); gap:clamp(18px,2.5vw,26px); }
+.pg-person{ display:flex; gap:16px; align-items:flex-start;
+  border:1px solid var(--line); border-radius:6px; padding:18px; background:#fff; }
+.pg-person .av{ width:62px; height:62px; border-radius:50%; flex:none; object-fit:cover;
+  background:var(--sand); display:grid; place-items:center;
+  font-family:"Iowan Old Style",Palatino,Georgia,serif; font-size:22px; color:var(--teal); }
+.pg-person .nm{ display:block; font-family:"Iowan Old Style",Palatino,Georgia,serif;
+  font-size:18px; line-height:1.25; color:var(--ink); font-weight:600; }
+.pg-person .rl{ display:block; font-size:13px; color:var(--muted); margin-top:4px; line-height:1.5; }
+.pg-person a.nm:hover{ color:var(--orange); }
+
+/* ---- submission formats ---- */
+.pg-formats{ list-style:none; margin:1.4em 0 0; padding:0; }
+.pg-formats li{ display:grid; grid-template-columns:1fr auto; gap:10px 24px;
+  align-items:baseline; padding:14px 0; border-bottom:1px solid var(--line); }
+.pg-formats li:last-child{ border-bottom:0; }
+.pg-formats .ft{ font-family:"Iowan Old Style",Palatino,Georgia,serif; font-size:18px;
+  color:var(--ink); font-weight:600; }
+.pg-formats .ds{ grid-column:1; font-size:14px; color:var(--muted); margin-top:2px; }
+.pg-formats .wc{ grid-row:1; font-size:13px; color:var(--teal); white-space:nowrap;
+  font-variant-numeric:tabular-nums; }
+
+/* ---- contact ---- */
+.pg-contact{ max-width:1000px; margin:0 auto; display:grid;
+  grid-template-columns:1fr 1.2fr; gap:clamp(28px,5vw,56px); align-items:start; }
+.pg-detail{ list-style:none; margin:0; padding:0; }
+.pg-detail li{ display:flex; gap:12px; padding:14px 0; border-bottom:1px solid var(--line); }
+.pg-detail li:last-child{ border-bottom:0; }
+.pg-detail .ic{ width:17px; height:17px; color:var(--orange); flex:none; margin-top:3px; }
+.pg-detail .lb{ display:block; font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--muted); }
+.pg-detail .vl{ display:block; font-size:15.5px; color:var(--ink); line-height:1.55; margin-top:3px; }
+.pg-detail a{ color:var(--ink); text-decoration:none; }
+.pg-detail a:hover{ color:var(--orange); }
+
+.pg-form{ background:var(--sand); border:1px solid var(--line); border-radius:8px;
+  padding:clamp(20px,3vw,30px); }
+.pg-form h2{ font-family:"Iowan Old Style",Palatino,Georgia,serif; font-size:23px;
+  color:var(--ink); margin:0 0 6px; font-weight:600; }
+.pg-form > p{ font-size:14px; color:var(--muted); margin:0 0 18px; }
+.pg-field{ margin-bottom:14px; }
+.pg-field label{ display:block; font-size:12px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--muted); margin-bottom:6px; }
+.pg-field input, .pg-field select, .pg-field textarea{ width:100%; font:inherit; font-size:15px;
+  padding:11px 13px; border:1px solid var(--line); border-radius:6px; background:#fff;
+  color:var(--ink); }
+.pg-field textarea{ min-height:130px; resize:vertical; }
+.pg-field input:focus, .pg-field select:focus, .pg-field textarea:focus{
+  outline:2px solid var(--orange); outline-offset:1px; border-color:transparent; }
+.pg-form button{ background:var(--navy); color:#fff; border:0; font:inherit; font-weight:600;
+  font-size:15px; padding:13px 26px; border-radius:6px; }
+.pg-form button:hover{ background:#0c2532; }
+.pg-form .note{ font-size:12px; color:var(--muted); margin:12px 0 0; }
+
+@media (max-width:860px){
+  .pg-people{ grid-template-columns:repeat(2,1fr); }
+  .pg-facts .in{ grid-template-columns:repeat(2,1fr); }
+  .pg-contact{ grid-template-columns:1fr; }
+}
+@media (max-width:560px){
+  .pg-people{ grid-template-columns:1fr; }
+  .pg-do{ grid-template-columns:1fr; }
+}

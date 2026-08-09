@@ -1,0 +1,65 @@
+/* TransHimalaya — authors index and author profile */
+
+/* ---- shared page head ---- */
+.au-index, .au-profile{ max-width:1100px; margin:0 auto;
+  padding:clamp(32px,5vw,56px) clamp(16px,4vw,40px) clamp(40px,6vw,64px); }
+.au-head{ max-width:46rem; }
+.au-head .k, .au-profile .k{ font-size:11px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--orange); margin:0; font-weight:700; }
+.au-head h1{ font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  font-size:clamp(32px,5vw,52px); line-height:1.1; font-weight:600; color:var(--ink); margin:10px 0 0; }
+.au-head .lede{ font-size:18px; line-height:1.6; color:#4b5a63; margin:14px 0 0; }
+
+/* ---- index grid ---- */
+.au-grid{ list-style:none; margin:clamp(28px,4vw,42px) 0 0; padding:0;
+  display:grid; grid-template-columns:repeat(4,1fr); gap:26px 22px; }
+.au-card a{ display:flex; flex-direction:column; align-items:center; text-align:center;
+  text-decoration:none; padding:22px 14px; border:1px solid var(--line); border-radius:8px;
+  background:#fff; height:100%; transition:.18s; }
+.au-card a:hover{ border-color:var(--orange); box-shadow:0 8px 22px rgba(18,40,55,.09);
+  transform:translateY(-2px); }
+.au-card .av{ width:96px; height:96px; border-radius:50%; overflow:hidden; background:var(--sand);
+  display:grid; place-items:center; margin-bottom:14px; flex:none; }
+.au-card .av img{ width:100%; height:100%; object-fit:cover; display:block; }
+.au-card .ini{ font-family:"Iowan Old Style",Palatino,Georgia,serif; font-size:34px; color:var(--teal); }
+.au-card .nm{ font-family:"Iowan Old Style",Palatino,Georgia,serif; font-size:18px;
+  line-height:1.25; color:var(--ink); }
+.au-card a:hover .nm{ color:var(--orange); }
+.au-card .rl{ font-size:12.5px; line-height:1.45; color:var(--muted); margin-top:6px; }
+.au-card .ct{ font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--teal); margin-top:auto; padding-top:12px; }
+
+/* ---- profile ---- */
+.au-hero{ display:grid; grid-template-columns:180px 1fr; gap:clamp(24px,4vw,44px);
+  align-items:start; padding-bottom:clamp(28px,4vw,40px); border-bottom:1px solid var(--line); }
+.au-hero .portrait{ width:180px; height:180px; border-radius:50%; object-fit:cover;
+  border:5px solid var(--sand); }
+.au-profile h1{ font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  font-size:clamp(30px,4.4vw,46px); line-height:1.1; font-weight:600; color:var(--ink); margin:10px 0 0; }
+.au-profile .rl{ font-size:15px; color:var(--teal); margin:8px 0 0; font-weight:600; }
+.au-profile .bio{ font-size:16.5px; line-height:1.7; color:#41505a; margin:16px 0 0; max-width:64ch; }
+
+/* ---- their work ---- */
+.au-works{ margin-top:clamp(30px,4vw,44px); }
+.au-list{ list-style:none; margin:0; padding:0; }
+.au-list li{ border-bottom:1px solid var(--line); }
+.au-list li:last-child{ border-bottom:0; }
+.au-list a{ display:block; padding:20px 0; text-decoration:none; }
+.au-list .sec{ display:block; font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--orange); font-weight:700; }
+.au-list .t{ display:block; font-family:"Iowan Old Style",Palatino,Georgia,serif;
+  font-size:clamp(20px,2.4vw,26px); line-height:1.25; color:var(--ink); margin:7px 0 0; }
+.au-list a:hover .t{ color:var(--orange); }
+.au-list .d{ display:flex; align-items:center; gap:7px; font-size:12.5px;
+  color:var(--muted); margin-top:9px; }
+
+@media (max-width:980px){ .au-grid{ grid-template-columns:repeat(3,1fr); } }
+@media (max-width:720px){
+  .au-grid{ grid-template-columns:repeat(2,1fr); }
+  .au-hero{ grid-template-columns:1fr; justify-items:start; }
+  .au-hero .portrait{ width:140px; height:140px; }
+}
+@media (max-width:420px){ .au-grid{ grid-template-columns:1fr; } }
+.au-profile .crumb{ margin:0 0 18px; font-size:12px; letter-spacing:.12em; text-transform:uppercase; }
+.au-profile .crumb a{ color:var(--muted); text-decoration:none; }
+.au-profile .crumb a:hover{ color:var(--orange); }
