@@ -85,7 +85,7 @@
           <div class="art-byline">
             {{AVATAR}}
             <div class="who">
-              <span class="nm">{{AUTHOR}}</span>
+              <a class="nm" href="{{AUTHOR_HREF}}">{{AUTHOR}}</a>
               <span class="dt"><time datetime="{{DATE_ISO}}">{{DATE}}</time> · {{MINS}} min read</span>
             </div>
             <div class="art-share">
@@ -118,7 +118,7 @@
           {{AUTHOR_PIC}}
           <div>
             <p class="k">About the author</p>
-            <h3>{{AUTHOR}}</h3>
+            <h3><a href="{{AUTHOR_HREF}}">{{AUTHOR}}</a></h3>
             <p>{{BIO}}</p>
           </div>
         </aside>

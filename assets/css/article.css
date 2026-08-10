@@ -131,3 +131,9 @@
   text-transform:uppercase; color:var(--ink); font-weight:700; }
 .art-body .art-table tbody tr:last-child td{ border-bottom:0; }
 .art-body .art-table figcaption{ font-size:13px; color:var(--muted); margin-top:10px; }
+
+/* the byline name and the author-card heading link to the author's page */
+.art-byline a.nm{ color:var(--ink); text-decoration:none; }
+.art-byline a.nm:hover{ color:var(--orange); text-decoration:underline; text-underline-offset:2px; }
+.art-author h3 a{ color:inherit; text-decoration:none; }
+.art-author h3 a:hover{ color:var(--orange); }

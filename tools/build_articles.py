@@ -10,7 +10,7 @@ site's own markup, and downloads the images it needs into assets/img/.
 Run from the site root.
 """
 
-import argparse, html, json, os, re, subprocess, sys, urllib.request
+import argparse, html, json, os, re, subprocess, sys, unicodedata, urllib.request
 import xml.etree.ElementTree as ET
 
 XML = os.path.expanduser("~/Downloads/transhimalaya.WordPress.2026-08-03.xml")
@@ -45,6 +45,13 @@ def text(x):
 
 def esc(s):
     return html.escape(s, quote=False)
+
+
+def author_slug(name):
+    """Author-page slug — must match tools/build_authors.py (accent-folded,
+    honorifics kept, e.g. 'Lt General Vinod Bhatia' -> lt-general-vinod-bhatia)."""
+    n = ''.join(c for c in unicodedata.normalize('NFD', name) if not unicodedata.combining(c))
+    return re.sub(r'-+', '-', re.sub(r'[^a-z0-9]+', '-', n.lower())).strip('-')
 
 
 def slugify(s):
@@ -318,6 +325,7 @@ def build(post, posts, tpl, author_img):
             .replace('{{TITLE}}', esc(post['title']))
             .replace('{{STANDFIRST}}', esc(standfirst(post['raw'])))
             .replace('{{SECTION}}', esc(post['section']))
+            .replace('{{AUTHOR_HREF}}', 'author-' + author_slug(post['author']) + '.html')
             .replace('{{AUTHOR}}', esc(post['author']))
             .replace('{{DATE_ISO}}', post['date'])
             .replace('{{DATE}}', pretty(post['date']))
