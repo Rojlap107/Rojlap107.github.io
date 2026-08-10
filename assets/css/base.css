@@ -146,7 +146,7 @@ img{ max-width:100%; }
 
 /* ---- masthead: the logo lockup carries the name and strapline ---- */
 .th-mast{ display:block; margin:0 auto; width:clamp(230px,26vw,320px);
-  aspect-ratio:996/900; background:var(--img-logo) center/contain no-repeat; }
+  aspect-ratio:1125/900; background:var(--img-logo) center/contain no-repeat; }
 
 /* ---- article imagery ---- */
 .th-cards .th-card:nth-child(1) .ph{ background:var(--img-mongolia) center/cover; }
