@@ -215,10 +215,17 @@ img{ max-width:100%; }
   .th-item > a .ca{ font-size:11px; opacity:.7; transition:transform .2s ease; }
   .th-item.is-open > a{ color:var(--orange); border-bottom-color:transparent; }
   .th-item.is-open > a .ca{ transform:rotate(180deg); }
+  /* in the flow, no floating-panel transition — a lingering opacity/visibility
+     transition here leaves the newly shown links unpainted until a reflow */
   .th-sub{ position:static; transform:none; opacity:1; visibility:visible;
-    display:none; min-width:0; width:100%; background:transparent;
+    transition:none; display:none; min-width:0; width:100%; background:transparent;
     border:0; border-radius:0; box-shadow:none;
     padding:0 0 6px 16px; border-left:2px solid var(--line); margin-bottom:10px; }
   .th-item.is-open .th-sub{ display:flex; }
+  /* the desktop dropdown centres itself with translateX(-50%); that rule has
+     higher specificity and would shove the in-flow mobile submenu off-screen
+     on hover/focus, so neutralise it here */
+  .th-item:hover .th-sub, .th-item:focus-within .th-sub{ transform:none; }
+  .th-sub a{ transition:none; }
   .th-sub a{ padding:11px 12px; border-radius:4px; font-size:14.5px; white-space:normal; }
 }
