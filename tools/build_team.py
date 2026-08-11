@@ -14,7 +14,9 @@ checked with FNVA before publication.
 
 import html, os, re, sys, unicodedata
 
-# name, group, role (one line under the name), bio
+# name, group, role (one line under the name), bio.
+# `credit` is raw HTML shown under the portrait — required when a photo's licence
+# asks for attribution (e.g. CC BY-SA, GODL-India).
 PEOPLE = [
     dict(
         name='B. P. Singh',
@@ -33,6 +35,8 @@ PEOPLE = [
             'the Central Tibetan Administration — serving from 2001 to 2011. A '
             'lifelong exponent of Gandhian non-violence and Buddhist philosophy, '
             'he has taught and written widely on both.',
+        credit='Photo by Sid5926 via Wikimedia Commons, '
+               '<a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> (cropped).',
     ),
     dict(
         name='Amb. Shyam Saran',
@@ -43,6 +47,8 @@ PEOPLE = [
             'Envoy on the civil nuclear agreement and on climate change. He has '
             'since chaired and advised a number of institutions on foreign affairs '
             'and strategic questions.',
+        credit='Photo: Press Information Bureau, Government of India, '
+               '<a href="https://data.gov.in/Government-Open-Data-License-India">GODL-India</a> (cropped).',
     ),
     dict(
         name='Prof. Srikanth Kondapalli',
@@ -91,14 +97,17 @@ def main():
     for p in PEOPLE:
         slug = slugify(p['name'])
         photo = f'assets/img/member-{slug}.jpg'
+        has_photo = os.path.exists(photo)
         portrait = (f'<img class="portrait" src="{photo}" alt="" width="180" height="180">'
-                    if os.path.exists(photo) else
+                    if has_photo else
                     f'<span class="portrait is-initials" aria-hidden="true">{esc(initials(p["name"]))}</span>')
+        cred = (f'<p class="pcred">{p["credit"]}</p>' if has_photo and p.get('credit') else '')
+        pcol = f'<div class="pcol">{portrait}{cred}</div>'
 
         body = f'''      <section class="au-profile">
         <p class="crumb"><a href="team.html">Team</a></p>
         <div class="au-hero">
-          {portrait}
+          {pcol}
           <div>
             <p class="k">{esc(p['group'])}</p>
             <h1>{esc(p['name'])}</h1>

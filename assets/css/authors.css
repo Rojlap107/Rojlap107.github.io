@@ -63,3 +63,8 @@
 .au-profile .crumb{ margin:0 0 18px; font-size:12px; letter-spacing:.12em; text-transform:uppercase; }
 .au-profile .crumb a{ color:var(--muted); text-decoration:none; }
 .au-profile .crumb a:hover{ color:var(--orange); }
+
+/* patron/trustee portrait credit (licence attribution under the photo) */
+.au-hero .pcol{ display:flex; flex-direction:column; }
+.au-hero .pcred{ font-size:10.5px; line-height:1.45; color:var(--muted); margin:10px 0 0; max-width:180px; }
+.au-hero .pcred a{ color:inherit; text-decoration:underline; }
