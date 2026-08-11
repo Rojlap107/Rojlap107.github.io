@@ -46,9 +46,15 @@ The article, section and Deyshal pages are generated from the WordPress export
 python3 tools/build_articles.py --all    # every published article
 python3 tools/build_categories.py        # the section pages
 python3 tools/build_deyshal.py           # the Deyshal hub and sub-sections
+python3 tools/build_team.py              # patron and trustee profile pages
 ```
 
 `build_articles.py` also downloads and resizes the images each article needs.
+
+`build_team.py` holds its own data — patrons and trustees write no articles, so
+they are not in the WordPress export. Their bios are drafts drawn from public
+roles and need checking with FNVA. Author profiles are generated separately by
+`build_authors.py`; the research-team members on `team.html` link to those.
 
 ## Conventions
 
