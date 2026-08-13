@@ -19,9 +19,9 @@ Then open <http://localhost:8748>.
 | | |
 |---|---|
 | `index.html` | Home |
-| `issues.html` | Magazine Issue — current issue, contents, past issues |
+| `issues.html` | Magazine Issue — the inaugural issue and its full contents |
 | `main-essays.html` and sections | Tibet Today · Tibet Beyond Borders · History · The Strategic Triangle · Global Perspectives · Youth · Tibet Monitor |
-| `deyshal.html` and sub-sections | Archives · Data & Visuals · Must Reads, plus six awaiting content |
+| `dreshey.html` and sub-sections | Archives · Data & Visuals · Must Reads, plus six awaiting content |
 | `about.html` · `team.html` · `career.html` · `contact.html` · `authors.html` | About |
 | 23 article pages | one per published article, at its own slug |
 
@@ -39,13 +39,13 @@ Every page loads `base.css` plus its own stylesheet.
 
 ## Generators
 
-The article, section and Deyshal pages are generated from the WordPress export
+The article, section and Dreshey pages are generated from the WordPress export
 (`~/Downloads/transhimalaya.WordPress.*.xml`), not hand-written:
 
 ```bash
 python3 tools/build_articles.py --all    # every published article
 python3 tools/build_categories.py        # the section pages
-python3 tools/build_deyshal.py           # the Deyshal hub and sub-sections
+python3 tools/build_deyshal.py           # the Dreshey hub and sub-sections
 python3 tools/build_team.py              # patron and trustee profile pages
 ```
 
@@ -65,11 +65,11 @@ roles and need checking with FNVA. Author profiles are generated separately by
 
 ## Still needed from FNVA
 
-- **Issue PDFs** in `assets/pdf/` (`transhimalaya-vol14-no2.pdf` etc.) — the download
-  buttons already point at these paths
-- **Past-issue data** — the six back issues shown are placeholders
+- **Inaugural issue PDF** at `assets/pdf/transhimalaya-issue-1-august-2026.pdf` — the
+  download button already points at this path
+- **Inaugural issue cover** — `assets/img/cover.jpg` is still the old placeholder
 - **Razorpay key** and a server-side order/verification endpoint for the subscription buttons
 - **A mail handler** for the contact form
 - **Copy approval** — section descriptions, the Must Reads selection, and the About and
   Team pages were drafted from fnvaworld.org and need checking
-- Content for Youth, Tibet Monitor and six Deyshal sub-sections
+- Content for Youth, Tibet Monitor and six Dreshey sub-sections

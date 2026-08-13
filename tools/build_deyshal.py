@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the Deyshal hub and its nine sub-sections.
+"""Generate the Dreshey hub and its nine sub-sections.
 
 Three of them can be filled from the magazine's own material — the archive,
 a reading selection, and the figures and tables drawn from the articles. The
@@ -84,7 +84,7 @@ def head(kicker, title, lede, extra=''):
 def empty(title):
     return ('        <div class="cat-empty">\n'
             '          <p class="ttl">Nothing published here yet</p>\n'
-            f'          <p>{title} is part of Deyshal but has no entries so far. '
+            f'          <p>{title} is part of Dreshey but has no entries so far. '
             'Browse the <a href="archives.html">archive</a> or read the '
             '<a href="issues.html">current issue</a> in the meantime.</p>\n'
             '        </div>\n')
@@ -107,13 +107,13 @@ def main():
             </a>
           </li>''' for s, t, d in SUBS)
     hub = f'''      <div class="dy">
-{head('Deyshal', 'Deyshal', 'The Foundation&#39;s reference shelf — the archive, the data behind the essays, and the reading and reference material that supports our research.')}
+{head('Dreshey', 'Dreshey', 'The Foundation&#39;s reference shelf — the archive, the data behind the essays, and the reading and reference material that supports our research.')}
         <ul class="dy-grid">
 {cards}
         </ul>
       </div>
 '''
-    print(f"  {'deyshal':26} hub            {page('deyshal.html', 'Deyshal', 'The Foundation reference shelf: archive, data, glossary and reading.', 'deyshal.css', hub)}")
+    print(f"  {'deyshal':26} hub            {page('dreshey.html', 'Dreshey', 'The Foundation reference shelf: archive, data, glossary and reading.', 'deyshal.css', hub)}")
 
     # ---------------------------------------------------------------- archive
     by_month = {}
@@ -131,7 +131,7 @@ def main():
                 f'<span class="mt">{esc(a["author"])} · {esc(a["section"])}</span></a></li>')
         rows.append('          </ul>')
     archive = f'''      <div class="dy">
-{head('Deyshal', 'Archives', 'Everything TransHimalaya has published, most recent first.',
+{head('Dreshey', 'Archives', 'Everything TransHimalaya has published, most recent first.',
       f'<p class="dy-count">{len(arts)} articles</p>')}
         <div class="dy-archive">
 {chr(10).join(rows)}
@@ -157,7 +157,7 @@ def main():
             </div>
           </li>''' for a in picks)
     must = f'''      <div class="dy">
-{head('Deyshal', 'Must Reads', 'Where to begin — one essay from each section of the magazine.')}
+{head('Dreshey', 'Must Reads', 'Where to begin — one essay from each section of the magazine.')}
         <ul class="dy-picks">
 {items}
         </ul>
@@ -190,7 +190,7 @@ def main():
             </a>
           </li>''') for a, src, cap in figs)
     dv = f'''      <div class="dy">
-{head('Deyshal', 'Data &amp; Visuals', 'The maps, charts, photographs and tables that appear in the essays, gathered in one place.',
+{head('Dreshey', 'Data &amp; Visuals', 'The maps, charts, photographs and tables that appear in the essays, gathered in one place.',
       f'<p class="dy-count">{len(figs)} items</p>')}
         <ul class="dy-figs">
 {tiles}
@@ -205,7 +205,7 @@ def main():
             continue
         plain = re.sub('&amp;', '&', t)
         body = f'''      <div class="dy">
-{head('Deyshal', t, d)}
+{head('Dreshey', t, d)}
 {empty(plain)}      </div>
 '''
         print(f"  {s:26} empty          {page(s + '.html', plain, d, 'deyshal.css', body)}")
