@@ -113,7 +113,7 @@ def main():
         </ul>
       </div>
 '''
-    print(f"  {'deyshal':26} hub            {page('dreshey.html', 'Dreshey', 'The Foundation reference shelf: archive, data, glossary and reading.', 'deyshal.css', hub)}")
+    print(f"  {'deyshal':26} hub            {page('dreshey.html', 'Dreshey', 'The Foundation reference shelf: archive, data, glossary and reading.', 'dreshey.css', hub)}")
 
     # ---------------------------------------------------------------- archive
     by_month = {}
@@ -138,7 +138,7 @@ def main():
         </div>
       </div>
 '''
-    print(f"  {'archives':26} {len(arts):3d} articles  {page('archives.html', 'Archives', 'The complete TransHimalaya archive.', 'deyshal.css', archive)}")
+    print(f"  {'archives':26} {len(arts):3d} articles  {page('archives.html', 'Archives', 'The complete TransHimalaya archive.', 'dreshey.css', archive)}")
 
     # ---------------------------------------------------------------- must reads
     picks, seen = [], set()
@@ -163,7 +163,7 @@ def main():
         </ul>
       </div>
 '''
-    print(f"  {'must-reads':26} {len(picks):3d} picks     {page('must-reads.html', 'Must Reads', 'Where to begin with TransHimalaya.', 'deyshal.css', must)}")
+    print(f"  {'must-reads':26} {len(picks):3d} picks     {page('must-reads.html', 'Must Reads', 'Where to begin with TransHimalaya.', 'dreshey.css', must)}")
 
     # ---------------------------------------------------------------- data & visuals
     figs = []
@@ -197,7 +197,7 @@ def main():
         </ul>
       </div>
 '''
-    print(f"  {'data-visuals':26} {len(figs):3d} items     {page('data-visuals.html', 'Data & Visuals', 'Maps, charts and tables from the essays.', 'deyshal.css', dv)}")
+    print(f"  {'data-visuals':26} {len(figs):3d} items     {page('data-visuals.html', 'Data & Visuals', 'Maps, charts and tables from the essays.', 'dreshey.css', dv)}")
 
     # ---------------------------------------------------------------- the rest
     for s, t, d in SUBS:
@@ -208,7 +208,7 @@ def main():
 {head('Dreshey', t, d)}
 {empty(plain)}      </div>
 '''
-        print(f"  {s:26} empty          {page(s + '.html', plain, d, 'deyshal.css', body)}")
+        print(f"  {s:26} empty          {page(s + '.html', plain, d, 'dreshey.css', body)}")
 
 
 if __name__ == '__main__':
