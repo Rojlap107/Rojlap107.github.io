@@ -137,3 +137,6 @@
 .art-byline a.nm:hover{ color:var(--orange); text-decoration:underline; text-underline-offset:2px; }
 .art-author h3 a{ color:inherit; text-decoration:none; }
 .art-author h3 a:hover{ color:var(--orange); }
+
+/* figure source attribution, folded into the caption */
+.art-body .art-fig figcaption .src{ font-style:italic; opacity:.85; }
