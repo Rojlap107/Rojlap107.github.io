@@ -70,6 +70,36 @@ DOCX = {
 }
 
 
+# new pieces not in the original WordPress export. `strip_lead` drops leading
+# title/author/label lines; kind='interview' uses the Q&A formatter.
+EXTRAS = [
+  dict(slug='why-does-tibet-matter', title='Why Does Tibet Matter?',
+       author='Srikanth Kondapalli', section='History', date='2026-08-01',
+       docx='S2_ HISTORY AND FOUNDATIONAL/Srikanth Kondapalli/Kondapalli Final Why Tibet Matters.docx'),
+  dict(slug='foreword', title='Foreword', author='Shyam Saran',
+       section='Foreword', date='2026-08-01',
+       docx=' S1_ Prologue/Foreword/Foreword for Ms. Rebon Banerjee Dhar - 16.7.2026.docx',
+       strip_lead=[r'^foreword$']),
+  dict(slug='editors-note', title='Editor’s Note', author='Srikanth Kondapalli',
+       section='Editor’s Note', date='2026-08-01',
+       docx=' S1_ Prologue/Editor_s Note/Editors note.docx',
+       strip_lead=[r'^draft$', r'^editor.?s note$']),
+  dict(slug='tibet-in-the-year-2048', title='Tibet in the Year 2048',
+       author='Wangpo Tethong', section='Strategic Foresight', date='2026-08-01',
+       docx=' S1_ Prologue/Wangpo Tethong/01-06-26_ Wangpo Tethong_Finalised (1).docx',
+       strip_lead=[r'^tibet in the year 2048$', r'^wangpo tethong$']),
+  dict(slug='the-way-forward-policy-recommendations',
+       title='The Way Forward: Policy Recommendations', author='The Editors',
+       section='Policy', date='2026-08-01',
+       docx=' S1_ Prologue/Way Forward/POLICY RECCOMMENDATIONS.docx',
+       strip_lead=[r'^policy recommendations']),
+  dict(slug='interview-with-sikyong-penpa-tsering',
+       title='Interview with Sikyong Penpa Tsering', author='Tenzing Dhamdul',
+       section='Interviews', date='2026-08-01', kind='interview',
+       docx='S7_ IN CONVERSATION WITH LEADERS/Interview for the print edition.docx'),
+]
+
+
 def esc(s):
     return html.escape(s, quote=False)
 
@@ -127,7 +157,7 @@ def is_bold_head(b):
             and len(text(b)) < 90 and not b.endswith(':**') is None)
 
 
-def build_body(md, slug):
+def build_body(md, slug, strip_lead=None):
     """Return (body_html, bio_text, first_landscape_image_or_None)."""
     # split off the author bio
     parts = re.split(r'(?im)^\s*\**\s*about the author\s*:?\s*\**\s*$', md, maxsplit=1)
@@ -138,6 +168,11 @@ def build_body(md, slug):
     bio = re.sub(r'!\[[^\]]*\]\([^)]*\)(\{[^}]*\})?', '', bio).strip()
 
     blocks = [b.strip() for b in re.split(r'\n\s*\n', body_md) if b.strip()]
+
+    # drop leading title / author / label lines (title lines come from metadata)
+    for pat in (strip_lead or []):
+        if blocks and re.match(pat, text(blocks[0]).strip(), re.I):
+            blocks.pop(0)
 
     # drop a trailing lone image — the author headshot glued before the bio —
     # but keep a genuine final figure (one preceded by a Figure/caption/source line)
@@ -266,9 +301,112 @@ def standfirst(body_html):
     return out.rstrip('.') + '.'
 
 
+def build_interview(md):
+    """Interview formatter: the host's questions are bold lead-ins, the
+    interviewee's answers are body paragraphs. Labels (Q n:, speaker names,
+    Introduction/Concluding) and the title/section lines are dropped."""
+    blocks = [b.strip() for b in re.split(r'\n\s*\n', md) if b.strip()]
+    out, standf, want_summary = [], '', False
+
+    def plain(b):
+        return re.sub(r'\*', '', text(b)).strip()
+
+    for b in blocks:
+        raw = b.strip()
+        pl = plain(raw)
+        low = pl.lower()
+        if want_summary:
+            standf = pl; want_summary = False; continue
+        if low in ('conversation with leaders', 'interview with sikyong penpa tsering',
+                   'below is the interview'):
+            continue
+        if low.startswith('summary of the talk'):
+            rest = re.sub(r'(?i)^summary of the talk[:\s]*', '', pl)
+            if len(rest) > 40:
+                standf = rest
+            else:
+                want_summary = True
+            continue
+        if re.match(r'(?i)^\*{3}.*\*{3}$', raw):          # ***Held at… / Host:…*** dateline
+            out.append(f'        <p class="art-note"><em>{inline(raw.strip("*"))}</em></p>')
+            continue
+        if not pl or pl == '.':
+            continue
+        if re.match(r'(?i)^(sikyong|host)\s*:?$', pl):    # bare speaker label
+            continue
+        if re.match(r'(?i)^(introduction|concluding|q\s*\d+)\s*:?$', pl):   # label-only line
+            continue
+        is_bold = raw.startswith('**') and raw.rstrip().endswith('**') and raw.count('**') == 2
+        is_ital = raw.startswith('*') and raw.endswith('*') and raw.count('*') == 2 and not is_bold
+        inner = raw.strip('*') if (is_bold or is_ital) else raw
+        inner = re.sub(r'(?i)^(introduction|concluding|q\s*\d+)\s*:?\s*', '', inner).strip()
+        if not plain(inner):
+            continue
+        if is_bold:
+            out.append(f'        <p class="art-q"><strong>{inline(inner)}</strong></p>')
+        else:
+            out.append(f'        <p>{inline(inner)}</p>')     # answer (de-italicised)
+    return '\n'.join(out), standf
+
+
+def render_page(meta, body, bio, tpl, arts, author_img, author_href):
+    from build_articles import author_slug
+    slug = meta['slug']
+    lede = meta.get('lede') or 'assets/img/hero-bg.jpg'
+    others = [p for s, p in arts.items() if s != slug]
+    mr = '\n'.join(
+        f'            <li><a href="{p["slug"]}.html"><span class="t">{esc(p["title"])}</span>'
+        f'<span class="m">{esc(p["author"])} · {esc(p["section"])}</span></a></li>'
+        for p in others[:5])
+    same = [p for p in others if p['section'] == meta['section']]
+    rel_posts = (same + [p for p in others if p not in same])[:3]
+    rel = '\n'.join(f'''            <article class="th-card">
+              <a class="ph" href="{p['slug']}.html" style="background-image:url({p.get('lede','assets/img/hero-bg.jpg')})"></a>
+              <div class="b">
+                <h3><a href="{p['slug']}.html">{esc(p['title'])}</a></h3>
+                <div class="meta"><span><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {pretty(p['date'])}</span><span>·</span><span>By {esc(p['author'])}</span></div>
+              </div>
+            </article>''' for p in rel_posts)
+    av = author_img.get(meta['author'], '')
+    avatar = (f'<img class="av" src="{av}" alt="" width="44" height="44">' if av else '')
+    author_pic = (f'<img src="{av}" alt="" width="96" height="96">' if av else '')
+    words = len(text(body).split())
+    sf = meta.get('standfirst') or standfirst(body)
+    page = (tpl
+            .replace('{{TITLE}}', esc(meta['title']))
+            .replace('{{STANDFIRST}}', esc(sf))
+            .replace('{{SECTION}}', esc(meta['section']))
+            .replace('{{AUTHOR_HREF}}', author_href)
+            .replace('{{AUTHOR}}', esc(meta['author']))
+            .replace('{{DATE_ISO}}', meta['date'])
+            .replace('{{DATE}}', pretty(meta['date']))
+            .replace('{{MINS}}', str(max(2, round(words / 200))))
+            .replace('{{LEDE}}', lede)
+            .replace('{{AVATAR}}', avatar)
+            .replace('{{AUTHOR_PIC}}', author_pic)
+            .replace('{{BIO}}', esc(bio) or 'Contributor to TransHimalaya.')
+            .replace('{{BODY}}', body)
+            .replace('{{NOTES}}', '')
+            .replace('{{MUSTREAD}}', mr)
+            .replace('{{RELATED}}', rel))
+    open(f'{slug}.html', 'w', encoding='utf-8').write(page)
+    return words, page.count('art-fig')
+
+
+def resolve_href(author):
+    from build_articles import author_slug
+    aslug = author_slug(author)
+    if os.path.exists(f'author-{aslug}.html'):
+        return f'author-{aslug}.html'
+    if os.path.exists(f'member-{aslug}.html'):
+        return f'member-{aslug}.html'
+    return 'authors.html'
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--only')
+    ap.add_argument('--extras', action='store_true', help='only the new (EXTRAS) pieces')
     args = ap.parse_args()
 
     if not os.path.exists('index.html'):
@@ -277,9 +415,8 @@ def main():
     tpl = open('tools/article.tpl.html', encoding='utf-8').read()
     arts = {a['slug']: a for a in json.load(open('tools/articles.json'))}
 
-    # author portraits + fallback bios (from the already-built author pages)
-    author_img, author_bio = {}, {}
     from build_articles import author_slug
+    author_img, author_bio = {}, {}
     for a in arts.values():
         aslug = author_slug(a['author'])
         p = f"assets/img/au-{aslug}.jpg"
@@ -291,61 +428,39 @@ def main():
             if m:
                 author_bio[a['author']] = text(m.group(1))
 
-    slugs = [args.only] if args.only else list(DOCX)
-    for slug in slugs:
-        if slug not in DOCX:
-            print(f"  ! no docx mapped for {slug}"); continue
-        post = arts[slug]
-        docx = os.path.join(ISSUE, DOCX[slug])
+    if not args.extras:
+        for slug in ([args.only] if args.only else list(DOCX)):
+            if slug not in DOCX:
+                print(f"  ! no docx mapped for {slug}"); continue
+            post = arts[slug]
+            docx = os.path.join(ISSUE, DOCX[slug])
+            if not os.path.exists(docx):
+                print(f"  ! missing {docx}"); continue
+            md = convert_docx(docx, slug)
+            body, bio, _ = build_body(md, slug)
+            if not bio:
+                bio = author_bio.get(post['author'], '')
+            w, nf = render_page(post, body, bio, tpl, arts, author_img,
+                                'author-' + author_slug(post['author']) + '.html')
+            print(f"  {slug[:44]:44} {w:5d}w  {nf} fig  bio:{'y' if bio else '-'}")
+
+    for meta in EXTRAS:
+        if args.only and meta['slug'] != args.only:
+            continue
+        docx = os.path.join(ISSUE, meta['docx'])
         if not os.path.exists(docx):
             print(f"  ! missing {docx}"); continue
-
-        md = convert_docx(docx, slug)
-        body, bio, first_img = build_body(md, slug)
-        if not bio:                      # docx had no "About the Author" — reuse author-page bio
-            bio = author_bio.get(post['author'], '')
-        lede = post.get('lede') or f'assets/img/hero-bg.jpg'
-
-        others = [p for s, p in arts.items() if s != slug]
-        mr = '\n'.join(
-            f'            <li><a href="{p["slug"]}.html"><span class="t">{esc(p["title"])}</span>'
-            f'<span class="m">{esc(p["author"])} · {esc(p["section"])}</span></a></li>'
-            for p in others[:5])
-        same = [p for p in others if p['section'] == post['section']]
-        rel_posts = (same + [p for p in others if p not in same])[:3]
-        rel = '\n'.join(f'''            <article class="th-card">
-              <a class="ph" href="{p['slug']}.html" style="background-image:url({p.get('lede','assets/img/hero-bg.jpg')})"></a>
-              <div class="b">
-                <h3><a href="{p['slug']}.html">{esc(p['title'])}</a></h3>
-                <div class="meta"><span><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {pretty(p['date'])}</span><span>·</span><span>By {esc(p['author'])}</span></div>
-              </div>
-            </article>''' for p in rel_posts)
-
-        av = author_img.get(post['author'], '')
-        avatar = (f'<img class="av" src="{av}" alt="" width="44" height="44">' if av else '')
-        author_pic = (f'<img src="{av}" alt="" width="96" height="96">' if av else '')
-        words = len(text(body).split())
-
-        page = (tpl
-                .replace('{{TITLE}}', esc(post['title']))
-                .replace('{{STANDFIRST}}', esc(standfirst(body)))
-                .replace('{{SECTION}}', esc(post['section']))
-                .replace('{{AUTHOR_HREF}}', 'author-' + author_slug(post['author']) + '.html')
-                .replace('{{AUTHOR}}', esc(post['author']))
-                .replace('{{DATE_ISO}}', post['date'])
-                .replace('{{DATE}}', pretty(post['date']))
-                .replace('{{MINS}}', str(max(2, round(words / 200))))
-                .replace('{{LEDE}}', lede)
-                .replace('{{AVATAR}}', avatar)
-                .replace('{{AUTHOR_PIC}}', author_pic)
-                .replace('{{BIO}}', esc(bio) or 'Contributor to TransHimalaya.')
-                .replace('{{BODY}}', body)
-                .replace('{{NOTES}}', '')
-                .replace('{{MUSTREAD}}', mr)
-                .replace('{{RELATED}}', rel))
-        open(f'{slug}.html', 'w', encoding='utf-8').write(page)
-        nfig = page.count('art-fig')
-        print(f"  {slug[:44]:44} {words:5d}w  {nfig} fig  bio:{'y' if bio else '-'}")
+        md = convert_docx(docx, meta['slug'])
+        if meta.get('kind') == 'interview':
+            body, sf = build_interview(md)
+            bio, meta = '', {**meta, 'standfirst': sf}
+        else:
+            body, bio, _ = build_body(md, meta['slug'], meta.get('strip_lead'))
+            if not bio:
+                bio = author_bio.get(meta['author'], '')
+        meta = {**meta, 'lede': arts.get(meta['slug'], {}).get('lede', 'assets/img/hero-bg.jpg')}
+        w, nf = render_page(meta, body, bio, tpl, arts, author_img, resolve_href(meta['author']))
+        print(f"  {meta['slug'][:44]:44} {w:5d}w  {nf} fig  [extra]")
 
 
 if __name__ == '__main__':

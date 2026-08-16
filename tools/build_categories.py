@@ -43,6 +43,10 @@ SECTIONS = [
     ('youth', 'Youth',
      'Younger voices on Tibet and the Himalaya — new writing, new questions.', None),
 
+    ('interviews', 'Interviews',
+     'Conversations with the leaders, scholars and practitioners shaping Tibet&#39;s '
+     'future.', None),
+
     ('tibet-monitor', 'Tibet Monitor',
      'A running record of developments inside Tibet, gathered and verified by the '
      'Foundation&#39;s researchers.', None),

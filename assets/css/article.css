@@ -140,3 +140,7 @@
 
 /* figure source attribution, folded into the caption */
 .art-body .art-fig figcaption .src{ font-style:italic; opacity:.85; }
+
+/* interview: host questions as bold lead-ins */
+.art-body .art-q{ margin-top:1.7em; color:var(--ink); }
+.art-body .art-note{ font-size:13.5px; color:var(--muted); margin:.3em 0; }
