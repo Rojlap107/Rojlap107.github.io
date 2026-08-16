@@ -121,7 +121,7 @@ def main():
             body = ('        <div class="cat-empty">\n'
                     '          <p class="ttl">Nothing published here yet</p>\n'
                     f'          <p>{title} will carry its first pieces shortly. In the '
-                    'meantime, read the <a href="issues.html">current issue</a> or browse '
+                    'meantime, read the <a href="journal-issue.html">current issue</a> or browse '
                     '<a href="main-essays.html">Main Essays</a>.</p>\n'
                     '        </div>\n')
             count = ''

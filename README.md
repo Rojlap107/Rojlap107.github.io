@@ -19,7 +19,7 @@ Then open <http://localhost:8748>.
 | | |
 |---|---|
 | `index.html` | Home |
-| `issues.html` | Magazine Issue — the inaugural issue and its full contents |
+| `journal-issue.html` | Journal Issue — the inaugural issue and its full contents |
 | `main-essays.html` and sections | Tibet Today · Tibet Beyond Borders · History · The Strategic Triangle · Global Perspectives · Youth · Tibet Monitor |
 | `dreshey.html` and sub-sections | Archives · Data & Visuals · Must Reads, plus six awaiting content |
 | `about.html` · `team.html` · `career.html` · `contact.html` · `authors.html` | About |
