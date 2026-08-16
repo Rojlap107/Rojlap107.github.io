@@ -121,7 +121,9 @@ def main():
         o, c = s.count('<div'), s.count('</div>')
         return 'OK' if o == c else f'MISMATCH {o}/{c}'
 
-    names = sorted(set(list(bios) + list(by_author)), key=sortkey)
+    SKIP_AUTHORS = {'Youth Voices'}
+    names = [n for n in sorted(set(list(bios) + list(by_author)), key=sortkey)
+             if n not in SKIP_AUTHORS]
     cards = []
 
     for name in names:

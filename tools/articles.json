@@ -230,5 +230,13 @@
     "date": "2026-08-01",
     "section": "Interviews",
     "lede": "assets/img/issue/interview-with-sikyong-penpa-tsering/lede.jpg"
+  },
+  {
+    "slug": "youth-voices",
+    "title": "Youth Voices",
+    "author": "Youth Voices",
+    "date": "2026-08-01",
+    "section": "Youth",
+    "lede": "assets/img/issue/youth-voices/tenzin-woesel.jpg"
   }
 ]

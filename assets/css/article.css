@@ -144,3 +144,7 @@
 /* interview: host questions as bold lead-ins */
 .art-body .art-q{ margin-top:1.7em; color:var(--ink); }
 .art-body .art-note{ font-size:13.5px; color:var(--muted); margin:.3em 0; }
+
+/* youth voices: modest portrait, not a full-width figure */
+.art-body .art-portrait{ max-width:200px; margin:1.2em 0; }
+.art-body .art-portrait img{ border-radius:6px; }
