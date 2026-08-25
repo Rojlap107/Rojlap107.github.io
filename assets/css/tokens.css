@@ -1,0 +1,37 @@
+/* TransHimalaya — design tokens
+   Colour, type and imagery custom properties, plus the reset.
+   Loaded first by every page; change a value here and the whole site follows.
+   Norzin Consultancy, 2026 */
+
+*{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; }
+body{ background:#fff; }
+img{ max-width:100%; }
+.th-vh{ position:absolute; width:1px; height:1px; overflow:hidden;
+  clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; }
+
+.th-site { --ink:#1B3A4B; --navy:#123243; --orange:#E68A2E; --teal:#2B7A99;
+    --paper:#fff; --sand:#F4F0E7; --line:#E4E0D5; --body:#454a4d; --muted:#7c8286;
+    background:var(--paper); color:var(--body);
+    font-family:system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif; }
+.th-site .serif, .th-card h3, .th-hero h1, .th-logo .nm, .th-field h4, .th-photo h3, .th-news h3, .th-foot .nm {
+    font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; }
+.th-site .ph, .th-site .thumb, .th-collage i {
+    background-color:#e6ebed;
+    background-image:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='80'%20height='54'%20viewBox='0%200%2080%2054'%3E%3Cpath%20d='M4%2048%20L26%2016%20L38%2032%20L52%2012%20L76%2048%20Z'%20fill='none'%20stroke='%23a6b4bc'%20stroke-width='2.5'%20stroke-linejoin='round'/%3E%3Cpath%20d='M46%2020%20l6%20-8%206%208%20z'%20fill='%23ffffff'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:center; }
+
+/* ---- imagery: every photograph the chrome and homepage refer to ---- */
+.th-site{
+  --img-logo:url("/assets/img/logo-full.png");
+  --img-mark:url("/assets/img/logo-mark.png");
+  --img-cover:url("/assets/img/cover.jpg");
+  --img-herobg:url("/assets/img/hero-bg.jpg");
+  --img-mongolia:url("/assets/img/mongolia.jpg");
+  --img-potala:url("/assets/img/potala.jpg");
+  --img-uyghur:url("/assets/img/uyghur.jpg");
+  --img-bhutan:url("/assets/img/bhutan.jpg");
+  --img-dalailama:url("/assets/img/dalailama.jpg");
+  --img-tibet:url("/assets/img/tibet.jpg");
+  --img-monlam:url("/assets/img/monlam.jpg");
+}

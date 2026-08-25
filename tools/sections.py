@@ -10,8 +10,11 @@ Colours are defined once here and emitted as CSS custom properties by
 """
 
 import html
+import os
 import re
 import unicodedata
+
+import paths as P
 
 # section name -> (chip colour, text colour on that chip)
 COLOURS = {
@@ -35,22 +38,28 @@ DEFAULT = ('#5A6B73', '#fff')
 # the topics gathered under In Focus
 IN_FOCUS = ['Tibet Today', 'Tibet Beyond Borders', 'History']
 
-# section -> the page that lists it. Opening pieces have no section page of
-# their own, so they point back at the edition.
+# section -> the slug of the page that lists it. Opening pieces have no section
+# page of their own, so they point back at the edition.
 PAGES = {
-    'History': 'history.html',
-    'Tibet Today': 'tibet-today.html',
-    'Tibet Beyond Borders': 'tibet-beyond-borders.html',
-    'The Strategic Triangle': 'the-strategic-triangle.html',
-    'Global Perspectives': 'global-perspectives.html',
-    'Youth': 'youth.html',
-    'Interviews': 'interviews.html',
-    'Tibet Monitor': 'tibet-monitor.html',
+    'History': 'history',
+    'Tibet Today': 'tibet-today',
+    'Tibet Beyond Borders': 'tibet-beyond-borders',
+    'The Strategic Triangle': 'the-strategic-triangle',
+    'Global Perspectives': 'global-perspectives',
+    'Youth': 'youth',
+    'Interviews': 'interviews',
+    'Tibet Monitor': 'tibet-monitor',
 }
 
 
 def page_for(section):
-    return PAGES.get(section, 'journal-editions.html')
+    """The URL of the page that lists this section."""
+    slug = PAGES.get(section)
+    return P.url('section', slug) if slug else P.url('issue')
+
+
+def article_url(slug):
+    return P.url('article', slug)
 
 
 def chip_link(section, cls='th-chip'):
@@ -84,7 +93,7 @@ def excerpt(slug, limit=115):
         return _EXCERPT_CACHE[slug]
     out = ''
     try:
-        page = open(f'{slug}.html', encoding='utf-8').read()
+        page = open(f'content/article/{slug}.html', encoding='utf-8').read()
         m = re.search(r'<p class="art-standfirst">(.*?)</p>', page, re.S)
         if m:
             t = re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', '', m.group(1))).strip()
@@ -99,7 +108,7 @@ def excerpt(slug, limit=115):
 
 
 def css_block():
-    """CSS for every chip colour — appended to base.css by build_sections_css."""
+    """CSS for every chip colour — appended to components.css by build_sections_css."""
     rows = []
     for name, (bg, fg) in COLOURS.items():
         # --cat lets other components (filter pills, rules) reuse the colour

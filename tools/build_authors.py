@@ -6,10 +6,13 @@ WordPress export; portraits from assets/img/au-<slug>.jpg where one exists.
 
     python3 tools/build_authors.py
 
-Run from the site root, after build_articles.py.
+Writes content/author/<slug>.html and content/authors-index/; run
+tools/build.py afterwards. Run from the site root, after the articles.
 """
 
 import html, json, os, re, sys, unicodedata
+import content as C
+import paths as P
 import xml.etree.ElementTree as ET
 
 XML = os.path.expanduser("~/Downloads/transhimalaya.WordPress.2026-08-03.xml")
@@ -111,24 +114,13 @@ def main():
     for v in by_author.values():
         v.sort(key=lambda a: a['date'], reverse=True)
 
-    idx = open('index.html', encoding='utf-8').read()
-    sprite = re.search(r'  <svg width="0" height="0".*?</svg>\n', idx, re.S).group(0)
-    header = re.search(r'      <!-- Header -->.*?</nav>\n', idx, re.S).group(0)
-    tail = re.search(r'      <!-- Newsletter -->.*?</footer>\n', idx, re.S).group(0)
+    manifest = C.load()
 
-    def shell(fn, title, desc, body):
-        s = ('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
-             '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
-             f'<title>{esc(title)} — TransHimalaya</title>\n'
-             f'<meta name="description" content="{esc(desc)}">\n'
-             '<link rel="icon" href="assets/img/logo-mark.png">\n'
-             '<link rel="stylesheet" href="assets/css/base.css">\n'
-             '<link rel="stylesheet" href="assets/css/authors.css">\n</head>\n'
-             f'<body>\n<div class="th-site">\n{sprite}{header}\n{body}\n{tail}</div>\n'
-             '<script src="assets/js/site.js"></script>\n</body>\n</html>\n')
-        open(fn, 'w', encoding='utf-8').write(s)
-        o, c = s.count('<div'), s.count('</div>')
-        return 'OK' if o == c else f'MISMATCH {o}/{c}'
+    def shell(page_type, slug, title, desc, body):
+        """Register the page's content; build.py wraps it in the chrome."""
+        C.write(page_type, slug, esc(title), esc(desc), f'\n{body}\n',
+                manifest=manifest)
+        return 'ok'
 
     SKIP_AUTHORS = {'Youth Voices'}
     names = [n for n in sorted(set(list(bios) + list(by_author)), key=sortkey)
@@ -143,13 +135,13 @@ def main():
         photo = f'assets/img/au-{slug}.jpg'
         has_photo = os.path.exists(photo)
 
-        portrait = (f'<img class="portrait" src="{photo}" alt="" width="180" height="180">'
+        portrait = (f'<img class="portrait" src="{P.asset(photo)}" alt="" width="180" height="180">'
                     if has_photo else
                     f'<span class="portrait is-initials" aria-hidden="true">'
                     f'{esc(first_name(name)[0])}{esc(name.split()[-1][0])}</span>')
 
         items = '\n'.join(f'''          <li>
-            <a href="{a['slug']}.html">
+            <a href="{P.url('article', a['slug'])}">
               <span class="sec">{esc(a['section'])}</span>
               <span class="t">{esc(a['title'])}</span>
               <span class="d"><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {pretty(a['date'])}</span>
@@ -165,7 +157,7 @@ def main():
         </div>''')
 
         body = f'''      <section class="au-profile">
-        <p class="crumb"><a href="authors.html">Authors</a></p>
+        <p class="crumb"><a href="/authors/">Authors</a></p>
         <div class="au-hero">
           {portrait}
           <div>
@@ -178,19 +170,19 @@ def main():
 {works_html}
       </section>
 '''
-        flag = shell(f'author-{slug}.html', name,
+        flag = shell('author', slug, name,
                      bio[:150] or f'{name}, contributor to TransHimalaya.', body)
         n = len(works)
         print(f"  author-{slug:34} {n} article{'' if n == 1 else 's':<2} "
               f"{'photo' if has_photo else 'initials':>8}  {flag}")
 
-        av = (f'<span class="av"><img src="{photo}" alt="" width="120" height="120" loading="lazy"></span>'
+        av = (f'<span class="av"><img src="{P.asset(photo)}" alt="" width="120" height="120" loading="lazy"></span>'
               if has_photo else
               f'<span class="av is-initials" aria-hidden="true">'
               f'{esc(first_name(name)[0])}{esc(name.split()[-1][0])}</span>')
         blurb = (bio[:118] + '…') if len(bio) > 118 else bio
         cards.append(f'''        <li class="au-card">
-          <a href="author-{slug}.html">
+          <a href="{P.url('author', slug)}">
             {av}
             <span class="nm">{esc(name)}</span>
             <span class="rl">{esc(blurb)}</span>
@@ -209,8 +201,10 @@ def main():
         </ul>
       </section>
 '''
-    print(f"\n  authors.html  {len(cards)} authors  "
-          f"{shell('authors.html', 'Authors', 'Everyone writing for TransHimalaya.', index_body)}")
+    print(f"\n  /authors/  {len(cards)} authors  "
+          f"{shell('authors-index', '', 'Authors', 'Everyone writing for TransHimalaya.', index_body)}")
+    C.prune('author', {slugify(n) for n in names}, manifest)
+    C.save(manifest)
 
 
 if __name__ == '__main__':

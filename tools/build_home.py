@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rebuild the dynamic middle of the homepage from tools/articles.json.
+"""Rebuild the dynamic middle of the home page from tools/articles.json.
 
 Replaces everything between the "Featured stories" marker and the
 "About + Photo essay band" marker with:
@@ -11,10 +11,12 @@ Replaces everything between the "Featured stories" marker and the
 
     python3 tools/build_home.py
 
-Run from the site root.
+Writes content/home/home.html; run tools/build.py afterwards to reassemble
+index.html. Run from the site root.
 """
 
 import html, json, os, re, sys
+import paths as P
 import sections as S
 
 # The generated region runs from the first of these markers to END. "Opening"
@@ -48,9 +50,9 @@ def opening_card(a):
 
 def featured_card(a):
     return f'''          <article class="th-card">
-            <a class="ph" href="{a['slug']}.html" style="background-image:url({a['lede']})">{S.chip(a['section'], 'th-chip ph-chip')}</a>
+            <a class="ph" href="{S.article_url(a['slug'])}" style="background-image:url({P.asset(a['lede'])})">{S.chip(a['section'], 'th-chip ph-chip')}</a>
             <div class="b">
-              <h3><a href="{a['slug']}.html">{esc(a['title'])}</a></h3>
+              <h3><a href="{S.article_url(a['slug'])}">{esc(a['title'])}</a></h3>
               <p>{esc(S.excerpt(a['slug']))}</p>
               <div class="meta"><span><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {short(a['date'])}</span><span>·</span><span>By {esc(a['author'])}</span></div>
             </div>
@@ -58,14 +60,14 @@ def featured_card(a):
 
 
 def field_item(a):
-    return (f'            <div class="item"><div class="thumb" style="background-image:url({a["lede"]})"></div>'
-            f'<div><h4><a href="{a["slug"]}.html">{esc(a["title"])}</a></h4>'
+    return (f'            <div class="item"><div class="thumb" style="background-image:url({P.asset(a["lede"])})"></div>'
+            f'<div><h4><a href="{S.article_url(a["slug"])}">{esc(a["title"])}</a></h4>'
             f'<div class="r">{S.chip(a["section"])}'
             f'<span class="date">{short(a["date"])}</span></div></div></div>')
 
 
 def main():
-    if not os.path.exists('index.html'):
+    if not os.path.exists('content/manifest.json'):
         sys.exit('run this from the site root')
     arts = json.load(open('tools/articles.json'))
     by_slug = {a['slug']: a for a in arts}
@@ -115,19 +117,20 @@ def main():
           <div class="th-fieldlist">
 {field_html}
           </div>
-          <div style="margin-top:16px"><a href="in-focus.html" style="color:var(--teal);font-weight:600;font-size:14px;text-decoration:none">Browse In Focus →</a></div>
+          <div style="margin-top:16px"><a href="/sections/in-focus/" style="color:var(--teal);font-weight:600;font-size:14px;text-decoration:none">Browse In Focus →</a></div>
         </div>
       </section>
 
 '''
 
-    idx = open('index.html', encoding='utf-8').read()
-    start = next((m for m in START_MARKERS if m in idx), None)
-    if not start or END not in idx:
-        sys.exit('homepage markers not found')
-    head = idx.split(start, 1)[0]
-    tail = idx.split(END, 1)[1]
-    open('index.html', 'w', encoding='utf-8').write(head + block + END + tail)
+    src = 'content/home/home.html'
+    page = open(src, encoding='utf-8').read()
+    start = next((m for m in START_MARKERS if m in page), None)
+    if not start or END not in page:
+        sys.exit(f'home page markers not found in {src}')
+    head = page.split(start, 1)[0]
+    tail = page.split(END, 1)[1]
+    open(src, 'w', encoding='utf-8').write(head + block + END + tail)
 
     print(f"  opening   {len(opening)} pieces: " + ', '.join(a['section'] for a in opening))
     print(f"  featured  {len(feat)} cards:   " + ', '.join(a['section'] for a in feat))

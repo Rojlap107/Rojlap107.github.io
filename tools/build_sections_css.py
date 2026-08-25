@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write the section-colour rules into base.css between managed markers.
+"""Write the section-colour rules into components.css between managed markers.
 
     python3 tools/build_sections_css.py
 
@@ -16,7 +16,7 @@ END = '/* <<< section-colours */'
 def main():
     if not os.path.exists('index.html'):
         sys.exit('run this from the site root')
-    p = 'assets/css/base.css'
+    p = 'assets/css/components.css'
     css = open(p, encoding='utf-8').read()
     block = f'{START}\n{S.css_block()}{END}\n'
     if START in css:
@@ -25,7 +25,7 @@ def main():
     else:
         css = css.rstrip('\n') + '\n\n' + block
     open(p, 'w', encoding='utf-8').write(css)
-    print(f'  base.css  {len(S.COLOURS)} section colours')
+    print(f'  components.css  {len(S.COLOURS)} section colours')
 
 
 if __name__ == '__main__':

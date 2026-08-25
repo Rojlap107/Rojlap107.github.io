@@ -12,63 +12,131 @@ Built by Norzin Consultancy.
 python3 -m http.server 8748
 ```
 
-Then open <http://localhost:8748>.
+Then open <http://localhost:8748>. URLs end in a slash (`/articles/foreword/`) and
+the server resolves each to that directory's `index.html`.
 
-## Pages
+## How the site is put together
 
-| | |
-|---|---|
-| `index.html` | Home |
-| `journal-editions.html` | Journal Editions — the inaugural edition (Vol. 1 No. 1) and its contents |
-| `in-focus.html` | In Focus — every essay, with a topic filter and search |
-| section pages | Tibet Today · Tibet Beyond Borders · History · The Strategic Triangle · Global Perspectives · Youth · Interviews · Tibet Monitor |
-| `dreshey.html` and sub-sections | Archives · Data & Visuals · Must Reads, plus six awaiting content |
-| `about.html` · `team.html` · `career.html` · `contact.html` · `authors.html` | About |
-| 23 article pages | one per published article, at its own slug |
-
-## Structure
+Every page is **content** (unique to it) wrapped in **chrome** (shared by all of
+them). Nothing repeats the masthead, the navigation or the footer.
 
 ```
-assets/css/   base.css (shared chrome) + one stylesheet per page type
-assets/js/    site.js — bell cursor, hamburger, submenus, sharing
-assets/img/   logo, covers, article photography, author portraits
-assets/pdf/   issue PDFs (to be supplied)
-tools/        generators — see below
+content/          the unique part of each page, as an HTML fragment
+  manifest.json   every page: type, slug, URL, title, description
+templates/
+  partials/       header.html · footer.html · head.html · sprite.svg · scripts.html
+  base.html       the document shell those partials bracket
+  fragments/      article.html — the shape of an article body
+assets/css/       tokens · chrome · components · cursor, plus one per page type
+tools/            the URL scheme, the renderer, and the content generators
 ```
 
-Every page loads `base.css` plus its own stylesheet.
+To change the masthead, the navigation or the footer, edit **one file** —
+`templates/partials/header.html` or `templates/partials/footer.html` — and rebuild:
+
+```bash
+python3 tools/rebuild.py
+```
+
+This structure maps onto a WordPress theme directly: `partials/header.html` is
+`header.php`, `partials/footer.html` is `footer.php`, `base.html` is the shell
+they bracket, and the per-type templates are `single.php` / `archive.php`.
+
+## URLs
+
+| type | URL | file |
+|---|---|---|
+| home | `/` | `index.html` |
+| edition | `/journal-editions/` | `journal-editions/index.html` |
+| article | `/articles/<slug>/` | `articles/<slug>/index.html` |
+| section | `/sections/<slug>/` | `sections/<slug>/index.html` |
+| Dreshey | `/dreshey/` and `/dreshey/<slug>/` | … |
+| author | `/authors/` and `/authors/<slug>/` | … |
+| team | `/team/` and `/team/<slug>/` | … |
+| page | `/about/` `/career/` `/contact/` | … |
+
+`tools/paths.py` is the single source of truth for this. The scheme matches
+WordPress's `/articles/%postname%/`, so the migration is a rename, not a rewrite.
+
+All links and assets are **site-absolute** (`/assets/…`, `/articles/…`) because a
+page at `/articles/<slug>/` cannot resolve a relative path. `tools/check_links.py`
+fails the build if a relative reference creeps back in.
+
+## Rebuilding
+
+```bash
+python3 tools/rebuild.py              # reassemble pages from content/ + templates/
+python3 tools/rebuild.py --check      # …and verify every internal link
+python3 tools/rebuild.py --content    # regenerate the content first (needs the sources below)
+python3 tools/build.py --only about   # one page
+python3 tools/check_links.py          # link and asset check on its own
+```
 
 ## Generators
 
-The article, section and Dreshey pages are generated from the WordPress export
-(`~/Downloads/transhimalaya.WordPress.*.xml`), not hand-written:
+The article, section, author, team, Dreshey and home-page content is generated,
+not hand-written. Each writes into `content/`; `tools/build.py` then wraps every
+fragment in the chrome.
 
 ```bash
-python3 tools/build_articles.py --all    # every published article
-python3 tools/build_categories.py        # the section pages
-python3 tools/build_deyshal.py           # the Dreshey hub and sub-sections
-python3 tools/build_team.py              # patron and trustee profile pages
-python3 tools/build_home.py              # the homepage: Opening, Featured, contents
-python3 tools/build_sections_css.py      # section colours into base.css
+python3 tools/build_issue.py          # article pages from the finalised .docx
+python3 tools/build_issue.py --only <slug>
+python3 tools/build_youth.py          # the Youth Voices page
+python3 tools/build_authors.py        # author pages and the author index
+python3 tools/build_team.py           # patron and trustee profiles
+python3 tools/build_categories.py     # section pages
+python3 tools/build_deyshal.py        # the Dreshey hub and sub-sections
+python3 tools/build_home.py           # the generated middle of the home page
+python3 tools/build_sections_css.py   # section colours into components.css
 ```
 
-`build_articles.py` also downloads and resizes the images each article needs.
+Run them in that order — the section, author, Dreshey and home pages all
+summarise the articles.
 
-`build_team.py` holds its own data — patrons and trustees write no articles, so
-they are not in the WordPress export. Their bios are drafts drawn from public
-roles and need checking with FNVA. Author profiles are generated separately by
-`build_authors.py`; the research-team members on `team.html` link to those.
+`tools/build_articles.py` is the **superseded** WordPress-export path. It rebuilds
+the same articles from the older WordPress text and rewrites
+`tools/articles.json`; only run it deliberately.
+
+### Sources that live outside this repository
+
+- `build_issue.py`, `build_youth.py` → `~/Desktop/Tenzin Paljor/FNVA/1st Issue/**/*.docx`
+- `build_authors.py`, `build_articles.py` → `~/Downloads/transhimalaya.WordPress.2026-08-03.xml`
+
+Without those, `content/` as committed is the only copy — edit the fragments
+directly rather than re-running a generator whose source you cannot see.
+
+`build_team.py` is the exception: patrons and trustees write no articles, so
+their details live in the script. Those bios are drafts drawn from public roles
+and need checking with FNVA.
+
+Requires `pandoc` and ImageMagick (`magick`) on PATH.
+
+## Stylesheets
+
+| file | what it holds |
+|---|---|
+| `tokens.css` | colour, type and imagery custom properties, and the reset |
+| `chrome.css` | **the masthead, navigation and footer** — change the chrome here |
+| `components.css` | section headings, cards, chips, icons, section colours |
+| `cursor.css` | the bell (drilbu) pointer |
+| `home` `issues` `article` `category` `dreshey` `authors` `pages` | one per page type |
+
+Every page loads the first four, then its own. `templates/partials/head.html` is
+where that list lives.
 
 ## Section colours
 
-`tools/sections.py` is the single source of truth for each topic's colour. Every
-card, chip and filter pill across the site takes its colour from there, so one
-topic always reads the same. After changing a colour, run
-`python3 tools/build_sections_css.py`.
+`tools/sections.py` is the single source of truth for each topic's colour, its
+slug and the page that lists it. Every card, chip and filter pill takes its
+colour from there, so one topic always reads the same. After changing a colour:
+
+```bash
+python3 tools/build_sections_css.py
+```
 
 ## Opening card images
 
-The Foreword and Editor's Note have only author portraits, so their homepage
+The Foreword and Editor's Note have only author portraits, so their home-page
 cards use the portrait contained on a blurred fill of itself (never cropped to
 16:10, which cuts faces off):
 
@@ -82,8 +150,10 @@ magick /tmp/_bg.jpg /tmp/_fg.png -gravity center -composite -strip -quality 84 O
 ## Conventions
 
 - `.th-*` for site components, `.issue-*`, `.art-*`, `.cat-*`, `.dy-*`, `.pg-*` per page type
-- No emoji — icons are inline SVG in the sprite at the top of each page
-- Mobile submenu rules are declared **last** in `base.css`; at equal specificity a
+- No emoji — icons are inline SVG in `templates/partials/sprite.svg`
+- Navigation items carry `data-nav="<key>"`; the build gives the current page's
+  item the `active` class, so renaming a label cannot break the highlight
+- Mobile submenu rules are declared **last** in `chrome.css`; at equal specificity a
   media query does not beat source order
 
 ## Still needed from FNVA

@@ -1,17 +1,25 @@
 #!/usr/bin/env python3
 """Generate article pages for TransHimalaya from the WordPress export.
 
+SUPERSEDED by tools/build_issue.py, which builds the same articles from the
+finalised Word documents. Running this overwrites those pages with the older
+WordPress text and rewrites tools/articles.json — only run it deliberately.
+
 Reads the WXR file, converts each chosen post into an article page using the
 site's own markup, and downloads the images it needs into assets/img/.
 
     python3 tools/build_articles.py            # the articles shown on the home page
     python3 tools/build_articles.py --all      # every published 2026 article
 
+Writes content/article/<slug>.html; run tools/build.py afterwards.
 Run from the site root.
 """
 
 import argparse, html, json, os, re, subprocess, sys, unicodedata, urllib.request
 import xml.etree.ElementTree as ET
+
+import content as C
+import paths as P
 
 XML = os.path.expanduser("~/Downloads/transhimalaya.WordPress.2026-08-03.xml")
 NS = {'wp': 'http://wordpress.org/export/1.2/',
@@ -302,7 +310,7 @@ def build(post, posts, tpl, author_img):
     # must-reads: the most recent other articles
     others = [p for p in posts if p['slug'] != post['slug']]
     mr = '\n'.join(
-        f'            <li><a href="{p["slug"]}.html"><span class="t">{esc(p["title"])}</span>'
+        f'            <li><a href="{P.url("article", p["slug"])}"><span class="t">{esc(p["title"])}</span>'
         f'<span class="m">{esc(p["author"])} · {esc(p["section"])}</span></a></li>'
         for p in others[:5])
 
@@ -310,27 +318,27 @@ def build(post, posts, tpl, author_img):
     same = [p for p in others if p['section'] == post['section']]
     rel_posts = (same + [p for p in others if p not in same])[:3]
     rel = '\n'.join(f'''            <article class="th-card">
-              <a class="ph" href="{p['slug']}.html" style="background-image:url({p['lede']})"></a>
+              <a class="ph" href="{P.url('article', p['slug'])}" style="background-image:url({P.asset(p['lede'])})"></a>
               <div class="b">
-                <h3><a href="{p['slug']}.html">{esc(p['title'])}</a></h3>
+                <h3><a href="{P.url('article', p['slug'])}">{esc(p['title'])}</a></h3>
                 <div class="meta"><span><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {pretty(p['date'])}</span><span>·</span><span>By {esc(p['author'])}</span></div>
               </div>
             </article>''' for p in rel_posts)
 
     av = author_img.get(post['author'], '')
-    avatar = (f'<img class="av" src="{av}" alt="" width="44" height="44">' if av else '')
-    author_pic = (f'<img src="{av}" alt="" width="96" height="96">' if av else '')
+    avatar = (f'<img class="av" src="{P.asset(av)}" alt="" width="44" height="44">' if av else '')
+    author_pic = (f'<img src="{P.asset(av)}" alt="" width="96" height="96">' if av else '')
 
     return (tpl
             .replace('{{TITLE}}', esc(post['title']))
             .replace('{{STANDFIRST}}', esc(standfirst(post['raw'])))
             .replace('{{SECTION}}', esc(post['section']))
-            .replace('{{AUTHOR_HREF}}', 'author-' + author_slug(post['author']) + '.html')
+            .replace('{{AUTHOR_HREF}}', P.url('author', author_slug(post['author'])))
             .replace('{{AUTHOR}}', esc(post['author']))
             .replace('{{DATE_ISO}}', post['date'])
             .replace('{{DATE}}', pretty(post['date']))
             .replace('{{MINS}}', str(max(2, round(post['words'] / 200))))
-            .replace('{{LEDE}}', feat or f'{IMG_DIR}/hero-bg.jpg')
+            .replace('{{LEDE}}', P.asset(feat or f'{IMG_DIR}/hero-bg.jpg'))
             .replace('{{AVATAR}}', avatar)
             .replace('{{AUTHOR_PIC}}', author_pic)
             .replace('{{BIO}}', esc(post['bio']) or 'Contributor to TransHimalaya.')
@@ -345,9 +353,10 @@ def main():
     ap.add_argument('--all', action='store_true', help='build every 2026 article')
     args = ap.parse_args()
 
-    if not os.path.exists('index.html'):
+    if not os.path.exists('content/manifest.json'):
         sys.exit('run this from the site root')
-    tpl = open('tools/article.tpl.html', encoding='utf-8').read()
+    tpl = open('templates/fragments/article.html', encoding='utf-8').read()
+    manifest = C.load()
 
     posts = load(None if args.all else HOMEPAGE)
     print(f"building {len(posts)} articles")
@@ -362,11 +371,10 @@ def main():
 
     for p in posts:
         page = build(p, posts, tpl, author_img)
-        with open(f"{p['slug']}.html", 'w', encoding='utf-8') as fh:
-            fh.write(page)
-        o, c = page.count('<div'), page.count('</div>')
-        flag = 'OK' if o == c else f'MISMATCH {o}/{c}'
-        print(f"  {p['slug'][:44]:46} {p['words']:5d}w  {flag}")
+        C.write('article', p['slug'], esc(p['title']), esc(standfirst(p['raw'])),
+                page, manifest=manifest)
+        print(f"  {p['slug'][:44]:46} {p['words']:5d}w")
+    C.save(manifest)
 
     json.dump([{k: p[k] for k in ('slug', 'title', 'author', 'date', 'section', 'lede')}
                for p in posts], open('tools/articles.json', 'w'), indent=1)

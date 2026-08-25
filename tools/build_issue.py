@@ -11,10 +11,13 @@ tools/articles.json so the contents page and author pages keep resolving.
     python3 tools/build_issue.py            # all mapped essays
     python3 tools/build_issue.py --only tibet-was-never-part-of-china
 
-Run from the site root.
+Writes content/article/<slug>.html; run tools/build.py afterwards to wrap
+each fragment in the site chrome. Run from the site root.
 """
 
 import argparse, html, json, os, re, subprocess, sys
+import content as C
+import paths as P
 import sections as S
 
 ISSUE = os.path.expanduser("~/Desktop/Tenzin Paljor/FNVA/1st Issue")
@@ -338,7 +341,7 @@ def build_body(md, slug, strip_lead=None, title=None, author=None,
         figcap = (f'\n          <figcaption>{label}{cap}</figcaption>'
                   if (label or cap) else '')
         out.append(f'        <figure class="art-fig">\n'
-                   f'          <img src="{path}" alt="" loading="lazy">{figcap}\n'
+                   f'          <img src="{P.asset(path)}" alt="" loading="lazy">{figcap}\n'
                    f'        </figure>')
 
     for b in blocks:
@@ -503,21 +506,21 @@ def render_page(meta, body, bio, tpl, arts, author_img, author_href, notes='', l
     lede = meta.get('lede') or 'assets/img/hero-bg.jpg'
     others = [p for s, p in arts.items() if s != slug]
     mr = '\n'.join(
-        f'            <li><a href="{p["slug"]}.html"><span class="t">{esc(p["title"])}</span>'
+        f'            <li><a href="{P.url("article", p["slug"])}"><span class="t">{esc(p["title"])}</span>'
         f'<span class="m">{esc(p["author"])} · {esc(p["section"])}</span></a></li>'
         for p in others[:5])
     same = [p for p in others if p['section'] == meta['section']]
     rel_posts = (same + [p for p in others if p not in same])[:3]
     rel = '\n'.join(f'''            <article class="th-card">
-              <a class="ph" href="{p['slug']}.html" style="background-image:url({p.get('lede','assets/img/hero-bg.jpg')})">{S.chip(p['section'], 'th-chip ph-chip')}</a>
+              <a class="ph" href="{P.url('article', p['slug'])}" style="background-image:url({P.asset(p.get('lede','assets/img/hero-bg.jpg'))})">{S.chip(p['section'], 'th-chip ph-chip')}</a>
               <div class="b">
-                <h3><a href="{p['slug']}.html">{esc(p['title'])}</a></h3>
+                <h3><a href="{P.url('article', p['slug'])}">{esc(p['title'])}</a></h3>
                 <div class="meta"><span><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {pretty(p['date'])}</span><span>·</span><span>By {esc(p['author'])}</span></div>
               </div>
             </article>''' for p in rel_posts)
     av = author_img.get(meta['author'], '')
-    avatar = (f'<img class="av" src="{av}" alt="" width="44" height="44">' if av else '')
-    author_pic = (f'<img src="{av}" alt="" width="96" height="96">' if av else '')
+    avatar = (f'<img class="av" src="{P.asset(av)}" alt="" width="44" height="44">' if av else '')
+    author_pic = (f'<img src="{P.asset(av)}" alt="" width="96" height="96">' if av else '')
     words = len(text(body).split())
     sf = meta.get('standfirst') or standfirst(body)
     page = (tpl
@@ -530,7 +533,7 @@ def render_page(meta, body, bio, tpl, arts, author_img, author_href, notes='', l
             .replace('{{DATE_ISO}}', meta['date'])
             .replace('{{DATE}}', pretty(meta['date']))
             .replace('{{MINS}}', str(max(2, round(words / 200))))
-            .replace('{{LEDE}}', lede)
+            .replace('{{LEDE}}', P.asset(lede))
             .replace('{{AVATAR}}', avatar)
             .replace('{{AUTHOR_PIC}}', author_pic)
             .replace('{{BIO}}', esc(bio) or 'Contributor to TransHimalaya.')
@@ -539,18 +542,20 @@ def render_page(meta, body, bio, tpl, arts, author_img, author_href, notes='', l
             .replace('{{NOTES}}', notes)
             .replace('{{MUSTREAD}}', mr)
             .replace('{{RELATED}}', rel))
-    open(f'{slug}.html', 'w', encoding='utf-8').write(page)
+    C.write('article', slug, esc(meta['title']), esc(sf), page,
+            manifest=MANIFEST)
     return words, page.count('art-fig')
 
 
 def resolve_href(author):
+    """An author's own page if they have one, a member profile if not."""
     from build_articles import author_slug
     aslug = author_slug(author)
-    if os.path.exists(f'author-{aslug}.html'):
-        return f'author-{aslug}.html'
-    if os.path.exists(f'member-{aslug}.html'):
-        return f'member-{aslug}.html'
-    return 'authors.html'
+    if os.path.exists(f'content/author/{aslug}.html'):
+        return P.url('author', aslug)
+    if os.path.exists(f'content/member/{aslug}.html'):
+        return P.url('member', aslug)
+    return P.url('authors-index')
 
 
 def main():
@@ -559,11 +564,13 @@ def main():
     ap.add_argument('--extras', action='store_true', help='only the new (EXTRAS) pieces')
     args = ap.parse_args()
 
-    if not os.path.exists('index.html'):
+    if not os.path.exists('content/manifest.json'):
         sys.exit('run from the site root')
 
-    tpl = open('tools/article.tpl.html', encoding='utf-8').read()
+    tpl = open('templates/fragments/article.html', encoding='utf-8').read()
     arts = {a['slug']: a for a in json.load(open('tools/articles.json'))}
+    global MANIFEST
+    MANIFEST = C.load()
 
     from build_articles import author_slug
     author_img, author_bio = {}, {}
@@ -572,7 +579,7 @@ def main():
         p = f"assets/img/au-{aslug}.jpg"
         if os.path.exists(p):
             author_img[a['author']] = p
-        apage = f"author-{aslug}.html"
+        apage = f"content/author/{aslug}.html"
         if os.path.exists(apage):
             m = re.search(r'<p class="bio">(.*?)</p>', open(apage, encoding='utf-8').read(), re.S)
             if m:
@@ -597,7 +604,7 @@ def main():
             if hero:
                 post = {**post, 'lede': hero['img']}
             w, nf = render_page(post, body, bio, tpl, arts, author_img,
-                                'author-' + author_slug(post['author']) + '.html', notes, lede_cap)
+                                P.url('author', author_slug(post['author'])), notes, lede_cap)
             print(f"  {slug[:44]:44} {w:5d}w  {nf} fig  bio:{'y' if bio else '-'}")
 
     for meta in EXTRAS:
@@ -624,6 +631,8 @@ def main():
         w, nf = render_page(meta, body, bio, tpl, arts, author_img,
                             resolve_href(meta['author']), notes, lede_cap)
         print(f"  {meta['slug'][:44]:44} {w:5d}w  {nf} fig  [extra]")
+
+    C.save(MANIFEST)
 
 
 if __name__ == '__main__':

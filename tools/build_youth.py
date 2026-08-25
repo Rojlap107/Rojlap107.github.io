@@ -6,10 +6,14 @@ becomes a titled section (with a portrait where we have one) on a single
 youth-voices.html page; the contents page links to the anchors.
 
     python3 tools/build_youth.py
+
+Writes content/article/youth-voices.html; run tools/build.py afterwards.
 """
 
 import os, re, subprocess, json
 import build_issue as bi
+import content as C
+import paths as P
 
 ISSUE = os.path.expanduser("~/Desktop/Tenzin Paljor/FNVA/1st Issue")
 S8 = os.path.join(ISSUE, "S8_ YOUTH VOICES")
@@ -69,7 +73,7 @@ def clean_paras(blocks, name):
 
 def section(name, slug, photo, body, bio):
     fig = (f'        <figure class="art-fig art-portrait">\n'
-           f'          <img src="{photo}" alt="{bi.esc(name)}" loading="lazy">\n'
+           f'          <img src="{P.asset(photo)}" alt="{bi.esc(name)}" loading="lazy">\n'
            f'        </figure>\n' if photo else '')
     biohtml = (f'        <p class="art-note"><em>{bi.inline(bio)}</em></p>\n' if bio else '')
     return (f'        <h2 id="{slug}">{bi.esc(name)}</h2>\n'
@@ -107,15 +111,17 @@ def main():
         print(f"  {name:16} {'photo' if photo else 'no-photo':8} {len(body)} paras  bio:{'y' if bio else '-'}")
     body = '\n'.join(body_parts)
 
-    tpl = open('tools/article.tpl.html', encoding='utf-8').read()
+    tpl = open('templates/fragments/article.html', encoding='utf-8').read()
     arts = {a['slug']: a for a in json.load(open('tools/articles.json'))}
+    bi.MANIFEST = C.load()
     meta = {'slug': 'youth-voices', 'title': 'Youth Voices', 'author': 'Youth Voices',
             'section': 'Youth', 'date': '2026-08-01',
             'lede': arts.get('youth-voices', {}).get('lede', 'assets/img/hero-bg.jpg')}
     bio = ('Reflections from young Tibetans on exile, identity and their '
            'contribution to their host communities.')
-    bi.render_page(meta, body, bio, tpl, arts, {}, 'authors.html')
-    print("  wrote youth-voices.html")
+    bi.render_page(meta, body, bio, tpl, arts, {}, P.url('authors-index'))
+    C.save(bi.MANIFEST)
+    print(f"  wrote {P.url('article', 'youth-voices')}")
 
 
 if __name__ == '__main__':

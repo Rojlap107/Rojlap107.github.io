@@ -7,10 +7,13 @@ rest have no source content yet and get an honest empty state.
 
     python3 tools/build_deyshal.py
 
-Run from the site root, after build_articles.py.
+Writes content/dreshey-hub/ and content/dreshey/<slug>.html; run tools/build.py
+afterwards to assemble the pages. Run from the site root, after the articles.
 """
 
 import html, json, os, re, sys
+import content as C
+import paths as P
 
 MONTH = {'01': 'January', '02': 'February', '03': 'March', '04': 'April', '05': 'May',
          '06': 'June', '07': 'July', '08': 'August', '09': 'September',
@@ -49,27 +52,11 @@ def pretty(d):
     return f"{int(d[8:10])} {MONTH[d[5:7]]} {d[:4]}"
 
 
-def chrome():
-    idx = open('index.html', encoding='utf-8').read()
-    return (re.search(r'  <svg width="0" height="0".*?</svg>\n', idx, re.S).group(0),
-            re.search(r'      <!-- Header -->.*?</nav>\n', idx, re.S).group(0),
-            re.search(r'      <!-- Newsletter -->.*?</footer>\n', idx, re.S).group(0))
-
-
-def page(fn, title, desc, css, body):
-    sprite, header, tail = CHROME
-    s = (f'<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
-         '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
-         f'<title>{esc(title)} — TransHimalaya</title>\n'
-         f'<meta name="description" content="{esc(re.sub("&amp;", "&", desc))}">\n'
-         '<link rel="icon" href="assets/img/logo-mark.png">\n'
-         '<link rel="stylesheet" href="assets/css/base.css">\n'
-         f'<link rel="stylesheet" href="assets/css/{css}">\n</head>\n<body>\n<div class="th-site">\n'
-         f'{sprite}{header}\n{body}\n{tail}</div>\n'
-         '<script src="assets/js/site.js"></script>\n</body>\n</html>\n')
-    open(fn, 'w', encoding='utf-8').write(s)
-    o, c = s.count('<div'), s.count('</div>')
-    return 'OK' if o == c else f'MISMATCH {o}/{c}'
+def page(page_type, slug, title, desc, body):
+    """Register one Dreshey page's content. The chrome is added by build.py."""
+    C.write(page_type, slug, esc(title), esc(re.sub('&amp;', '&', desc)),
+            f'\n{body}\n', manifest=MANIFEST)
+    return 'ok'
 
 
 def head(kicker, title, lede, extra=''):
@@ -85,22 +72,22 @@ def empty(title):
     return ('        <div class="cat-empty">\n'
             '          <p class="ttl">Nothing published here yet</p>\n'
             f'          <p>{title} is part of Dreshey but has no entries so far. '
-            'Browse the <a href="archives.html">archive</a> or read the '
-            '<a href="journal-editions.html">current issue</a> in the meantime.</p>\n'
+            'Browse the <a href="/dreshey/archives/">archive</a> or read the '
+            '<a href="/journal-editions/">current issue</a> in the meantime.</p>\n'
             '        </div>\n')
 
 
 def main():
-    global CHROME
-    if not os.path.exists('index.html'):
+    global MANIFEST
+    if not os.path.exists('content/manifest.json'):
         sys.exit('run this from the site root')
-    CHROME = chrome()
+    MANIFEST = C.load()
     arts = sorted(json.load(open('tools/articles.json')),
                   key=lambda a: a['date'], reverse=True)
 
     # ---------------------------------------------------------------- hub
     cards = '\n'.join(f'''          <li class="dy-card{'' if s in FILLED else ' is-soon'}">
-            <a href="{s}.html">
+            <a href="{P.url('dreshey', s)}">
               <span class="nm">{t}</span>
               <span class="ds">{d}</span>
               <span class="go">{'Open' if s in FILLED else 'Coming soon'}</span>
@@ -113,7 +100,7 @@ def main():
         </ul>
       </div>
 '''
-    print(f"  {'deyshal':26} hub            {page('dreshey.html', 'Dreshey', 'The Foundation reference shelf: archive, data, glossary and reading.', 'dreshey.css', hub)}")
+    print(f"  {'deyshal':26} hub            {page('dreshey-hub', '', 'Dreshey', 'The Foundation reference shelf: archive, data, glossary and reading.', hub)}")
 
     # ---------------------------------------------------------------- archive
     by_month = {}
@@ -125,7 +112,7 @@ def main():
         rows.append('          <ul class="dy-list">')
         for a in by_month[ym]:
             rows.append(
-                f'            <li><a href="{a["slug"]}.html">'
+                f'            <li><a href="{P.url('article', a["slug"])}">'
                 f'<span class="dt">{int(a["date"][8:10])}</span>'
                 f'<span class="tt">{esc(a["title"])}</span>'
                 f'<span class="mt">{esc(a["author"])} · {esc(a["section"])}</span></a></li>')
@@ -138,7 +125,7 @@ def main():
         </div>
       </div>
 '''
-    print(f"  {'archives':26} {len(arts):3d} articles  {page('archives.html', 'Archives', 'The complete TransHimalaya archive.', 'dreshey.css', archive)}")
+    print(f"  {'archives':26} {len(arts):3d} articles  {page('dreshey', 'archives', 'Archives', 'The complete TransHimalaya archive.', archive)}")
 
     # ---------------------------------------------------------------- must reads
     picks, seen = [], set()
@@ -149,10 +136,10 @@ def main():
         picks.append(a)
     picks += [a for a in arts if a not in picks][:1]
     items = '\n'.join(f'''          <li class="dy-pick">
-            <a class="ph" href="{a['slug']}.html" style="background-image:url({a['lede']})"></a>
+            <a class="ph" href="{P.url('article', a['slug'])}" style="background-image:url({P.asset(a['lede'])})"></a>
             <div class="b">
               <p class="k">{esc(a['section'])}</p>
-              <h2><a href="{a['slug']}.html">{esc(a['title'])}</a></h2>
+              <h2><a href="{P.url('article', a['slug'])}">{esc(a['title'])}</a></h2>
               <p class="mt">By {esc(a['author'])} · {pretty(a['date'])}</p>
             </div>
           </li>''' for a in picks)
@@ -163,12 +150,12 @@ def main():
         </ul>
       </div>
 '''
-    print(f"  {'must-reads':26} {len(picks):3d} picks     {page('must-reads.html', 'Must Reads', 'Where to begin with TransHimalaya.', 'dreshey.css', must)}")
+    print(f"  {'must-reads':26} {len(picks):3d} picks     {page('dreshey', 'must-reads', 'Must Reads', 'Where to begin with TransHimalaya.', must)}")
 
     # ---------------------------------------------------------------- data & visuals
     figs = []
     for a in arts:
-        s = open(a['slug'] + '.html', encoding='utf-8').read()
+        s = open(f"content/article/{a['slug']}.html", encoding='utf-8').read()
         for m in re.finditer(r'<figure class="art-fig">\s*<img src="([^"]+)"[^>]*>\s*'
                              r'<figcaption>(.*?)</figcaption>', s, re.S):
             cap = re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', '', m.group(2)))).strip()
@@ -177,13 +164,13 @@ def main():
             figs.append((a, None, 'Table'))
     tiles = '\n'.join(
         (f'''          <li class="dy-fig">
-            <a href="{a['slug']}.html">
-              <span class="im" style="background-image:url({src})"></span>
+            <a href="{P.url('article', a['slug'])}">
+              <span class="im" style="background-image:url({P.asset(src)})"></span>
               <span class="cp">{esc(cap)}</span>
               <span class="src">{esc(a['title'])}</span>
             </a>
           </li>''' if src else f'''          <li class="dy-fig is-table">
-            <a href="{a['slug']}.html">
+            <a href="{P.url('article', a['slug'])}">
               <span class="im"><span class="lbl">Table</span></span>
               <span class="cp">Data table</span>
               <span class="src">{esc(a['title'])}</span>
@@ -197,7 +184,7 @@ def main():
         </ul>
       </div>
 '''
-    print(f"  {'data-visuals':26} {len(figs):3d} items     {page('data-visuals.html', 'Data & Visuals', 'Maps, charts and tables from the essays.', 'dreshey.css', dv)}")
+    print(f"  {'data-visuals':26} {len(figs):3d} items     {page('dreshey', 'data-visuals', 'Data & Visuals', 'Maps, charts and tables from the essays.', dv)}")
 
     # ---------------------------------------------------------------- the rest
     for s, t, d in SUBS:
@@ -208,7 +195,9 @@ def main():
 {head('Dreshey', t, d)}
 {empty(plain)}      </div>
 '''
-        print(f"  {s:26} empty          {page(s + '.html', plain, d, 'dreshey.css', body)}")
+        print(f"  {s:26} empty          {page('dreshey', s, plain, d, body)}")
+
+    C.save(MANIFEST)
 
 
 if __name__ == '__main__':

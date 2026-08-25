@@ -7,10 +7,13 @@ state rather than an empty grid.
 
     python3 tools/build_categories.py
 
-Run from the site root. Reads tools/articles.json, written by build_articles.py.
+Writes content/section/<slug>.html; run tools/build.py afterwards to assemble
+the pages. Run from the site root. Reads tools/articles.json.
 """
 
 import html, json, os, re, sys
+import content as C
+import paths as P
 import sections as S
 
 # slug -> (page title, standfirst). The standfirst copy is ours, not the
@@ -79,10 +82,10 @@ def data_attrs(a):
 
 def lead_card(a):
     return f'''        <article class="cat-lead"{data_attrs(a)}>
-          <a class="ph" href="{a['slug']}.html" style="background-image:url({a['lede']})">{S.chip(a['section'], 'th-chip ph-chip')}</a>
+          <a class="ph" href="{S.article_url(a['slug'])}" style="background-image:url({P.asset(a['lede'])})">{S.chip(a['section'], 'th-chip ph-chip')}</a>
           <div class="b">
             <p class="k">{esc(a['section'])}</p>
-            <h2><a href="{a['slug']}.html">{esc(a['title'])}</a></h2>
+            <h2><a href="{S.article_url(a['slug'])}">{esc(a['title'])}</a></h2>
             <div class="meta">
               <span><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {pretty(a['date'])}</span>
               <span>·</span><span>By {esc(a['author'])}</span>
@@ -93,9 +96,9 @@ def lead_card(a):
 
 def card(a):
     return f'''          <article class="th-card"{data_attrs(a)}>
-            <a class="ph" href="{a['slug']}.html" style="background-image:url({a['lede']})">{S.chip(a['section'], 'th-chip ph-chip')}</a>
+            <a class="ph" href="{S.article_url(a['slug'])}" style="background-image:url({P.asset(a['lede'])})">{S.chip(a['section'], 'th-chip ph-chip')}</a>
             <div class="b">
-              <h3><a href="{a['slug']}.html">{esc(a['title'])}</a></h3>
+              <h3><a href="{S.article_url(a['slug'])}">{esc(a['title'])}</a></h3>
               <p>{esc(S.excerpt(a['slug']))}</p>
               <div class="meta">
                 <span><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {short(a['date'])}</span>
@@ -129,14 +132,10 @@ def filter_bar(items):
 
 
 def main():
-    if not os.path.exists('index.html'):
+    if not os.path.exists('content/manifest.json'):
         sys.exit('run this from the site root')
     arts = json.load(open('tools/articles.json'))
-
-    idx = open('index.html', encoding='utf-8').read()
-    sprite = re.search(r'  <svg width="0" height="0".*?</svg>\n', idx, re.S).group(0)
-    header = re.search(r'      <!-- Header -->.*?</nav>\n', idx, re.S).group(0)
-    tail = re.search(r'      <!-- Newsletter -->.*?</footer>\n', idx, re.S).group(0)
+    manifest = C.load()
 
     for slug, title, lede, children in SECTIONS:
         if children:                       # a parent section gathers its children
@@ -165,25 +164,12 @@ def main():
             body = ('        <div class="cat-empty">\n'
                     '          <p class="ttl">Nothing published here yet</p>\n'
                     f'          <p>{title} will carry its first pieces shortly. In the '
-                    'meantime, read the <a href="journal-editions.html">current edition</a> or browse '
-                    '<a href="in-focus.html">In Focus</a>.</p>\n'
+                    'meantime, read the <a href="/journal-editions/">current edition</a> or browse '
+                    '<a href="/sections/in-focus/">In Focus</a>.</p>\n'
                     '        </div>\n')
             count = ''
 
-        page = f'''<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{esc(title)} — TransHimalaya</title>
-<meta name="description" content="{re.sub(r'&#39;', "'", lede)}">
-<link rel="icon" href="assets/img/logo-mark.png">
-<link rel="stylesheet" href="assets/css/base.css">
-<link rel="stylesheet" href="assets/css/category.css">
-</head>
-<body>
-<div class="th-site">
-{sprite}{header}
+        fragment = f"""
       <div class="cat">
         <header class="cat-head">
           <p class="k">Section</p>
@@ -194,16 +180,12 @@ def main():
 
 {body}      </div>
 
-{tail}</div>
-<script src="assets/js/site.js"></script>
-</body>
-</html>
-'''
-        with open(f'{slug}.html', 'w', encoding='utf-8') as fh:
-            fh.write(page)
-        o, c = page.count('<div'), page.count('</div>')
-        flag = 'OK' if o == c else f'MISMATCH {o}/{c}'
-        print(f"  {slug:26} {len(items):3d} articles  {flag}")
+"""
+        C.write('section', slug, title, re.sub(r'&#39;', "'", lede), fragment,
+                manifest=manifest)
+        print(f"  {slug:26} {len(items):3d} articles")
+
+    C.save(manifest)
 
 
 if __name__ == '__main__':

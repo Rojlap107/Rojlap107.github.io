@@ -1,0 +1,27 @@
+/* TransHimalaya — the bell cursor
+   The drilbu replaces the pointer on fine-pointer devices. Behaviour lives in
+   assets/js/site.js; this is only its appearance and swing.
+   Norzin Consultancy, 2026 */
+
+.th-site.cursor-on, .th-site.cursor-on *{ cursor:none; }
+.th-cursor { position: fixed; left: 0; top: 0; z-index: 9999; width: 38px; height: 38px;
+    pointer-events: none; will-change: transform; transition: opacity .2s ease; }
+/* The bell (drilbu) is the pointer: it hangs slightly tilted at rest and
+     swings from its handle when the pointer is over anything clickable. */
+  .th-cursor .bell { position: absolute; inset: 0;
+    background: url("/assets/img/bell.png") center/contain no-repeat;
+    transform: rotate(-12deg); transform-origin: 50% 10%;
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,.35));
+    transition: transform .18s ease; }
+.th-cursor.is-hover .bell { animation: th-ring 1.1s ease-in-out infinite; }
+@keyframes th-ring {
+      0%, 100% { transform: rotate(-12deg); }
+     18%       { transform: rotate(12deg);  }
+     36%       { transform: rotate(-9deg);  }
+     54%       { transform: rotate(7deg);   }
+     72%       { transform: rotate(-4deg);  }
+     86%       { transform: rotate(1deg);   }
+  }
+@media (prefers-reduced-motion: reduce){
+    .th-cursor .bell { animation: none !important; }
+  }

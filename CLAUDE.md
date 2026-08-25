@@ -5,126 +5,143 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What this is
 
 A static site for **TransHimalaya**, a journal published by the Foundation for Non-violent
-Alternatives (FNVA). No framework, no bundler, no package.json — 87 hand-shaped HTML files at
-the repo root, plus `assets/` and a set of Python generators in `tools/`. Built by Norzin
-Consultancy.
+Alternatives (FNVA). No framework, no bundler, no package.json — Python generators in `tools/`
+assemble ~90 pages from content fragments and shared templates. Built by Norzin Consultancy.
+It is intended to become a WordPress theme, and the structure is shaped for that.
 
 ## Commands
 
 ```bash
-python3 -m http.server 8748          # serve locally → http://localhost:8748
+python3 -m http.server 8748           # serve locally → http://localhost:8748
+
+python3 tools/rebuild.py              # reassemble pages from content/ + templates/
+python3 tools/rebuild.py --check      # …and verify every internal link
+python3 tools/rebuild.py --content    # regenerate content from the source docs first
+python3 tools/build.py --only <slug>  # one page (accepts a slug or a type)
+python3 tools/build.py --clean        # delete built directories first
+python3 tools/check_links.py          # link/asset check; fails on relative references
 ```
 
-Generators — **always run from the site root**, never from `tools/`:
+There are no tests and no linter. The checks that exist:
 
-```bash
-python3 tools/build_issue.py                 # the 23 first-issue article pages, from .docx
-python3 tools/build_issue.py --only <slug>   # one article
-python3 tools/build_issue.py --extras        # only the EXTRAS pieces (foreword, interview, …)
-python3 tools/build_youth.py                 # youth-voices.html
-python3 tools/build_categories.py            # section pages (in-focus, history, interviews, …)
-python3 tools/build_deyshal.py               # dreshey.html hub + 9 sub-sections
-python3 tools/build_authors.py               # author-<slug>.html + authors.html
-python3 tools/build_team.py                  # member-<slug>.html (patrons, trustees)
-python3 tools/build_home.py                  # the generated middle of index.html
-python3 tools/build_sections_css.py          # section colours into base.css
-```
-
-There are no tests and no linter. The generators self-check by counting `<div>` vs `</div>` and
-printing `OK` or `MISMATCH n/m` per page — treat a MISMATCH as a build failure.
+- `tools/build.py` counts `<div>` vs `</div>` per page and reports `MISMATCH n/m`.
+- `tools/check_links.py` resolves every internal reference. Treat a non-zero exit as a
+  build failure. The issue PDF is a known, allowed absence (see README).
 
 Requires `pandoc` and ImageMagick (`magick`) on PATH.
 
 ## Architecture
 
-### index.html is the chrome template
+### Content and chrome are separate
 
-`build_authors.py`, `build_categories.py`, `build_deyshal.py` and `build_team.py` each read
-`index.html` and regex out three regions to wrap their pages in:
+Every page is a content fragment wrapped in shared chrome. No page file contains a masthead,
+a navigation bar or a footer of its own.
 
-- sprite — `<svg width="0" height="0">…</svg>`
-- header + nav — `<!-- Header -->` … `</nav>`
-- footer — `<!-- Newsletter -->` … `</footer>`
+```
+content/<type>/<slug>.html    the unique part of one page — no <html>, no chrome
+content/manifest.json         every page: type, slug, url, out, head_title, description
+templates/partials/           header.html · footer.html · head.html · sprite.svg · scripts.html
+templates/base.html           the document shell the partials bracket
+templates/fragments/article.html   the shape of an article body, with {{PLACEHOLDERS}}
+```
 
-So the HTML comment markers in `index.html` (`<!-- Header -->`, `<!-- Opening -->`,
-`<!-- Featured stories -->`, `<!-- About + Photo essay band -->`, `<!-- Newsletter -->`,
-`<!-- Footer -->`) are load-bearing. Removing or renaming one breaks a generator, usually with
-an `AttributeError` on `.group(0)`.
+To change the chrome site-wide, edit one partial and run `tools/rebuild.py`. This is the
+point of the structure — do not reintroduce per-page copies of the header or footer.
 
-`build_home.py` writes *into* `index.html`, replacing everything from `<!-- Opening -->` to
-`<!-- About + Photo essay band -->`. The hero, the About/Photo band, the newsletter and the
-footer in `index.html` are hand-maintained; the middle is not — edits there are lost on the
-next `build_home.py`.
+`tools/render.py` is a ~60-line renderer: `{{> partial}}` includes and `{{VAR}}`
+substitution, nothing else. `tools/build.py` walks the manifest and writes the pages.
 
-Article pages come from `tools/article.tpl.html`, which carries its **own** copy of the nav.
-A site-wide nav change therefore means: edit `index.html`, edit `article.tpl.html`, then
-re-run the generators.
+The mapping to a WordPress theme is deliberate: `partials/header.html` → `header.php`,
+`partials/footer.html` → `footer.php`, `base.html` → the shell they bracket, and a
+per-type template → `single.php` / `archive.php`. `build.py` will use
+`templates/<type>.html` if it exists and fall back to `base.html`, which is the
+extension point for genuinely different page shapes.
 
-### tools/articles.json is the article index
+### tools/paths.py owns the URL scheme
 
-`build_issue.py` reads it (slug, title, author, date, section, lede) and every other generator
-depends on it for contents lists, section pages, author pages, must-read and
-"you may also like" rails. It is currently **written only by `build_articles.py`**.
+Type + slug → URL and output path. Every page is written as `<dir>/index.html` so URLs end
+in a slash and carry no extension, matching `/articles/%postname%/` in WordPress.
 
-`build_articles.py` is the older WordPress-export path (reads a WXR file from `~/Downloads`)
-and has been superseded by `build_issue.py` for the first issue's essays. Running it will
-overwrite the docx-built article pages and rewrite `articles.json`. Don't run it unless that
-is specifically what you want.
+```
+home /  ·  issue /journal-editions/  ·  article /articles/<slug>/
+section /sections/<slug>/  ·  dreshey-hub /dreshey/  ·  dreshey /dreshey/<slug>/
+authors-index /authors/  ·  author /authors/<slug>/
+team-index /team/  ·  member /team/<slug>/  ·  page /<slug>/
+```
 
-### tools/sections.py is the single source of truth for section identity
+**All links and assets must be site-absolute.** A page at `/articles/<slug>/` cannot resolve
+a relative path — `assets/img/x.jpg` there means `/articles/<slug>/assets/img/x.jpg`.
+Use `paths.asset(p)` rather than prepending a slash by hand: image paths arrive both bare
+(from `tools/articles.json`) and already-absolute (from content fragments), and
+hand-prefixing the second kind produces `//assets/...`, which the browser reads as a
+protocol-relative host. `check_links.py` catches both mistakes.
 
-Colour, ordering, slug, and which page a section chip links to all live in `COLOURS` / `PAGES`
-there. Chips carry a class (`cat-<slug>`), never an inline colour; the classes are emitted into
-`base.css` between the `/* >>> section-colours … */` and `/* <<< section-colours */` markers.
-After changing a colour, run `python3 tools/build_sections_css.py` — it replaces that block
+### Generators produce content, never pages
+
+Each generator writes `content/<type>/<slug>.html` and registers the page via
+`tools/content.py` (`C.write(...)`, then `C.save(manifest)`). None of them emits `<html>`
+or scrapes chrome out of another page — that is how it used to work and it is why the
+navigation had to be edited in ten places.
+
+Dependency order, as encoded in `tools/rebuild.py`:
+
+```
+build_issue → build_youth → build_authors → build_team
+            → build_categories → build_deyshal → build_home → build_sections_css
+```
+
+Articles come first because the section, author, Dreshey and home pages all summarise them.
+`sections.excerpt()` reads `content/article/<slug>.html`, so the article fragments must
+exist before anything that renders a card.
+
+`tools/build_articles.py` is the **superseded** WordPress-export path. It rebuilds the same
+articles from older text and rewrites `tools/articles.json`. Don't run it incidentally.
+
+### tools/sections.py owns section identity
+
+Colour, slug, and the page that lists each section. Chips carry a class (`cat-<slug>`),
+never an inline colour; the classes are generated into `components.css` between the
+`/* >>> section-colours … */` markers by `build_sections_css.py`, which replaces that block
 idempotently.
-
-`sections.py` also holds `excerpt()`, which scrapes each article page's `<p class="art-standfirst">`
-for card summaries. Cards therefore depend on the article pages already existing: build
-articles before section/home pages.
 
 ### Sources live outside the repo
 
-The generators read from absolute paths under `$HOME` that are not committed:
-
 - `build_issue.py`, `build_youth.py` → `~/Desktop/Tenzin Paljor/FNVA/1st Issue/**/*.docx`
-  (the `DOCX` dict in `build_issue.py` maps slug → document path)
-- `build_articles.py`, `build_authors.py` → `~/Downloads/transhimalaya.WordPress.2026-08-03.xml`
+- `build_authors.py`, `build_articles.py` → `~/Downloads/transhimalaya.WordPress.2026-08-03.xml`
 
-Without those, the generated pages already in git are the only artefact. Prefer editing HTML
-directly over re-running a generator whose source you can't see.
+Without them, `content/` as committed is the only copy. Prefer editing a fragment directly
+over re-running a generator whose source you cannot see. `build_team.py` is the exception —
+patron and trustee data is inline in the script.
 
-`build_team.py` is the exception — patron and trustee data is inline in the script, because
-they write no articles and so appear in no export.
+## Stylesheets
 
-### Ordering
+`tokens.css` (custom properties + reset) → `chrome.css` (**masthead, nav, footer**) →
+`components.css` (headings, cards, chips, icons, section colours) → `cursor.css`, then one
+per page type (`home` `issues` `article` `category` `dreshey` `authors` `pages`). The load
+order lives in `templates/partials/head.html`.
 
-`build_issue.py` (or `build_articles.py`) → `build_authors.py` → `build_categories.py` /
-`build_deyshal.py` / `build_home.py`.
+There is no `base.css` any more; it was split into the four files above. If you need to know
+which file a rule belongs in, `chrome.css` is only ever the header and footer.
 
 ## Conventions
 
-- CSS: `base.css` (shared chrome) plus exactly one stylesheet per page type —
-  `home`, `issues`, `article`, `category`, `dreshey`, `authors`, `pages`. Every page loads
-  `base.css` first.
-- Class prefixes: `.th-*` for shared components; `.issue-*`, `.art-*`, `.cat-*`, `.dy-*`,
-  `.pg-*` per page type.
-- No emoji. Icons are inline SVG `<symbol>`s in the sprite at the top of each page, referenced
-  with `<use href="#ic-…">`.
-- Mobile submenu rules are declared **last** in `base.css` on purpose — at equal specificity a
-  media query does not beat source order. Don't move them.
-- British spellings in prose and in code comments ("colour", "centred").
-- Section names use a typographic apostrophe where the copy does (`Editor’s Note`) — keys in
+- Class prefixes: `.th-*` shared; `.issue-*`, `.art-*`, `.cat-*`, `.dy-*`, `.pg-*` per page type.
+- No emoji. Icons are `<symbol>`s in `templates/partials/sprite.svg`, used via `<use href="#ic-…">`.
+- Nav items carry `data-nav="<key>"`; `paths.nav_active()` names the key for a page and
+  `render.mark_active()` applies the `active` class. Match on `data-nav`, not on href.
+  Article pages deliberately highlight nothing.
+- Mobile submenu rules are declared **last** in `chrome.css` on purpose — at equal
+  specificity a media query does not beat source order. Don't move them.
+- British spellings in prose and comments ("colour", "centred").
+- Section names use a typographic apostrophe where the copy does (`Editor’s Note`); keys in
   `sections.py` must match exactly.
 - Author slugs keep honorifics and fold accents (`Lt General Vinod Bhatia` →
-  `lt-general-vinod-bhatia`). `build_articles.author_slug` is the shared implementation;
-  `build_issue.py` imports it rather than reimplementing.
+  `lt-general-vinod-bhatia`). `build_articles.author_slug` is the shared implementation.
 
 ## Outstanding, per README
 
 Issue PDF at `assets/pdf/transhimalaya-issue-1-august-2026.pdf`, the real cover for
 `assets/img/cover.jpg`, a Razorpay key and server-side verification for the subscription
-buttons, a mail handler for the contact form, and FNVA approval of the drafted copy (section
-standfirsts, Must Reads selection, About/Team bios). Youth, Tibet Monitor and six Dreshey
-sub-sections still render an honest empty state rather than fake content — keep it that way
-until real material arrives.
+buttons, a mail handler for the contact form, and FNVA approval of the drafted copy.
+Youth, Tibet Monitor and six Dreshey sub-sections render an honest empty state rather than
+fake content — keep it that way until real material arrives.

@@ -8,11 +8,14 @@ profile shell (and authors.css) as the author pages, with the group name
 
     python3 tools/build_team.py
 
+Writes content/member/<slug>.html; run tools/build.py afterwards.
 Run from the site root. Bios are drafts drawn from public roles and should be
 checked with FNVA before publication.
 """
 
 import html, os, re, sys, unicodedata
+import content as C
+import paths as P
 
 # name, group, role (one line under the name), bio.
 # `credit` is raw HTML shown under the portrait — required when a photo's licence
@@ -85,26 +88,22 @@ def initials(name):
 
 
 def main():
-    if not os.path.exists('index.html'):
+    if not os.path.exists('content/manifest.json'):
         sys.exit('run this from the site root')
-
-    idx = open('index.html', encoding='utf-8').read()
-    sprite = re.search(r'  <svg width="0" height="0".*?</svg>\n', idx, re.S).group(0)
-    header = re.search(r'      <!-- Header -->.*?</nav>\n', idx, re.S).group(0)
-    tail = re.search(r'      <!-- Newsletter -->.*?</footer>\n', idx, re.S).group(0)
+    manifest = C.load()
 
     for p in PEOPLE:
         slug = slugify(p['name'])
         photo = f'assets/img/member-{slug}.jpg'
         has_photo = os.path.exists(photo)
-        portrait = (f'<img class="portrait" src="{photo}" alt="" width="180" height="180">'
+        portrait = (f'<img class="portrait" src="{P.asset(photo)}" alt="" width="180" height="180">'
                     if has_photo else
                     f'<span class="portrait is-initials" aria-hidden="true">{esc(initials(p["name"]))}</span>')
         cred = (f'<p class="pcred">{p["credit"]}</p>' if has_photo and p.get('credit') else '')
         pcol = f'<div class="pcol">{portrait}{cred}</div>'
 
         body = f'''      <section class="au-profile">
-        <p class="crumb"><a href="team.html">Team</a></p>
+        <p class="crumb"><a href="/team/">Team</a></p>
         <div class="au-hero">
           {pcol}
           <div>
@@ -116,18 +115,13 @@ def main():
         </div>
       </section>
 '''
-        s = ('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
-             '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
-             f'<title>{esc(p["name"])} — TransHimalaya</title>\n'
-             f'<meta name="description" content="{esc(p["name"])} — {esc(p["role"])}.">\n'
-             '<link rel="icon" href="assets/img/logo-mark.png">\n'
-             '<link rel="stylesheet" href="assets/css/base.css">\n'
-             '<link rel="stylesheet" href="assets/css/authors.css">\n</head>\n'
-             f'<body>\n<div class="th-site">\n{sprite}{header}\n{body}\n{tail}</div>\n'
-             '<script src="assets/js/site.js"></script>\n</body>\n</html>\n')
-        open(f'member-{slug}.html', 'w', encoding='utf-8').write(s)
-        o, c = s.count('<div'), s.count('</div>')
-        print(f"  member-{slug:38} {p['group']:8}  {'OK' if o == c else f'MISMATCH {o}/{c}'}")
+        C.write('member', slug, esc(p['name']),
+                f'{esc(p["name"])} — {esc(p["role"])}.', f'\n{body}\n',
+                manifest=manifest)
+        print(f"  /team/{slug:38} {p['group']:8}")
+
+    C.prune('member', {slugify(x['name']) for x in PEOPLE}, manifest)
+    C.save(manifest)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,100 @@
+/* TransHimalaya — shared components
+   Section headings, dividers, cards, chips, icons and the subscription band —
+   the pieces page stylesheets compose with.
+   Norzin Consultancy, 2026 */
+
+/* ---- section shell and headings ---- */
+.th-sec { max-width:1200px; margin:0 auto; padding:46px clamp(16px,4vw,40px); }
+.th-h2 { text-align:center; color:var(--ink); font-size:15px; letter-spacing:.16em; text-transform:uppercase; font-weight:700; margin:0; }
+.th-div { display:flex; align-items:center; justify-content:center; gap:10px; margin:12px auto 30px; }
+.th-div i { width:44px; height:2px; background:var(--orange); opacity:.5; display:block; }
+.th-div b { width:9px; height:9px; background:var(--orange); transform:rotate(45deg); display:block; }
+.th-h3 { color:var(--ink); font-size:15px; letter-spacing:.13em; text-transform:uppercase; font-weight:700; margin:0; }
+.th-divL { display:flex; align-items:center; gap:8px; margin:6px 0 22px; }
+.th-divL i { width:34px; height:2px; background:var(--orange); opacity:.5; }
+.th-divL b { width:8px; height:8px; background:var(--orange); transform:rotate(45deg); }
+
+/* ---- cards ---- */
+.th-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:26px; }
+.th-card { background:#fff; border:1px solid var(--line); border-radius:5px; overflow:hidden; display:flex; flex-direction:column; }
+.th-card .ph { aspect-ratio:16/10; position:relative; background-size:76px; }
+.th-card .chip { position:absolute; top:12px; left:12px; color:#fff; font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:5px 11px; border-radius:3px; }
+.th-card .b { padding:18px; display:flex; flex-direction:column; flex:1; }
+.th-card h3 { font-size:20px; line-height:1.2; color:var(--ink); margin:0 0 8px; }
+.th-card p { font-size:14px; line-height:1.55; margin:0 0 16px; }
+.th-card .meta { margin-top:auto; border-top:1px solid var(--line); padding-top:12px; display:flex; gap:10px; align-items:center; font-size:12.5px; color:var(--muted); }
+.th-viewall { text-align:center; margin-top:24px; }
+.th-viewall a { color:var(--teal); font-weight:600; font-size:14px; text-decoration:none; }
+.th-viewall a:hover { color:var(--orange); }
+
+@media (max-width:820px){
+  .th-cards{ grid-template-columns:1fr; }
+}
+
+/* ---- chips ---- */
+.th-chip { display:inline-block; color:#fff; background:var(--muted); font-size:11px; font-weight:700;
+  letter-spacing:.07em; text-transform:uppercase; line-height:1; padding:6px 10px; border-radius:3px;
+  white-space:nowrap; }
+/* section chip sitting on a card photograph */
+.th-card .ph{ position:relative; }
+.ph-chip{ position:absolute; top:10px; left:10px; z-index:2; }
+.cat-lead .ph{ position:relative; }
+
+/* ---- inline icons: grey, filled, sized to the text they sit beside ---- */
+.ic{ width:1em; height:1em; fill:currentColor; display:inline-block;
+     vertical-align:-0.13em; flex:none; opacity:.9; }
+
+/* ---- imagery bound to the homepage and issue layouts ---- */
+.th-cards .th-card:nth-child(1) .ph{ background:var(--img-mongolia) center/cover; }
+.th-cards .th-card:nth-child(2) .ph{ background:var(--img-potala) center/cover; }
+.th-cards .th-card:nth-child(3) .ph{ background:var(--img-uyghur) center/cover; }
+.th-fieldlist .item:nth-child(1) .thumb{ background:var(--img-bhutan) center/cover; }
+.th-fieldlist .item:nth-child(2) .thumb{ background:var(--img-dalailama) center/cover; }
+.th-fieldlist .item:nth-child(3) .thumb{ background:var(--img-tibet) center/cover; }
+.th-fieldlist .item:nth-child(4) .thumb{ background:var(--img-monlam) center/cover; }
+.th-about .art{ background:var(--img-mark) center/contain no-repeat !important; }
+.th-hero .img{ background:var(--img-herobg) center/cover no-repeat; }
+.th-hero .cover{ background:var(--img-cover) center/contain no-repeat; }
+.issue-toc .cov{ background:var(--img-cover) center/contain no-repeat !important;
+  padding:0 !important; aspect-ratio:2/3; border-radius:3px; }
+.issue-toc .cov > *{ display:none !important; }
+
+/* ---- subscription (Razorpay) ---- */
+.th-subscribe{ background:#fff; color:var(--ink); border-top:1px solid var(--line); }
+.th-subscribe .in{ max-width:1200px; margin:0 auto; padding:clamp(30px,4vw,46px) clamp(16px,4vw,40px);
+  display:grid; grid-template-columns:1.35fr 1fr; gap:clamp(24px,4vw,50px); align-items:center; }
+.th-subscribe .k{ font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--orange); margin:0; }
+.th-subscribe h2{ font-family:"Iowan Old Style",Palatino,Georgia,serif; font-size:clamp(25px,3.2vw,34px);
+  line-height:1.2; margin:10px 0 10px; font-weight:600; color:var(--ink); }
+.th-subscribe p{ margin:0; font-size:15px; line-height:1.6; color:#4b5a63; max-width:52ch; }
+.th-plans{ display:flex; gap:12px; flex-wrap:wrap; }
+.th-plan{ flex:1 1 150px; background:var(--sand); border:1px solid var(--line);
+  border-radius:8px; padding:18px; }
+.th-plan .nm{ font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+.th-plan .pr{ font-family:"Iowan Old Style",Palatino,Georgia,serif; font-size:29px; color:var(--ink); margin:6px 0 2px; }
+.th-plan .pr span{ font-family:system-ui,sans-serif; font-size:12px; color:var(--muted); letter-spacing:.04em; }
+.th-plan .btn{ display:block; margin-top:14px; text-align:center; background:var(--orange); color:#fff;
+  border:0; font:inherit; font-weight:700; font-size:14px; padding:11px; border-radius:6px; text-decoration:none; }
+.th-plan .btn:hover{ background:#d17d22; }
+.th-plan.is-featured{ background:#fff8ef; border-color:var(--orange); box-shadow:0 6px 18px rgba(230,138,46,.16); }
+.th-subscribe .note{ font-size:12px; color:var(--muted); margin-top:14px; display:flex; align-items:center; gap:7px; }
+@media (max-width:820px){ .th-subscribe .in{ grid-template-columns:1fr; } }
+
+/* Subscribe (Razorpay) band hidden until the payment feature is ready */
+.th-subscribe{ display:none !important; }
+
+/* >>> section-colours (generated by tools/build_sections_css.py) */
+/* section colours — one colour per topic, shared by every card */
+.cat-history{ --cat:#8C6239; --cat-fg:#fff; background:#8C6239; color:#fff; }
+.cat-tibet-today{ --cat:#2B7A99; --cat-fg:#fff; background:#2B7A99; color:#fff; }
+.cat-tibet-beyond-borders{ --cat:#E68A2E; --cat-fg:#fff; background:#E68A2E; color:#fff; }
+.cat-the-strategic-triangle{ --cat:#1B3A4B; --cat-fg:#fff; background:#1B3A4B; color:#fff; }
+.cat-global-perspectives{ --cat:#3F7A5E; --cat-fg:#fff; background:#3F7A5E; color:#fff; }
+.cat-youth{ --cat:#7B5EA7; --cat-fg:#fff; background:#7B5EA7; color:#fff; }
+.cat-interviews{ --cat:#B3477A; --cat-fg:#fff; background:#B3477A; color:#fff; }
+.cat-tibet-monitor{ --cat:#C0392B; --cat-fg:#fff; background:#C0392B; color:#fff; }
+.cat-foreword{ --cat:#5A6B73; --cat-fg:#fff; background:#5A6B73; color:#fff; }
+.cat-editor-s-note{ --cat:#5A6B73; --cat-fg:#fff; background:#5A6B73; color:#fff; }
+.cat-strategic-foresight{ --cat:#4B6A8A; --cat-fg:#fff; background:#4B6A8A; color:#fff; }
+.cat-policy{ --cat:#6B7F4B; --cat-fg:#fff; background:#6B7F4B; color:#fff; }
+/* <<< section-colours */
