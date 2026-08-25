@@ -160,6 +160,7 @@ def pretty(d):
 # ----------------------------------------------------------------- inline markdown
 
 _FN = {}          # footnote label -> (display number, text), set per article
+FN_MARK = re.compile(r'<sup class="fn"><a id="fnr-([^"]+)" href="#fn-([^"]+)">([^<]*)</a></sup>')
 
 
 def inline(s):
@@ -432,16 +433,47 @@ def build_body(md, slug, strip_lead=None, title=None, author=None,
         else:
             out.append(f'        <p>{inline(bt)}</p>')
     flush_pending()
+    body_html = '\n'.join(out)
     notes_html = ''
+
+    # A note the text points at is a reference — a link, a book, a source. A
+    # note with no marker is the author's own: in the documents these hang off
+    # the title or the byline, so they lose their marker when those lines are
+    # dropped, and numbering them alongside the references throws the sequence
+    # out. They are listed separately and unnumbered; the references renumber
+    # from 1 so a marker in the text and its entry always agree.
     if _FN:
-        items = '\n'.join(
-            f'          <li id="fn-{esc(l)}">{inline(t)} '
+        cited, seen = [], set()
+        for m in FN_MARK.finditer(body_html + bio):
+            if m.group(1) not in seen:
+                seen.add(m.group(1)); cited.append(m.group(1))
+        number = {l: str(i) for i, l in enumerate(cited, 1)}
+
+        def renumber(m):
+            l = m.group(1)
+            return (f'<sup class="fn"><a id="fnr-{esc(l)}" href="#fn-{esc(l)}">'
+                    f'{esc(number.get(l, m.group(3)))}</a></sup>')
+        body_html = FN_MARK.sub(renumber, body_html)
+        bio = FN_MARK.sub(renumber, bio)
+
+        refs = '\n'.join(
+            f'          <li id="fn-{esc(l)}">{inline(_FN[l][1])} '
             f'<a class="fn-back" href="#fnr-{esc(l)}" aria-label="Back to text">↩</a></li>'
+            for l in cited)
+        own = '\n'.join(
+            f'          <li>{inline(t)}</li>'
             for l, (n, t) in sorted(_FN.items(),
-                                    key=lambda kv: int(kv[1][0]) if kv[1][0].isdigit() else 999))
-        notes_html = ('\n        <section class="art-notes">\n          <h2>Notes</h2>\n'
-                      f'          <ol>\n{items}\n          </ol>\n        </section>\n')
-    return '\n'.join(out), bio, first_img[0], notes_html
+                                    key=lambda kv: int(kv[1][0]) if kv[1][0].isdigit() else 999)
+            if l not in number)
+        if refs:
+            notes_html += ('\n        <section class="art-notes">\n'
+                           '          <h2>References</h2>\n'
+                           f'          <ol>\n{refs}\n          </ol>\n        </section>\n')
+        if own:
+            notes_html += ('\n        <section class="art-notes art-ownnotes">\n'
+                           '          <h2>Notes by the Author</h2>\n'
+                           f'          <ul>\n{own}\n          </ul>\n        </section>\n')
+    return body_html, bio, first_img[0], notes_html
 
 
 # ----------------------------------------------------------------- page assembly
