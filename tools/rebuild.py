@@ -24,7 +24,6 @@ CONTENT_STEPS = [
     ('build_issue.py',        'article pages from the finalised documents'),
     ('build_youth.py',        'the Youth Voices page'),
     ('build_authors.py',      'author pages and the author index'),
-    ('build_team.py',         'patron and trustee profiles'),
     ('build_categories.py',   'section pages'),
     ('build_deyshal.py',      'the Dreshey hub and sub-sections'),
     ('build_home.py',         'the generated middle of the home page'),

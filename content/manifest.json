@@ -700,46 +700,6 @@
   "legacy": "journal-editions.html"
  },
  {
-  "type": "member",
-  "slug": "amb-shyam-saran",
-  "url": "/team/amb-shyam-saran/",
-  "out": "team/amb-shyam-saran/index.html",
-  "head_title": "Amb. Shyam Saran — TransHimalaya",
-  "description": "Amb. Shyam Saran — Former Foreign Secretary, Government of India.",
-  "content": "member/amb-shyam-saran.html",
-  "legacy": "member-amb-shyam-saran.html"
- },
- {
-  "type": "member",
-  "slug": "b-p-singh",
-  "url": "/team/b-p-singh/",
-  "out": "team/b-p-singh/index.html",
-  "head_title": "B. P. Singh — TransHimalaya",
-  "description": "B. P. Singh — Former Home Secretary, Government of India.",
-  "content": "member/b-p-singh.html",
-  "legacy": "member-b-p-singh.html"
- },
- {
-  "type": "member",
-  "slug": "prof-srikanth-kondapalli",
-  "url": "/team/prof-srikanth-kondapalli/",
-  "out": "team/prof-srikanth-kondapalli/index.html",
-  "head_title": "Prof. Srikanth Kondapalli — TransHimalaya",
-  "description": "Prof. Srikanth Kondapalli — Professor in Chinese Studies, Jawaharlal Nehru University (JNU).",
-  "content": "member/prof-srikanth-kondapalli.html",
-  "legacy": "member-prof-srikanth-kondapalli.html"
- },
- {
-  "type": "member",
-  "slug": "ven-samdhong-lobsang-tenzin-rinpoche",
-  "url": "/team/ven-samdhong-lobsang-tenzin-rinpoche/",
-  "out": "team/ven-samdhong-lobsang-tenzin-rinpoche/index.html",
-  "head_title": "Ven. Samdhong Lobsang Tenzin Rinpoche — TransHimalaya",
-  "description": "Ven. Samdhong Lobsang Tenzin Rinpoche — Former Kalon Tripa, Central Tibetan Administration.",
-  "content": "member/ven-samdhong-lobsang-tenzin-rinpoche.html",
-  "legacy": "member-ven-samdhong-lobsang-tenzin-rinpoche.html"
- },
- {
   "type": "page",
   "slug": "about",
   "url": "/about/",
@@ -875,7 +835,7 @@
   "url": "/team/",
   "out": "team/index.html",
   "head_title": "Our Team — TransHimalaya",
-  "description": "The editorial team of TransHimalaya, and the patrons, trustees and researchers of the Foundation for Non-violent Alternatives.",
+  "description": "The editorial team of TransHimalaya: editor, editorial board, executive editor and copyright editor.",
   "content": "team-index/team-index.html",
   "legacy": "team.html"
  }

@@ -52,7 +52,7 @@ they bracket, and the per-type templates are `single.php` / `archive.php`.
 | section | `/sections/<slug>/` | `sections/<slug>/index.html` |
 | Dreshey | `/dreshey/` and `/dreshey/<slug>/` | … |
 | author | `/authors/` and `/authors/<slug>/` | … |
-| team | `/team/` and `/team/<slug>/` | … |
+| team | `/team/` | `team/index.html` |
 | page | `/about/` `/career/` `/contact/` | … |
 
 `tools/paths.py` is the single source of truth for this. The scheme matches
@@ -74,7 +74,7 @@ python3 tools/check_links.py          # link and asset check on its own
 
 ## Generators
 
-The article, section, author, team, Dreshey and home-page content is generated,
+The article, section, author, Dreshey and home-page content is generated,
 not hand-written. Each writes into `content/`; `tools/build.py` then wraps every
 fragment in the chrome.
 
@@ -83,7 +83,6 @@ python3 tools/build_issue.py          # article pages from the finalised .docx
 python3 tools/build_issue.py --only <slug>
 python3 tools/build_youth.py          # the Youth Voices page
 python3 tools/build_authors.py        # author pages and the author index
-python3 tools/build_team.py           # patron and trustee profiles
 python3 tools/build_categories.py     # section pages
 python3 tools/build_deyshal.py        # the Dreshey hub and sub-sections
 python3 tools/build_home.py           # the generated middle of the home page
@@ -92,6 +91,10 @@ python3 tools/build_sections_css.py   # section colours into components.css
 
 Run them in that order — the section, author, Dreshey and home pages all
 summarise the articles.
+
+`/about/`, `/team/`, `/governing-council/`, `/career/` and `/contact/` are
+hand-maintained: edit their fragments under `content/page/` (and
+`content/team-index/`) directly.
 
 `tools/build_articles.py` is the **superseded** WordPress-export path. It rebuilds
 the same articles from the older WordPress text and rewrites
@@ -104,10 +107,6 @@ the same articles from the older WordPress text and rewrites
 
 Without those, `content/` as committed is the only copy — edit the fragments
 directly rather than re-running a generator whose source you cannot see.
-
-`build_team.py` is the exception: patrons and trustees write no articles, so
-their details live in the script. Those bios are drafts drawn from public roles
-and need checking with FNVA.
 
 Requires `pandoc` and ImageMagick (`magick`) on PATH.
 

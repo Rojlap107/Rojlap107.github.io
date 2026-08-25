@@ -3,7 +3,7 @@
 
 Each essay's .docx (under ~/Desktop/Tenzin Paljor/FNVA/1st Issue) is converted
 with pandoc, its embedded figures extracted into assets/img/issue/<slug>/, and a
-page emitted with article.tpl.html — matching the existing article design
+fragment emitted with templates/fragments/article.html — matching the article design
 (.art-fig figures, <h2> sub-heads, About-the-author bio). Slugs, titles,
 authors, sections and the Must-Read / You-may-also-like rails come from
 tools/articles.json so the contents page and author pages keep resolving.
@@ -551,13 +551,11 @@ def render_page(meta, body, bio, tpl, arts, author_img, author_href, notes='', l
 
 
 def resolve_href(author):
-    """An author's own page if they have one, a member profile if not."""
+    """An author's own page if they have one, the author index if not."""
     from build_articles import author_slug
     aslug = author_slug(author)
     if os.path.exists(f'content/author/{aslug}.html'):
         return P.url('author', aslug)
-    if os.path.exists(f'content/member/{aslug}.html'):
-        return P.url('member', aslug)
     return P.url('authors-index')
 
 

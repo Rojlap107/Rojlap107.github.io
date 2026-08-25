@@ -66,7 +66,7 @@ in a slash and carry no extension, matching `/articles/%postname%/` in WordPress
 home /  ·  issue /journal-editions/  ·  article /articles/<slug>/
 section /sections/<slug>/  ·  dreshey-hub /dreshey/  ·  dreshey /dreshey/<slug>/
 authors-index /authors/  ·  author /authors/<slug>/
-team-index /team/  ·  member /team/<slug>/  ·  page /<slug>/
+team-index /team/  ·  page /<slug>/
 ```
 
 **All links and assets must be site-absolute.** A page at `/articles/<slug>/` cannot resolve
@@ -86,7 +86,7 @@ navigation had to be edited in ten places.
 Dependency order, as encoded in `tools/rebuild.py`:
 
 ```
-build_issue → build_youth → build_authors → build_team
+build_issue → build_youth → build_authors
             → build_categories → build_deyshal → build_home → build_sections_css
 ```
 
@@ -110,8 +110,14 @@ idempotently.
 - `build_authors.py`, `build_articles.py` → `~/Downloads/transhimalaya.WordPress.2026-08-03.xml`
 
 Without them, `content/` as committed is the only copy. Prefer editing a fragment directly
-over re-running a generator whose source you cannot see. `build_team.py` is the exception —
-patron and trustee data is inline in the script.
+over re-running a generator whose source you cannot see.
+
+`/about/`, `/team/`, `/governing-council/`, `/career/` and `/contact/` have no generator at
+all — they are hand-maintained fragments under `content/page/` and `content/team-index/`.
+`/team/` is the journal's masthead (Editor, Editorial Board, Executive Editor, Copyright
+Editor); FNVA's own patrons, trustees and research team are deliberately not listed there,
+and the `member` page type and `build_team.py` that served them have been removed. People
+are linked to their author page when they have one, and given initials when they do not.
 
 ## Stylesheets
 

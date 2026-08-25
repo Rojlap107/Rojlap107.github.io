@@ -17,7 +17,6 @@ needs no extension — the same shape WordPress produces from
     authors-index   /authors/                  authors/index.html
     author          /authors/<slug>/           authors/<slug>/index.html
     team-index      /team/                     team/index.html
-    member          /team/<slug>/              team/<slug>/index.html
     page            /<slug>/                   <slug>/index.html
 """
 
@@ -45,7 +44,6 @@ TYPES = {
     'authors-index': ('authors',           'authors-index.html', 'authors.css',  NAV_ABOUT),
     'author':        ('authors',           'author.html',        'authors.css',  NAV_ABOUT),
     'team-index':    ('team',              'team-index.html',    'pages.css',    NAV_ABOUT),
-    'member':        ('team',              'member.html',        'authors.css',  NAV_ABOUT),
     'page':          ('',                  'page.html',          'pages.css',    NAV_ABOUT),
 }
 
