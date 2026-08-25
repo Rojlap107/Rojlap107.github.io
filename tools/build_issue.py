@@ -419,9 +419,10 @@ def build_body(md, slug, strip_lead=None, title=None, author=None,
 def convert_docx(path, slug):
     media = os.path.join(MEDIA_ROOT, slug)
     os.makedirs(media, exist_ok=True)
-    src = path
+    src, tmp = path, None
     if path.lower().endswith('.doc'):        # legacy binary .doc — macOS textutil reads it
-        tmp = os.path.join(media, '_src.docx')
+        # under /tmp, not under media/: anything left in assets/ is published
+        tmp = f'/tmp/_th_{slug}.docx'
         subprocess.run(['textutil', '-convert', 'docx', path, '-output', tmp],
                        capture_output=True)
         if os.path.exists(tmp):
@@ -429,6 +430,8 @@ def convert_docx(path, slug):
     md = subprocess.run(['pandoc', src, '-t', 'markdown', '--wrap=none',
                          f'--extract-media={media}'],
                         capture_output=True, text=True).stdout
+    if tmp and os.path.exists(tmp):
+        os.remove(tmp)
     # resize / strip any oversized extracted figures
     mdir = os.path.join(media, 'media')
     if os.path.isdir(mdir):
