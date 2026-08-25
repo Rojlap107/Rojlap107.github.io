@@ -50,8 +50,9 @@ def opening_card(a):
 
 def featured_card(a):
     return f'''          <article class="th-card">
-            <a class="ph" href="{S.article_url(a['slug'])}" style="background-image:url({P.asset(a['lede'])})">{S.chip(a['section'], 'th-chip ph-chip')}</a>
+            <a class="ph" href="{S.article_url(a['slug'])}" style="background-image:url({P.asset(a['lede'])})"></a>
             <div class="b">
+              {S.chip(a['section'], 'th-chip card-chip')}
               <h3><a href="{S.article_url(a['slug'])}">{esc(a['title'])}</a></h3>
               <p>{esc(S.excerpt(a['slug']))}</p>
               <div class="meta"><span><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {short(a['date'])}</span><span>·</span><span>By {esc(a['author'])}</span></div>

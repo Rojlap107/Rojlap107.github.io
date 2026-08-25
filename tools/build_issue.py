@@ -604,8 +604,9 @@ def render_page(meta, body, bio, tpl, arts, author_img, author_href, notes='', l
     same = [p for p in others if p['section'] == meta['section']]
     rel_posts = (same + [p for p in others if p not in same])[:3]
     rel = '\n'.join(f'''            <article class="th-card">
-              <a class="ph" href="{P.url('article', p['slug'])}" style="background-image:url({P.asset(p.get('lede','assets/img/hero-bg.jpg'))})">{S.chip(p['section'], 'th-chip ph-chip')}</a>
+              <a class="ph" href="{P.url('article', p['slug'])}" style="background-image:url({P.asset(p.get('lede','assets/img/hero-bg.jpg'))})"></a>
               <div class="b">
+                {S.chip(p['section'], 'th-chip card-chip')}
                 <h3><a href="{P.url('article', p['slug'])}">{esc(p['title'])}</a></h3>
                 <div class="meta"><span><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {pretty(p['date'])}</span><span>·</span><span>By {esc(p['author'])}</span></div>
               </div>

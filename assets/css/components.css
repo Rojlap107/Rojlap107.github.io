@@ -37,7 +37,10 @@
   white-space:nowrap; }
 /* section chip sitting on a card photograph */
 .th-card .ph{ position:relative; }
-.ph-chip{ position:absolute; top:10px; left:10px; z-index:2; }
+/* The topic chip sits above the title, in the flow. It used to be absolutely
+   positioned over the photograph, where it covered the subject of the image. */
+.card-chip{ align-self:flex-start; font-size:9.5px; letter-spacing:.09em;
+  padding:4px 8px; margin:0 0 9px; }
 .cat-lead .ph{ position:relative; }
 
 /* ---- inline icons: grey, filled, sized to the text they sit beside ---- */
