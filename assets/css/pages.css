@@ -110,3 +110,22 @@
   .pg-people{ grid-template-columns:1fr; }
   .pg-do{ grid-template-columns:1fr; }
 }
+
+/* ---- plain lists: guiding principles, the shape of an edition ----
+   The diamond marker is the same motif as the section dividers. */
+.pg-principles, .pg-outline{ list-style:none; margin:1.3em 0 0; padding:0; }
+.pg-principles li, .pg-outline li{ position:relative; padding:10px 0 10px 24px;
+  border-top:1px solid var(--line); font-size:15.5px; line-height:1.5; }
+.pg-principles li::before, .pg-outline li::before{ content:""; position:absolute;
+  left:2px; top:18px; width:7px; height:7px; background:var(--orange);
+  transform:rotate(45deg); }
+.pg-outline{ display:grid; grid-template-columns:repeat(2,1fr); gap:0 30px; }
+.pg-outline a{ color:var(--ink); text-decoration:none; font-weight:600; }
+.pg-outline a:hover{ color:var(--orange); }
+
+/* a person with no profile page of their own reads the same as one who has */
+.pg-person span.nm{ color:var(--ink); }
+
+@media (max-width:560px){
+  .pg-outline{ grid-template-columns:1fr; }
+}

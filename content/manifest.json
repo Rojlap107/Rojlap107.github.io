@@ -744,8 +744,8 @@
   "slug": "about",
   "url": "/about/",
   "out": "about/index.html",
-  "head_title": "About FNVA — TransHimalaya",
-  "description": "FNVA is a not-for-profit, non-partisan organisation working on Tibet, China and the Himalayan frontier from an Indian policy perspective.",
+  "head_title": "About TransHimalaya",
+  "description": "TransHimalaya is an independent, interdisciplinary research and policy journal examining the forces and transformations shaping Tibet and Asia’s upland regions.",
   "content": "page/about.html",
   "legacy": "about.html"
  },
@@ -768,6 +768,16 @@
   "description": "Contact the Foundation for Non-violent Alternatives in New Delhi.",
   "content": "page/contact.html",
   "legacy": "contact.html"
+ },
+ {
+  "type": "page",
+  "slug": "governing-council",
+  "url": "/governing-council/",
+  "out": "governing-council/index.html",
+  "head_title": "Governing Council — TransHimalaya",
+  "description": "The Governing Council of TransHimalaya, chaired by Ambassador Shyam Saran.",
+  "content": "page/governing-council.html",
+  "legacy": "governing-council.html"
  },
  {
   "type": "section",
@@ -865,7 +875,7 @@
   "url": "/team/",
   "out": "team/index.html",
   "head_title": "Our Team — TransHimalaya",
-  "description": "The patrons, trustees and research team behind the Foundation for Non-violent Alternatives.",
+  "description": "The editorial team of TransHimalaya, and the patrons, trustees and researchers of the Foundation for Non-violent Alternatives.",
   "content": "team-index/team-index.html",
   "legacy": "team.html"
  }
