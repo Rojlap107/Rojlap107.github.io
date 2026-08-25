@@ -229,13 +229,42 @@ def is_bold_head(b):
             and len(text(b)) < 90 and not b.endswith(':**') is None)
 
 
+
+def split_footnotes(md):
+    """Take the footnote definitions out of the markdown and return both.
+
+    A definition can run past its first line: pandoc indents the rest under it,
+    which is how a note holding a bare URL gets written. Matching only the first
+    line lost that URL from the note and left it in the body as a stray
+    paragraph -- and being the last block, it was then mistaken for the trailing
+    paragraph the author bio is read from.
+    """
+    keep, defs, cur = [], [], None
+    for line in md.split('\n'):
+        m = re.match(r'^\[\^([^\]]+)\]:[ \t]*(.*)$', line)
+        if m:
+            cur = [m.group(1), m.group(2).strip()]
+            defs.append(cur)
+            continue
+        if cur is not None:
+            if not line.strip():
+                continue                                  # blank line inside a note
+            if re.match(r'^[ \t]{2,}', line):             # indented continuation
+                cur[1] = f'{cur[1]} {line.strip()}'.strip()
+                continue
+            cur = None                                    # back to body text
+        keep.append(line)
+    return '\n'.join(keep), [(l, t) for l, t in defs]
+
+
 def build_body(md, slug, strip_lead=None, title=None, author=None,
                skip_img=None, skip_texts=None):
     """Return (body_html, bio_text, first_image, notes_html)."""
     skip_norm = {re.sub(r'[^a-z0-9]', '', t.lower()) for t in (skip_texts or [])}
     global _FN
     _FN = {}
-    for i, (label, txt) in enumerate(re.findall(r'(?im)^\[\^([^\]]+)\]:[ \t]*(.+)$', md), 1):
+    md, defs = split_footnotes(md)
+    for i, (label, txt) in enumerate(defs, 1):
         _FN[label] = (label.strip() if label.strip().isdigit() else str(i), txt.strip())
 
     # split off the author bio at the LAST "About the Author" marker (some docs
@@ -247,6 +276,10 @@ def build_body(md, slug, strip_lead=None, title=None, author=None,
         body_md, bio_md = md, ''
     bio_md = re.split(r'(?im)^\s*\**\s*(references|bibliography|works cited|notes)\b',
                       bio_md)[0]
+    # Not every document heads its reference list. One rules a line of dashes
+    # and starts numbering, which without this ends up appended to the bio.
+    bio_md = re.split(r'(?m)^[ \t]*[-\u2013\u2014_]{4,}[ \t]*$', bio_md)[0]
+    bio_md = re.split(r'(?m)^[ \t]*\d{1,2}[.:][ \t]+\S', bio_md)[0]
     # strip any headshot image markdown BEFORE inline() (which would mangle it)
     raw_bio = re.sub(r'!\[[^\]]*\]\([^)]*\)(\{[^}]*\})?', '', bio_md)
     bio = clean_bio(inline(raw_bio))
@@ -665,18 +698,14 @@ def main():
     MANIFEST = C.load()
 
     from build_articles import author_slug
+    # Bios come from the store, never from the author pages this run will
+    # rewrite: scraping them fed a previous run's mistakes straight back in.
     BIOS = B.seed()
-    author_img, author_bio = {}, {}
+    author_img = {}
     for a in arts.values():
-        aslug = author_slug(a['author'])
-        p = f"assets/img/au-{aslug}.jpg"
+        p = f"assets/img/au-{author_slug(a['author'])}.jpg"
         if os.path.exists(p):
             author_img[a['author']] = p
-        apage = f"content/author/{aslug}.html"
-        if os.path.exists(apage):
-            m = re.search(r'<p class="bio">(.*?)</p>', open(apage, encoding='utf-8').read(), re.S)
-            if m:
-                author_bio[a['author']] = clean_bio(m.group(1))
 
     # Two passes. An author with two pieces, or one whose fullest bio lives in
     # another source, would otherwise get whichever text happened to be known
@@ -697,8 +726,6 @@ def main():
             body, bio, _, notes = build_body(md, slug, title=post['title'],
                                              author=post['author'],
                                              skip_img=skip_img, skip_texts=skip_texts)
-            if not bio:
-                bio = author_bio.get(post['author'], '')
             if hero:
                 post = {**post, 'lede': hero['img']}
             jobs.append(dict(meta=post, body=body, bio=bio, notes=notes,
@@ -723,10 +750,6 @@ def main():
             body, bio, _, notes = build_body(md, meta['slug'], meta.get('strip_lead'),
                                              title=meta['title'], author=meta['author'],
                                              skip_img=skip_img, skip_texts=skip_texts)
-        # every piece settles its bio the same way, the interview included —
-        # an interviewer has a bio like anyone else
-        if not bio:
-            bio = author_bio.get(meta['author'], '')
         lede = hero['img'] if hero else arts.get(meta['slug'], {}).get('lede', 'assets/img/hero-bg.jpg')
         meta = {**meta, 'lede': lede}
         jobs.append(dict(meta=meta, body=body, bio=bio, notes=notes,

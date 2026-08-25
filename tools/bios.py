@@ -42,6 +42,7 @@ def tidy(bio):
     the untidy copy would win.
     """
     b = re.sub(r'^(?:\*+|_+|:|\s)+', '', (bio or '').strip())
+    b = re.sub(r'(?:\s*[#*_|]+)+$', '', b)          # a stray heading marker at the end
     return re.sub(r'[ \t\xa0]+', ' ', b).strip()
 
 
