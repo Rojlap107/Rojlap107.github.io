@@ -256,10 +256,23 @@ def build_body(md, slug, strip_lead=None, title=None, author=None,
               if not re.match(r'^\[\^[^\]]+\]:', b)
               and not re.match(r'(?i)^\**\s*about the author\s*:?\s*\**$', text(b))]
 
-    # drop leading title / author / label lines (title & author come from metadata)
-    for pat in (strip_lead or []):
-        if blocks and re.match(pat, text(blocks[0]).strip(), re.I):
-            blocks.pop(0)
+    def bare(b):
+        """A block's words with markdown decoration removed, for matching."""
+        t = re.sub(r'\{[^}]*\}', '', text(b))            # pandoc spans, {.underline}
+        t = re.sub(r'^#{1,6}\s*', '', t.strip())          # heading markers
+        return t.strip().strip('*_[]# ').strip()
+
+    # Drop leading title / author / label lines; title and author come from the
+    # metadata. Matching ignores markdown decoration, so a label written
+    # "**DRAFT**" or "# Editor's Note" is recognised, and repeats until no
+    # pattern matches so the order of the patterns does not matter.
+    if strip_lead:
+        dropping = True
+        while dropping and blocks:
+            dropping = False
+            for pat in strip_lead:
+                if blocks and re.match(pat, bare(blocks[0]), re.I):
+                    blocks.pop(0); dropping = True; break
 
     def norm(s):
         s = re.sub(r'\{[^}]*\}', '', s)                    # pandoc spans, e.g. {.mark}
@@ -291,6 +304,20 @@ def build_body(md, slug, strip_lead=None, title=None, author=None,
         if re.match(rf'(?i)^{re.escape(author)}\b', lt) and \
            re.search(r'(?i)^\S+\s+\S+\s+(is|was|serves|served|currently)\b', lt):
             bio = clean_bio(inline(blocks.pop()))
+
+    # A signed piece ends with the author's name over their affiliation, and
+    # sometimes a bare "Date:". The byline carries the name and the bio carries
+    # the affiliation, so the run is redundant. Only a short run of short lines
+    # qualifies, so a closing paragraph is never mistaken for a signature.
+    if author and len(blocks) > 3:
+        an = norm(author)
+        for i in range(max(0, len(blocks) - 8), len(blocks)):
+            bn = norm(blocks[i])
+            if bn and len(bn) < 44 and (
+                    bn == an or difflib.SequenceMatcher(None, bn, an).ratio() > 0.75):
+                if all(len(text(b)) < 100 for b in blocks[i:]):
+                    del blocks[i:]
+                break
 
     # drop a trailing lone image — the author headshot glued before the bio —
     # but keep a genuine final figure (one preceded by a Figure/caption/source line)
