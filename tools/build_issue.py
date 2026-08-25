@@ -112,9 +112,14 @@ HERO = {
       caption='His Majesty King Jigme Khesar Namgyel Wangchuck during the Global '
               'Peace Prayer Festival in November in Thimphu, Bhutan.',
       source='His Majesty The King’s Facebook Page'),
+  # The caption below belongs to this image in the document. A promoted hero
+  # drops its own label and caption from the body, so it has to be given here.
   'why-does-tibet-matter': dict(
       img='assets/img/issue/why-does-tibet-matter/media/image5.jpg',
-      caption='', source='Utsang Culture'),
+      caption='The supine (lying down) Srinmo whose body spanned the entire '
+              'Tibetan plateau, with strategic geomantic temples like the '
+              'Jokhang Monastery to pin her down and tame the land for Buddhism.',
+      source='Utsang Culture'),
 }
 
 
@@ -317,7 +322,7 @@ def build_body(md, slug, strip_lead=None, title=None, author=None,
     def flush_pending():
         for kind, val in pending:
             if kind == 'fignum':
-                out.append(f'        <p><strong>{esc(val)}</strong></p>')
+                continue          # a label with no figure to sit in is noise
             elif kind == 'caption':
                 out.append(f'        <p><em>{inline(val)}</em></p>')
             elif kind == 'source':
@@ -381,6 +386,13 @@ def build_body(md, slug, strip_lead=None, title=None, author=None,
             continue
         if bt.startswith('*') and bt.endswith('*') and bt.count('*') == 2 and len(bt) < 220:
             pending.append(('caption', bt.strip('*'))); continue
+        # Several documents write a figure as three lines — label, caption,
+        # image — rather than italicising the caption. Without this, the plain
+        # caption paragraph ends the figure block, stranding the label.
+        if (pending and pending[-1][0] == 'fignum'
+                and not any(k == 'caption' for k, _ in pending)
+                and len(bt) < 320 and not re.match(r'^[>#|!\[]|^\*\*', bt)):
+            pending.append(('caption', bt)); continue
         # not a figure component -> flush any pending as plain paragraphs
         flush_pending()
         prev_is_fig = out and out[-1].lstrip().startswith('<figure class="art-fig">')
@@ -389,7 +401,8 @@ def build_body(md, slug, strip_lead=None, title=None, author=None,
             out.append(f'        <blockquote class="art-pull"><p>{q}</p></blockquote>')
         elif re.match(r'^\[[^\]]+\]\{\.underline\}$', bt) and len(text(bt)) < 90:
             out.append(f'        <h2>{inline(bt)}</h2>')      # underline-styled sub-head
-        elif bt.startswith('**') and bt.endswith('**') and bt.count('**') == 2 and len(text(bt)) < 90:
+        elif (bt.startswith('**') and bt.endswith('**') and bt.count('**') == 2
+                and len(text(bt)) < 130 and not text(bt).rstrip().endswith('.')):
             out.append(f'        <h2>{inline(bt.strip("*"))}</h2>')
         elif re.match(r'^#{1,6}\s', bt):
             inner = re.sub(r'^#{1,6}\s+', '', bt)        # a genuine sub-head is short;
