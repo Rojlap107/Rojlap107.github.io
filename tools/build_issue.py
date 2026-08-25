@@ -15,7 +15,7 @@ Writes content/article/<slug>.html; run tools/build.py afterwards to wrap
 each fragment in the site chrome. Run from the site root.
 """
 
-import argparse, html, json, os, re, subprocess, sys
+import argparse, difflib, html, json, os, re, subprocess, sys
 import content as C
 import paths as P
 import sections as S
@@ -166,6 +166,10 @@ def inline(s):
     """Convert a run of pandoc-markdown inline text to safe HTML."""
     s = re.sub(r'\\([^\w\s])', r'\1', s)                   # drop backslash escapes (\$ \~ …)
     s = re.sub(r'HYPERLINK\s+"[^"]*"\s*', '', s)           # Word HYPERLINK field codes
+    # <https://…> autolinks: drop the brackets now. Left in place, esc() turns
+    # them into &lt;…&gt; and the bare-URL linkifier below swallows the '&gt'
+    # into the href, which then 404s. The brackets carry no meaning anyway.
+    s = re.sub(r'<\s*(https?://[^>\s]+?)\s*>', r'\1', s)
     # protect links first
     links = []
     def stash_link(m):
@@ -267,7 +271,12 @@ def build_body(md, slug, strip_lead=None, title=None, author=None,
     if author:
         an = norm(author)
         for i in range(min(3, len(blocks))):
-            if norm(blocks[i]) == an:
+            bn = norm(blocks[i])
+            # The document's byline and the metadata name often differ a little
+            # — "Tenzing"/"Tenzin" Lamsang, "Lt Gen … (Retd.)" against
+            # "Lt General …" — so compare loosely. A byline is always short.
+            if bn and len(bn) < 44 and (
+                    bn == an or difflib.SequenceMatcher(None, bn, an).ratio() > 0.75):
                 del blocks[:i + 1]; break
     # a leading title line with no byline after it (matches the metadata title)
     if title and blocks:
@@ -385,7 +394,15 @@ def build_body(md, slug, strip_lead=None, title=None, author=None,
                 pending.append(('source', srctext))
             continue
         if bt.startswith('*') and bt.endswith('*') and bt.count('*') == 2 and len(bt) < 220:
-            pending.append(('caption', bt.strip('*'))); continue
+            # Captions appear on either side of their image depending on the
+            # document. One that follows a figure belongs to it; one that comes
+            # first waits for the image still to be emitted.
+            if (out and out[-1].lstrip().startswith('<figure class="art-fig">')
+                    and '<figcaption>' not in out[-1]):
+                fold_fig(caption_html(bt.strip('*')))
+            else:
+                pending.append(('caption', bt.strip('*')))
+            continue
         # Several documents write a figure as three lines — label, caption,
         # image — rather than italicising the caption. Without this, the plain
         # caption paragraph ends the figure block, stranding the label.
