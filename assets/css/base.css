@@ -229,3 +229,6 @@ img{ max-width:100%; }
   .th-sub a{ transition:none; }
   .th-sub a{ padding:11px 12px; border-radius:4px; font-size:14.5px; white-space:normal; }
 }
+
+/* Subscribe (Razorpay) band hidden until the payment feature is ready */
+.th-subscribe{ display:none !important; }

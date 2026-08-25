@@ -53,7 +53,7 @@ def chrome():
     idx = open('index.html', encoding='utf-8').read()
     return (re.search(r'  <svg width="0" height="0".*?</svg>\n', idx, re.S).group(0),
             re.search(r'      <!-- Header -->.*?</nav>\n', idx, re.S).group(0),
-            re.search(r'      <!-- Subscription · Razorpay -->.*?</footer>\n', idx, re.S).group(0))
+            re.search(r'      <!-- Newsletter -->.*?</footer>\n', idx, re.S).group(0))
 
 
 def page(fn, title, desc, css, body):

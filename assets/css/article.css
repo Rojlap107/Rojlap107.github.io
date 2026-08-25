@@ -148,3 +148,7 @@
 /* youth voices: modest portrait, not a full-width figure */
 .art-body .art-portrait{ max-width:200px; margin:1.2em 0; }
 .art-body .art-portrait img{ border-radius:6px; }
+
+/* footnote reference markers + back-links */
+.art-body sup.fn a{ color:var(--teal); text-decoration:none; font-weight:600; }
+.art-notes .fn-back{ text-decoration:none; margin-left:5px; color:var(--muted); }

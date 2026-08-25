@@ -95,6 +95,15 @@ def main():
             if len(bio) > len(bios.get(who, '')):
                 bios[who] = bio
 
+    # supplied bios for contributors not in the WordPress export
+    bios.update({
+        'Srikanth Kondapalli':
+            'Srikanth Kondapalli is Professor in Chinese Studies at the Centre for '
+            'Chinese Studies, School of International Studies, Jawaharlal Nehru '
+            'University (JNU), New Delhi. He is a Trustee of the Foundation for '
+            'Non-violent Alternatives (FNVA).',
+    })
+
     # group articles by author
     by_author = {}
     for a in arts:
@@ -105,7 +114,7 @@ def main():
     idx = open('index.html', encoding='utf-8').read()
     sprite = re.search(r'  <svg width="0" height="0".*?</svg>\n', idx, re.S).group(0)
     header = re.search(r'      <!-- Header -->.*?</nav>\n', idx, re.S).group(0)
-    tail = re.search(r'      <!-- Subscription · Razorpay -->.*?</footer>\n', idx, re.S).group(0)
+    tail = re.search(r'      <!-- Newsletter -->.*?</footer>\n', idx, re.S).group(0)
 
     def shell(fn, title, desc, body):
         s = ('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'

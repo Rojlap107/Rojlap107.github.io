@@ -53,12 +53,11 @@ PEOPLE = [
     dict(
         name='Prof. Srikanth Kondapalli',
         group='Trustee',
-        role='Professor of Chinese Studies, Jawaharlal Nehru University',
-        bio='One of India’s foremost analysts of China, Srikanth Kondapalli is '
-            'Professor in Chinese Studies at the School of International Studies, '
-            'Jawaharlal Nehru University, where he has also served as Dean. His '
-            'research spans Chinese foreign and security policy, the People’s '
-            'Liberation Army, and China’s relations with South Asia.',
+        role='Professor in Chinese Studies, Jawaharlal Nehru University (JNU)',
+        bio='Srikanth Kondapalli is Professor in Chinese Studies at the Centre for '
+            'Chinese Studies, School of International Studies, Jawaharlal Nehru '
+            'University (JNU), New Delhi. He is a Trustee of the Foundation for '
+            'Non-violent Alternatives (FNVA).',
     ),
 ]
 
@@ -92,7 +91,7 @@ def main():
     idx = open('index.html', encoding='utf-8').read()
     sprite = re.search(r'  <svg width="0" height="0".*?</svg>\n', idx, re.S).group(0)
     header = re.search(r'      <!-- Header -->.*?</nav>\n', idx, re.S).group(0)
-    tail = re.search(r'      <!-- Subscription · Razorpay -->.*?</footer>\n', idx, re.S).group(0)
+    tail = re.search(r'      <!-- Newsletter -->.*?</footer>\n', idx, re.S).group(0)
 
     for p in PEOPLE:
         slug = slugify(p['name'])

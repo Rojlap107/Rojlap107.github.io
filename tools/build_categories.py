@@ -104,7 +104,7 @@ def main():
     idx = open('index.html', encoding='utf-8').read()
     sprite = re.search(r'  <svg width="0" height="0".*?</svg>\n', idx, re.S).group(0)
     header = re.search(r'      <!-- Header -->.*?</nav>\n', idx, re.S).group(0)
-    tail = re.search(r'      <!-- Subscription · Razorpay -->.*?</footer>\n', idx, re.S).group(0)
+    tail = re.search(r'      <!-- Newsletter -->.*?</footer>\n', idx, re.S).group(0)
 
     for slug, title, lede, children in SECTIONS:
         if children:                       # a parent section gathers its children
