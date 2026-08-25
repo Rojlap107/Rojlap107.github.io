@@ -109,3 +109,11 @@
 .th-field h4 a{ color:inherit; text-decoration:none; }
 .th-field h4 a:hover{ color:var(--orange); }
 .th-cards .th-card a.ph{ display:block; background-size:cover; background-position:center; }
+
+
+/* From-the-Field thumbnails now carry the article image */
+.th-field .thumb{ background-size:cover; background-position:center; }
+
+/* From the Field: topic box sits with the date on its own line */
+.th-field .r{ gap:12px; flex-wrap:wrap; }
+.th-field .r .th-chip{ flex:none; }

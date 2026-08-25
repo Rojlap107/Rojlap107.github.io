@@ -86,7 +86,7 @@ def empty(title):
             '          <p class="ttl">Nothing published here yet</p>\n'
             f'          <p>{title} is part of Dreshey but has no entries so far. '
             'Browse the <a href="archives.html">archive</a> or read the '
-            '<a href="journal-issue.html">current issue</a> in the meantime.</p>\n'
+            '<a href="journal-editions.html">current issue</a> in the meantime.</p>\n'
             '        </div>\n')
 
 

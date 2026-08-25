@@ -19,7 +19,7 @@ NS = {'wp': 'http://wordpress.org/export/1.2/',
       'content': 'http://purl.org/rss/1.0/modules/content/'}
 IMG_DIR = "assets/img"
 
-# Section shown on the article; the parent "Main Essays" only applies when a
+# Section shown on the article; the parent "In Focus" only applies when a
 # post carries no more specific category.
 SECTION = {
     'The Strategic Triangle: India Tibet and the PRC': 'The Strategic Triangle',
@@ -27,7 +27,7 @@ SECTION = {
     'Tibet Today': 'Tibet Today',
     'Tibet Beyond Borders': 'Tibet Beyond Borders',
     'History': 'History',
-    'Main Essays': 'Main Essays',
+    'In Focus': 'In Focus',
 }
 
 # Articles carried on the home page, in the order they appear there.
@@ -254,7 +254,7 @@ def load(only=None):
                 for m in it.findall('wp:postmeta', NS)}
         raw = it.findtext('content:encoded', default='', namespaces=NS) or ''
         cats = [c.text for c in it.findall('category') if c.get('domain') == 'category']
-        section = next((SECTION[c] for c in cats if c in SECTION and c != 'Main Essays'),
+        section = next((SECTION[c] for c in cats if c in SECTION and c != 'In Focus'),
                        next((SECTION[c] for c in cats if c in SECTION), 'Essays'))
         bio = re.search(r'ABOUT THE AUTHOR(.*)$', raw, re.S)
         posts.append({

@@ -19,8 +19,9 @@ Then open <http://localhost:8748>.
 | | |
 |---|---|
 | `index.html` | Home |
-| `journal-issue.html` | Journal Issue — the inaugural issue and its full contents |
-| `main-essays.html` and sections | Tibet Today · Tibet Beyond Borders · History · The Strategic Triangle · Global Perspectives · Youth · Tibet Monitor |
+| `journal-editions.html` | Journal Editions — the inaugural edition (Vol. 1 No. 1) and its contents |
+| `in-focus.html` | In Focus — every essay, with a topic filter and search |
+| section pages | Tibet Today · Tibet Beyond Borders · History · The Strategic Triangle · Global Perspectives · Youth · Interviews · Tibet Monitor |
 | `dreshey.html` and sub-sections | Archives · Data & Visuals · Must Reads, plus six awaiting content |
 | `about.html` · `team.html` · `career.html` · `contact.html` · `authors.html` | About |
 | 23 article pages | one per published article, at its own slug |
@@ -47,6 +48,8 @@ python3 tools/build_articles.py --all    # every published article
 python3 tools/build_categories.py        # the section pages
 python3 tools/build_deyshal.py           # the Dreshey hub and sub-sections
 python3 tools/build_team.py              # patron and trustee profile pages
+python3 tools/build_home.py              # the homepage: Opening, Featured, contents
+python3 tools/build_sections_css.py      # section colours into base.css
 ```
 
 `build_articles.py` also downloads and resizes the images each article needs.
@@ -55,6 +58,26 @@ python3 tools/build_team.py              # patron and trustee profile pages
 they are not in the WordPress export. Their bios are drafts drawn from public
 roles and need checking with FNVA. Author profiles are generated separately by
 `build_authors.py`; the research-team members on `team.html` link to those.
+
+## Section colours
+
+`tools/sections.py` is the single source of truth for each topic's colour. Every
+card, chip and filter pill across the site takes its colour from there, so one
+topic always reads the same. After changing a colour, run
+`python3 tools/build_sections_css.py`.
+
+## Opening card images
+
+The Foreword and Editor's Note have only author portraits, so their homepage
+cards use the portrait contained on a blurred fill of itself (never cropped to
+16:10, which cuts faces off):
+
+```bash
+magick SRC -fuzz 12% -trim +repage /tmp/_src.png
+magick /tmp/_src.png -resize 900x563^ -gravity center -extent 900x563 -blur 0x18 -modulate 96,70 /tmp/_bg.jpg
+magick /tmp/_src.png -resize 470x520 /tmp/_fg.png
+magick /tmp/_bg.jpg /tmp/_fg.png -gravity center -composite -strip -quality 84 OUT
+```
 
 ## Conventions
 

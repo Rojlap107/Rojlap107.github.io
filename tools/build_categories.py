@@ -11,14 +11,15 @@ Run from the site root. Reads tools/articles.json, written by build_articles.py.
 """
 
 import html, json, os, re, sys
+import sections as S
 
 # slug -> (page title, standfirst). The standfirst copy is ours, not the
 # client's, and should be approved before launch.
 SECTIONS = [
-    ('main-essays', 'Main Essays',
-     'The magazine&#39;s long-form scholarship on Tibet and the Himalaya — history, '
+    ('in-focus', 'In Focus',
+     'The journal&#39;s long-form scholarship on Tibet and the Himalaya — history, '
      'politics, economy and society.',
-     ['Tibet Today', 'Tibet Beyond Borders', 'History']),
+     S.IN_FOCUS),
 
     ('tibet-today', 'Tibet Today',
      'Reporting and analysis on conditions inside Tibet: governance, surveillance, '
@@ -69,9 +70,16 @@ def short(d):
     return f"{int(d[8:10])} {MONTH[d[5:7]][:3]} {d[:4]}"
 
 
+def data_attrs(a):
+    """Filter/search hooks used by the In Focus filter bar."""
+    hay = f"{a['title']} {a['author']} {a['section']}".lower()
+    return (f' data-topic="{S.slug(a["section"])}"'
+            f' data-search="{esc(hay)}"')
+
+
 def lead_card(a):
-    return f'''        <article class="cat-lead">
-          <a class="ph" href="{a['slug']}.html" style="background-image:url({a['lede']})"></a>
+    return f'''        <article class="cat-lead"{data_attrs(a)}>
+          <a class="ph" href="{a['slug']}.html" style="background-image:url({a['lede']})">{S.chip(a['section'], 'th-chip ph-chip')}</a>
           <div class="b">
             <p class="k">{esc(a['section'])}</p>
             <h2><a href="{a['slug']}.html">{esc(a['title'])}</a></h2>
@@ -84,16 +92,40 @@ def lead_card(a):
 
 
 def card(a):
-    return f'''          <article class="th-card">
-            <a class="ph" href="{a['slug']}.html" style="background-image:url({a['lede']})"></a>
+    return f'''          <article class="th-card"{data_attrs(a)}>
+            <a class="ph" href="{a['slug']}.html" style="background-image:url({a['lede']})">{S.chip(a['section'], 'th-chip ph-chip')}</a>
             <div class="b">
               <h3><a href="{a['slug']}.html">{esc(a['title'])}</a></h3>
+              <p>{esc(S.excerpt(a['slug']))}</p>
               <div class="meta">
                 <span><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {short(a['date'])}</span>
                 <span>·</span><span>By {esc(a['author'])}</span>
               </div>
             </div>
           </article>'''
+
+
+def filter_bar(items):
+    """Topic filter + search, shown on In Focus where several topics gather."""
+    topics = []
+    for a in items:
+        if a['section'] not in topics:
+            topics.append(a['section'])
+    topics.sort()
+    buttons = '\n'.join(
+        f'            <button type="button" class="cf-btn cat-{S.slug(t)}" '
+        f'data-filter="{S.slug(t)}">{esc(t)}</button>' for t in topics)
+    return f'''        <div class="cat-filter" data-catfilter>
+          <div class="cf-topics">
+            <button type="button" class="cf-btn is-on" data-filter="all">All</button>
+{buttons}
+          </div>
+          <div class="cf-search">
+            <input type="search" placeholder="Search this section…" aria-label="Search articles">
+          </div>
+          <p class="cf-count" aria-live="polite"></p>
+        </div>
+'''
 
 
 def main():
@@ -113,7 +145,15 @@ def main():
             items = [a for a in arts if a['section'] == title]
         items.sort(key=lambda a: a['date'], reverse=True)
 
-        if items:
+        if items and children:
+            # a gathering page (In Focus): filter + search over uniform cards,
+            # newest first, so more topics can be added in later editions
+            grid = ('        <div class="th-cards cat-grid">\n' +
+                    '\n'.join(card(a) for a in items) + '\n        </div>\n')
+            body = f'{filter_bar(items)}\n{grid}'
+            count = (f'<p class="cat-count">{len(items)} '
+                     f'{"article" if len(items) == 1 else "articles"}</p>')
+        elif items:
             rest = items[1:]
             grid = ('' if not rest else
                     '        <div class="th-cards cat-grid">\n' +
@@ -125,8 +165,8 @@ def main():
             body = ('        <div class="cat-empty">\n'
                     '          <p class="ttl">Nothing published here yet</p>\n'
                     f'          <p>{title} will carry its first pieces shortly. In the '
-                    'meantime, read the <a href="journal-issue.html">current issue</a> or browse '
-                    '<a href="main-essays.html">Main Essays</a>.</p>\n'
+                    'meantime, read the <a href="journal-editions.html">current edition</a> or browse '
+                    '<a href="in-focus.html">In Focus</a>.</p>\n'
                     '        </div>\n')
             count = ''
 

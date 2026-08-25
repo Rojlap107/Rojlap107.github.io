@@ -141,3 +141,49 @@
     }
   });
 })();
+
+/* In Focus — filter the cards by topic and by a free-text search.
+   Everything is already in the page; this only shows and hides. */
+(function () {
+  var bar = document.querySelector('[data-catfilter]');
+  var grid = document.querySelector('.cat-grid');
+  if (!bar || !grid) return;
+
+  var cards = Array.prototype.slice.call(grid.querySelectorAll('.th-card'));
+  var buttons = Array.prototype.slice.call(bar.querySelectorAll('.cf-btn'));
+  var input = bar.querySelector('input[type="search"]');
+  var count = bar.querySelector('.cf-count');
+  var topic = 'all';
+
+  var empty = document.createElement('p');
+  empty.className = 'cat-noresult';
+  empty.hidden = true;
+  empty.textContent = 'No articles match that search yet.';
+  grid.parentNode.insertBefore(empty, grid.nextSibling);
+
+  function apply() {
+    var q = (input.value || '').trim().toLowerCase();
+    var shown = 0;
+    cards.forEach(function (c) {
+      var okTopic = topic === 'all' || c.getAttribute('data-topic') === topic;
+      var okText = !q || (c.getAttribute('data-search') || '').indexOf(q) !== -1;
+      var on = okTopic && okText;
+      c.classList.toggle('is-hidden', !on);
+      if (on) shown++;
+    });
+    empty.hidden = shown !== 0;
+    if (count) {
+      count.textContent = (topic === 'all' && !q) ? '' :
+        shown + (shown === 1 ? ' article' : ' articles');
+    }
+  }
+
+  buttons.forEach(function (b) {
+    b.addEventListener('click', function () {
+      topic = b.getAttribute('data-filter');
+      buttons.forEach(function (o) { o.classList.toggle('is-on', o === b); });
+      apply();
+    });
+  });
+  input.addEventListener('input', apply);
+})();

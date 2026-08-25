@@ -189,7 +189,7 @@
     "author": "Shyam Saran",
     "date": "2026-08-01",
     "section": "Foreword",
-    "lede": "assets/img/hero-bg.jpg"
+    "lede": "assets/img/issue/foreword/lede.jpg"
   },
   {
     "slug": "editors-note",
@@ -197,7 +197,7 @@
     "author": "Srikanth Kondapalli",
     "date": "2026-08-01",
     "section": "Editor’s Note",
-    "lede": "assets/img/hero-bg.jpg"
+    "lede": "assets/img/issue/editors-note/lede.jpg"
   },
   {
     "slug": "tibet-in-the-year-2048",
@@ -221,7 +221,7 @@
     "author": "Srikanth Kondapalli",
     "date": "2026-08-01",
     "section": "History",
-    "lede": "assets/img/hero-bg.jpg"
+    "lede": "assets/img/issue/why-does-tibet-matter/media/image5.jpg"
   },
   {
     "slug": "interview-with-sikyong-penpa-tsering",

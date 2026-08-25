@@ -15,6 +15,7 @@ Run from the site root.
 """
 
 import argparse, html, json, os, re, subprocess, sys
+import sections as S
 
 ISSUE = os.path.expanduser("~/Desktop/Tenzin Paljor/FNVA/1st Issue")
 MEDIA_ROOT = "assets/img/issue"
@@ -108,7 +109,21 @@ HERO = {
       caption='His Majesty King Jigme Khesar Namgyel Wangchuck during the Global '
               'Peace Prayer Festival in November in Thimphu, Bhutan.',
       source='His Majesty The King’s Facebook Page'),
+  'why-does-tibet-matter': dict(
+      img='assets/img/issue/why-does-tibet-matter/media/image5.jpg',
+      caption='', source='Utsang Culture'),
 }
+
+
+def hero_bits(hero):
+    """(skip_img, skip_texts, lede_cap) for a HERO entry, or (None, None, '')."""
+    if not hero:
+        return None, None, ''
+    cap = (f'{esc(hero["caption"])} ' if hero.get('caption') else '')
+    src = (f'<span class="src">Source: {esc(hero["source"])}</span>' if hero.get('source') else '')
+    lede_cap = f'\n          <figcaption>{cap}{src}</figcaption>' if (cap or src) else ''
+    texts = [t for t in (hero.get('caption'), hero.get('source')) if t]
+    return hero['img'].rsplit('/', 1)[-1], texts, lede_cap
 
 
 def esc(s):
@@ -141,7 +156,7 @@ _FN = {}          # footnote label -> (display number, text), set per article
 
 def inline(s):
     """Convert a run of pandoc-markdown inline text to safe HTML."""
-    s = re.sub(r'\\([\\`*_{}\[\]()#+.!\'"-])', r'\1', s)   # drop backslash escapes
+    s = re.sub(r'\\([^\w\s])', r'\1', s)                   # drop backslash escapes (\$ \~ …)
     s = re.sub(r'HYPERLINK\s+"[^"]*"\s*', '', s)           # Word HYPERLINK field codes
     # protect links first
     links = []
@@ -156,9 +171,19 @@ def inline(s):
     s = s.replace('[]', '')
     s = s.replace('---', '—').replace('--', '–')          # em / en dashes
     s = esc(s)
+
+    def fn_ref(m):                                        # footnote ref -> superscript link
+        label = m.group(1)
+        if label in _FN:
+            return (f'<sup class="fn"><a id="fnr-{esc(label)}" '
+                    f'href="#fn-{esc(label)}">{esc(_FN[label][0])}</a></sup>')
+        return ''
+    # handle footnote refs BEFORE superscripts, so the '^' inside [^n] is not
+    # swept up by the ^…^ superscript rule (which would swallow whole sentences)
+    s = re.sub(r'\[\^([^\]]+)\]', fn_ref, s)
     s = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', s)
     s = re.sub(r'(?<!\*)\*(?!\s)(.+?)(?<!\s)\*(?!\*)', r'<em>\1</em>', s)
-    s = re.sub(r'\^([^^]+)\^', r'<sup>\1</sup>', s)         # superscripts
+    s = re.sub(r'\^([^^]+)\^', r'<sup>\1</sup>', s)         # superscripts (km^2^, 14^th^)
     def put_link(m):
         t, u = links[int(m.group(1))]
         return f'<a href="{esc(u)}" rel="noopener">{esc(t)}</a>'
@@ -172,15 +197,6 @@ def inline(s):
     s = re.sub(r'(?<=[a-zA-Z0-9/])\]+(?=[\s,.;)]|$)', '', s)   # ']' right after a URL
     s = re.sub(r'(?<![">])\b(https?://[^\s<>)\]]+[a-zA-Z0-9/])',
                r'<a href="\1" rel="noopener">\1</a>', s)  # linkify bare URLs
-
-    def fn_ref(m):                                        # footnote reference -> superscript
-        label = m.group(1)
-        if label in _FN:
-            num = _FN[label][0]
-            return (f'<sup class="fn"><a id="fnr-{esc(label)}" '
-                    f'href="#fn-{esc(label)}">{esc(num)}</a></sup>')
-        return ''
-    s = re.sub(r'\[\^([^\]]+)\]', fn_ref, s)
     s = re.sub(r'\[([^\[\]<>]{1,120})\]', r'\1', s)       # [orphan text] -> text
     return s
 
@@ -271,6 +287,7 @@ def build_body(md, slug, strip_lead=None, title=None, author=None,
 
     out, pending = [], []          # pending holds fignum/caption lines before an image
     first_img = [None]
+    skip_src = [False]              # drop the source line after a skipped hero image
 
     def fold_fig(cap_html):
         """Attach a caption to the figure just emitted, so every image caption
@@ -325,6 +342,7 @@ def build_body(md, slug, strip_lead=None, title=None, author=None,
                    f'        </figure>')
 
     for b in blocks:
+        take_src = skip_src[0]; skip_src[0] = False
         if skip_norm and re.sub(r'[^a-z0-9]', '', text(b).lower()) in skip_norm:
             continue                 # a hero caption/source line, shown on the hero instead
         m = IMG_RE.search(b)
@@ -333,8 +351,9 @@ def build_body(md, slug, strip_lead=None, title=None, author=None,
             trailing = IMG_RE.sub('', b).strip()
             if first_img[0] is None:
                 first_img[0] = local
-            # this image was promoted to the hero — drop it (and its caption) here
+            # this image was promoted to the hero — drop it, its Figure label and source
             if skip_img and local.endswith(skip_img):
+                pending.clear(); skip_src[0] = True
                 continue
             # a long paragraph glued to an image is the author headshot + bio
             if trailing and len(text(trailing)) > 200 and not bio:
@@ -351,6 +370,8 @@ def build_body(md, slug, strip_lead=None, title=None, author=None,
         if re.match(r'(?i)^figure\s+\d', bt) and len(bt) < 60:
             pending.append(('fignum', bt)); continue
         if re.match(r'(?i)^\**\s*source\b', bt):
+            if take_src:
+                continue             # the source line of the image promoted to the hero
             srctext = re.sub(r'(?i)^\**\s*source\s*:?\s*', '', bt).strip(' *')
             if not fold_fig(f'<span class="src">Source: {inline(srctext)}</span>'):
                 pending.append(('source', srctext))
@@ -363,6 +384,8 @@ def build_body(md, slug, strip_lead=None, title=None, author=None,
         if bt.startswith('>'):
             q = inline(re.sub(r'^\s*>\s?', '', bt, flags=re.M))
             out.append(f'        <blockquote class="art-pull"><p>{q}</p></blockquote>')
+        elif re.match(r'^\[[^\]]+\]\{\.underline\}$', bt) and len(text(bt)) < 90:
+            out.append(f'        <h2>{inline(bt)}</h2>')      # underline-styled sub-head
         elif bt.startswith('**') and bt.endswith('**') and bt.count('**') == 2 and len(text(bt)) < 90:
             out.append(f'        <h2>{inline(bt.strip("*"))}</h2>')
         elif re.match(r'^#{1,6}\s', bt):
@@ -486,7 +509,7 @@ def render_page(meta, body, bio, tpl, arts, author_img, author_href, notes='', l
     same = [p for p in others if p['section'] == meta['section']]
     rel_posts = (same + [p for p in others if p not in same])[:3]
     rel = '\n'.join(f'''            <article class="th-card">
-              <a class="ph" href="{p['slug']}.html" style="background-image:url({p.get('lede','assets/img/hero-bg.jpg')})"></a>
+              <a class="ph" href="{p['slug']}.html" style="background-image:url({p.get('lede','assets/img/hero-bg.jpg')})">{S.chip(p['section'], 'th-chip ph-chip')}</a>
               <div class="b">
                 <h3><a href="{p['slug']}.html">{esc(p['title'])}</a></h3>
                 <div class="meta"><span><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {pretty(p['date'])}</span><span>·</span><span>By {esc(p['author'])}</span></div>
@@ -500,6 +523,7 @@ def render_page(meta, body, bio, tpl, arts, author_img, author_href, notes='', l
     page = (tpl
             .replace('{{TITLE}}', esc(meta['title']))
             .replace('{{STANDFIRST}}', esc(sf))
+            .replace('{{SECTION_CHIP}}', S.chip_link(meta['section'], 'th-chip'))
             .replace('{{SECTION}}', esc(meta['section']))
             .replace('{{AUTHOR_HREF}}', author_href)
             .replace('{{AUTHOR}}', esc(meta['author']))
@@ -564,18 +588,14 @@ def main():
                 print(f"  ! missing {docx}"); continue
             md = convert_docx(docx, slug)
             hero = HERO.get(slug)
-            skip_img = hero['img'].rsplit('/', 1)[-1] if hero else None
-            skip_texts = [hero['caption'], hero['source']] if hero else None
+            skip_img, skip_texts, lede_cap = hero_bits(hero)
             body, bio, _, notes = build_body(md, slug, title=post['title'],
                                              author=post['author'],
                                              skip_img=skip_img, skip_texts=skip_texts)
             if not bio:
                 bio = author_bio.get(post['author'], '')
-            lede_cap = ''
             if hero:
                 post = {**post, 'lede': hero['img']}
-                lede_cap = (f'\n          <figcaption>{esc(hero["caption"])} '
-                            f'<span class="src">Source: {esc(hero["source"])}</span></figcaption>')
             w, nf = render_page(post, body, bio, tpl, arts, author_img,
                                 'author-' + author_slug(post['author']) + '.html', notes, lede_cap)
             print(f"  {slug[:44]:44} {w:5d}w  {nf} fig  bio:{'y' if bio else '-'}")
@@ -587,17 +607,22 @@ def main():
         if not os.path.exists(docx):
             print(f"  ! missing {docx}"); continue
         md = convert_docx(docx, meta['slug'])
-        notes = ''
+        notes, lede_cap = '', ''
+        hero = HERO.get(meta['slug'])
         if meta.get('kind') == 'interview':
             body, sf = build_interview(md)
             bio, meta = '', {**meta, 'standfirst': sf}
         else:
+            skip_img, skip_texts, lede_cap = hero_bits(hero)
             body, bio, _, notes = build_body(md, meta['slug'], meta.get('strip_lead'),
-                                             title=meta['title'], author=meta['author'])
+                                             title=meta['title'], author=meta['author'],
+                                             skip_img=skip_img, skip_texts=skip_texts)
             if not bio:
                 bio = author_bio.get(meta['author'], '')
-        meta = {**meta, 'lede': arts.get(meta['slug'], {}).get('lede', 'assets/img/hero-bg.jpg')}
-        w, nf = render_page(meta, body, bio, tpl, arts, author_img, resolve_href(meta['author']), notes)
+        lede = hero['img'] if hero else arts.get(meta['slug'], {}).get('lede', 'assets/img/hero-bg.jpg')
+        meta = {**meta, 'lede': lede}
+        w, nf = render_page(meta, body, bio, tpl, arts, author_img,
+                            resolve_href(meta['author']), notes, lede_cap)
         print(f"  {meta['slug'][:44]:44} {w:5d}w  {nf} fig  [extra]")
 
 
