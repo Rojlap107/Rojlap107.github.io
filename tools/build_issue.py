@@ -665,7 +665,7 @@ def main():
     MANIFEST = C.load()
 
     from build_articles import author_slug
-    BIOS = B.load()
+    BIOS = B.seed()
     author_img, author_bio = {}, {}
     for a in arts.values():
         aslug = author_slug(a['author'])
@@ -678,6 +678,11 @@ def main():
             if m:
                 author_bio[a['author']] = clean_bio(m.group(1))
 
+    # Two passes. An author with two pieces, or one whose fullest bio lives in
+    # another source, would otherwise get whichever text happened to be known
+    # when their page was written. Everything is converted first, so the store
+    # is complete before a single page is rendered.
+    jobs = []
     if not args.extras:
         for slug in ([args.only] if args.only else list(DOCX)):
             if slug not in DOCX:
@@ -692,16 +697,14 @@ def main():
             body, bio, _, notes = build_body(md, slug, title=post['title'],
                                              author=post['author'],
                                              skip_img=skip_img, skip_texts=skip_texts)
-            aslug = author_slug(post['author'])
             if not bio:
                 bio = author_bio.get(post['author'], '')
-            B.merge({aslug: bio}, BIOS)
-            bio = B.best(aslug, bio, BIOS)
             if hero:
                 post = {**post, 'lede': hero['img']}
-            w, nf = render_page(post, body, bio, tpl, arts, author_img,
-                                P.url('author', author_slug(post['author'])), notes, lede_cap)
-            print(f"  {slug[:44]:44} {w:5d}w  {nf} fig  bio:{'y' if bio else '-'}")
+            jobs.append(dict(meta=post, body=body, bio=bio, notes=notes,
+                             lede_cap=lede_cap, author=post['author'],
+                             href=P.url('author', author_slug(post['author'])),
+                             tag=''))
 
     for meta in EXTRAS:
         if args.only and meta['slug'] != args.only:
@@ -724,14 +727,20 @@ def main():
         # an interviewer has a bio like anyone else
         if not bio:
             bio = author_bio.get(meta['author'], '')
-        aslug = author_slug(meta['author'])
-        B.merge({aslug: bio}, BIOS)
-        bio = B.best(aslug, bio, BIOS)
         lede = hero['img'] if hero else arts.get(meta['slug'], {}).get('lede', 'assets/img/hero-bg.jpg')
         meta = {**meta, 'lede': lede}
-        w, nf = render_page(meta, body, bio, tpl, arts, author_img,
-                            resolve_href(meta['author']), notes, lede_cap)
-        print(f"  {meta['slug'][:44]:44} {w:5d}w  {nf} fig  [extra]")
+        jobs.append(dict(meta=meta, body=body, bio=bio, notes=notes,
+                         lede_cap=lede_cap, author=meta['author'],
+                         href=resolve_href(meta['author']), tag='  [extra]'))
+
+    for j in jobs:                                  # first pass: learn the bios
+        B.merge({author_slug(j['author']): j['bio']}, BIOS)
+    for j in jobs:                                  # second pass: write the pages
+        bio = B.best(author_slug(j['author']), j['bio'], BIOS)
+        w, nf = render_page(j['meta'], j['body'], bio, tpl, arts, author_img,
+                            j['href'], j['notes'], j['lede_cap'])
+        print(f"  {j['meta']['slug'][:44]:44} {w:5d}w  {nf} fig  "
+              f"bio:{'y' if bio else '-'}{j['tag']}")
 
     B.save(BIOS)
     C.save(MANIFEST)

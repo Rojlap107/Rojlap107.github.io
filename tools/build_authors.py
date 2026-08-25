@@ -82,54 +82,14 @@ def main():
     arts = json.load(open('tools/articles.json'))
     ch = ET.parse(XML).getroot().find('channel')
 
+    # Every bio known, from the export and from the supplied set, before any
+    # page is written — see tools/bios.py.
+    BIOS = B.seed()
     bios = {}
-    for it in ch.findall('item'):
-        if it.findtext('wp:post_type', default='', namespaces=NS) != 'post':
-            continue
-        if it.findtext('wp:status', default='', namespaces=NS) != 'publish':
-            continue
-        if not it.findtext('wp:post_date', default='', namespaces=NS).startswith('2026'):
-            continue
-        who = it.findtext('dc:creator', default='', namespaces=NS)
-        raw = re.sub(r'<!--.*?-->', '',
-                     it.findtext('content:encoded', default='', namespaces=NS) or '', flags=re.S)
-        m = re.search(r'ABOUT THE AUTHOR(.*)$', raw, re.S)
-        if m and who:
-            bio = re.sub(r'^[:\s]+', '', text(m.group(1)))
-            if len(bio) > len(bios.get(who, '')):
-                bios[who] = bio
-
-    # Supplied bios for contributors the WordPress export does not carry. These
-    # are merged rather than assigned: `update` overwrote a fuller bio found
-    # elsewhere, which is how one author ended up fuller on their article than
-    # on their own page.
-    supplied = ({
-        # The detailed bio from the author's own document, with the centre and
-        # school from the shorter version restored into the opening sentence —
-        # the fuller text named only "Jawaharlal Nehru University". The centre is
-        # the Centre for East Asian Studies, as both this bio's own later
-        # sentence and "About TH.docx" have it.
-        'Srikanth Kondapalli':
-            'Srikanth Kondapalli is Professor in Chinese Studies at the Centre for '
-            'East Asian Studies, School of International Studies, Jawaharlal Nehru '
-            'University (JNU), New Delhi. He was former Dean of School of '
-            'International Studies, JNU from 2022-24; Chairman of the Centre for '
-            'East Asian Studies, SIS, JNU from 2008-10, 2012-20, and in 2022. He is '
-            'Chair Professor under the Chair of Excellence of Ministry of Defence '
-            'since August 2022. He is a distinguished fellow at several think-tanks '
-            'including Vivekananda International Foundation and Institute for Peace '
-            'and Conflict Studies. He has supervised more than 30 Ph.D. researchers '
-            'at JNU and is also an academic advisor for Ph.D. researchers at Al '
-            'Farabi Kazakh National University and Ablai Khan University at Almaty '
-            'and Tamkhang University (Taipei). He is a Trustee with the Foundation '
-            'for Non-violent Alternatives (FNVA) since 2021.',
-    })
-    for who, text_ in supplied.items():
-        if len(text_) > len(bios.get(who, '')):
-            bios[who] = text_
-
-    # one canonical bio per author, shared with the article pages
-    BIOS = B.merge({slugify(n): b for n, b in bios.items()})
+    for a in arts:
+        k = B.slug(a['author'])
+        if BIOS.get(k):
+            bios[a['author']] = BIOS[k]
 
     # group articles by author
     by_author = {}
