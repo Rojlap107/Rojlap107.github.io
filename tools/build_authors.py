@@ -11,6 +11,7 @@ tools/build.py afterwards. Run from the site root, after the articles.
 """
 
 import html, json, os, re, sys, unicodedata
+import bios as B
 import content as C
 import paths as P
 import xml.etree.ElementTree as ET
@@ -98,14 +99,37 @@ def main():
             if len(bio) > len(bios.get(who, '')):
                 bios[who] = bio
 
-    # supplied bios for contributors not in the WordPress export
-    bios.update({
+    # Supplied bios for contributors the WordPress export does not carry. These
+    # are merged rather than assigned: `update` overwrote a fuller bio found
+    # elsewhere, which is how one author ended up fuller on their article than
+    # on their own page.
+    supplied = ({
+        # The detailed bio from the author's own document, with the centre and
+        # school from the shorter version restored into the opening sentence —
+        # the fuller text named only "Jawaharlal Nehru University". The centre is
+        # the Centre for East Asian Studies, as both this bio's own later
+        # sentence and "About TH.docx" have it.
         'Srikanth Kondapalli':
             'Srikanth Kondapalli is Professor in Chinese Studies at the Centre for '
-            'Chinese Studies, School of International Studies, Jawaharlal Nehru '
-            'University (JNU), New Delhi. He is a Trustee of the Foundation for '
-            'Non-violent Alternatives (FNVA).',
+            'East Asian Studies, School of International Studies, Jawaharlal Nehru '
+            'University (JNU), New Delhi. He was former Dean of School of '
+            'International Studies, JNU from 2022-24; Chairman of the Centre for '
+            'East Asian Studies, SIS, JNU from 2008-10, 2012-20, and in 2022. He is '
+            'Chair Professor under the Chair of Excellence of Ministry of Defence '
+            'since August 2022. He is a distinguished fellow at several think-tanks '
+            'including Vivekananda International Foundation and Institute for Peace '
+            'and Conflict Studies. He has supervised more than 30 Ph.D. researchers '
+            'at JNU and is also an academic advisor for Ph.D. researchers at Al '
+            'Farabi Kazakh National University and Ablai Khan University at Almaty '
+            'and Tamkhang University (Taipei). He is a Trustee with the Foundation '
+            'for Non-violent Alternatives (FNVA) since 2021.',
     })
+    for who, text_ in supplied.items():
+        if len(text_) > len(bios.get(who, '')):
+            bios[who] = text_
+
+    # one canonical bio per author, shared with the article pages
+    BIOS = B.merge({slugify(n): b for n, b in bios.items()})
 
     # group articles by author
     by_author = {}
@@ -129,7 +153,7 @@ def main():
 
     for name in names:
         slug = slugify(name)
-        bio = bios.get(name, '')
+        bio = B.best(slug, bios.get(name, ''), BIOS)
         role = role_from(bio, name)
         works = by_author.get(name, [])
         photo = f'assets/img/au-{slug}.jpg'
@@ -205,6 +229,7 @@ def main():
           f"{shell('authors-index', '', 'Authors', 'Everyone writing for TransHimalaya.', index_body)}")
     C.prune('author', {slugify(n) for n in names}, manifest)
     C.save(manifest)
+    B.save(BIOS)
 
 
 if __name__ == '__main__':

@@ -16,6 +16,7 @@ each fragment in the site chrome. Run from the site root.
 """
 
 import argparse, difflib, html, json, os, re, subprocess, sys
+import bios as B
 import content as C
 import paths as P
 import sections as S
@@ -664,6 +665,7 @@ def main():
     MANIFEST = C.load()
 
     from build_articles import author_slug
+    BIOS = B.load()
     author_img, author_bio = {}, {}
     for a in arts.values():
         aslug = author_slug(a['author'])
@@ -690,8 +692,11 @@ def main():
             body, bio, _, notes = build_body(md, slug, title=post['title'],
                                              author=post['author'],
                                              skip_img=skip_img, skip_texts=skip_texts)
+            aslug = author_slug(post['author'])
             if not bio:
                 bio = author_bio.get(post['author'], '')
+            B.merge({aslug: bio}, BIOS)
+            bio = B.best(aslug, bio, BIOS)
             if hero:
                 post = {**post, 'lede': hero['img']}
             w, nf = render_page(post, body, bio, tpl, arts, author_img,
@@ -715,14 +720,20 @@ def main():
             body, bio, _, notes = build_body(md, meta['slug'], meta.get('strip_lead'),
                                              title=meta['title'], author=meta['author'],
                                              skip_img=skip_img, skip_texts=skip_texts)
-            if not bio:
-                bio = author_bio.get(meta['author'], '')
+        # every piece settles its bio the same way, the interview included —
+        # an interviewer has a bio like anyone else
+        if not bio:
+            bio = author_bio.get(meta['author'], '')
+        aslug = author_slug(meta['author'])
+        B.merge({aslug: bio}, BIOS)
+        bio = B.best(aslug, bio, BIOS)
         lede = hero['img'] if hero else arts.get(meta['slug'], {}).get('lede', 'assets/img/hero-bg.jpg')
         meta = {**meta, 'lede': lede}
         w, nf = render_page(meta, body, bio, tpl, arts, author_img,
                             resolve_href(meta['author']), notes, lede_cap)
         print(f"  {meta['slug'][:44]:44} {w:5d}w  {nf} fig  [extra]")
 
+    B.save(BIOS)
     C.save(MANIFEST)
 
 
