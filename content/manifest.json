@@ -581,16 +581,6 @@
  },
  {
   "type": "dreshey",
-  "slug": "archives",
-  "url": "/dreshey/archives/",
-  "out": "dreshey/archives/index.html",
-  "head_title": "Archives — TransHimalaya",
-  "description": "The complete TransHimalaya archive.",
-  "content": "dreshey/archives.html",
-  "legacy": "archives.html"
- },
- {
-  "type": "dreshey",
   "slug": "book-reviews",
   "url": "/dreshey/book-reviews/",
   "out": "dreshey/book-reviews/index.html",
@@ -598,16 +588,6 @@
   "description": "New writing on Tibet, China and the Himalaya.",
   "content": "dreshey/book-reviews.html",
   "legacy": "book-reviews.html"
- },
- {
-  "type": "dreshey",
-  "slug": "china-jargon",
-  "url": "/dreshey/china-jargon/",
-  "out": "dreshey/china-jargon/index.html",
-  "head_title": "China Jargon — TransHimalaya",
-  "description": "The vocabulary of Party documents, translated and explained.",
-  "content": "dreshey/china-jargon.html",
-  "legacy": "china-jargon.html"
  },
  {
   "type": "dreshey",
@@ -621,53 +601,73 @@
  },
  {
   "type": "dreshey",
-  "slug": "dharamshala",
-  "url": "/dreshey/dharamshala/",
-  "out": "dreshey/dharamshala/index.html",
-  "head_title": "Developments in Dharamshala — TransHimalaya",
-  "description": "International developments and happenings in Dharamshala.",
-  "content": "dreshey/dharamshala.html",
-  "legacy": "dharamshala.html"
+  "slug": "decoding-beijings-terminology",
+  "url": "/dreshey/decoding-beijings-terminology/",
+  "out": "dreshey/decoding-beijings-terminology/index.html",
+  "head_title": "Decoding Beijing’s Terminology — TransHimalaya",
+  "description": "The vocabulary of Party documents, translated and explained.",
+  "content": "dreshey/decoding-beijings-terminology.html",
+  "legacy": "decoding-beijings-terminology.html"
  },
  {
   "type": "dreshey",
-  "slug": "glossary-of-terms",
-  "url": "/dreshey/glossary-of-terms/",
-  "out": "dreshey/glossary-of-terms/index.html",
-  "head_title": "Glossary of Terms — TransHimalaya",
-  "description": "Tibetan, Chinese and policy terms, defined.",
-  "content": "dreshey/glossary-of-terms.html",
-  "legacy": "glossary-of-terms.html"
+  "slug": "from-the-archives",
+  "url": "/dreshey/from-the-archives/",
+  "out": "dreshey/from-the-archives/index.html",
+  "head_title": "From the Archives — TransHimalaya",
+  "description": "The complete TransHimalaya archive.",
+  "content": "dreshey/from-the-archives.html",
+  "legacy": "from-the-archives.html"
  },
  {
   "type": "dreshey",
-  "slug": "must-reads",
-  "url": "/dreshey/must-reads/",
-  "out": "dreshey/must-reads/index.html",
-  "head_title": "Must Reads — TransHimalaya",
-  "description": "Where to begin with TransHimalaya.",
-  "content": "dreshey/must-reads.html",
-  "legacy": "must-reads.html"
- },
- {
-  "type": "dreshey",
-  "slug": "snippets",
-  "url": "/dreshey/snippets/",
-  "out": "dreshey/snippets/index.html",
-  "head_title": "Snippets — TransHimalaya",
-  "description": "Short items of note from across the region.",
-  "content": "dreshey/snippets.html",
-  "legacy": "snippets.html"
- },
- {
-  "type": "dreshey",
-  "slug": "tibet-then-and-now",
-  "url": "/dreshey/tibet-then-and-now/",
-  "out": "dreshey/tibet-then-and-now/index.html",
-  "head_title": "Tibet Then and Now — TransHimalaya",
+  "slug": "photographs-then-and-now",
+  "url": "/dreshey/photographs-then-and-now/",
+  "out": "dreshey/photographs-then-and-now/index.html",
+  "head_title": "Photographs Then and Now — TransHimalaya",
   "description": "Visual records of a changing plateau.",
-  "content": "dreshey/tibet-then-and-now.html",
-  "legacy": "tibet-then-and-now.html"
+  "content": "dreshey/photographs-then-and-now.html",
+  "legacy": "photographs-then-and-now.html"
+ },
+ {
+  "type": "dreshey",
+  "slug": "recommended-readings",
+  "url": "/dreshey/recommended-readings/",
+  "out": "dreshey/recommended-readings/index.html",
+  "head_title": "Recommended Readings — TransHimalaya",
+  "description": "Where to begin with TransHimalaya.",
+  "content": "dreshey/recommended-readings.html",
+  "legacy": "recommended-readings.html"
+ },
+ {
+  "type": "dreshey",
+  "slug": "snippets-of-interesting-info",
+  "url": "/dreshey/snippets-of-interesting-info/",
+  "out": "dreshey/snippets-of-interesting-info/index.html",
+  "head_title": "Snippets of Interesting Info. — TransHimalaya",
+  "description": "Short items of note from across the region.",
+  "content": "dreshey/snippets-of-interesting-info.html",
+  "legacy": "snippets-of-interesting-info.html"
+ },
+ {
+  "type": "dreshey",
+  "slug": "tibet-highlights",
+  "url": "/dreshey/tibet-highlights/",
+  "out": "dreshey/tibet-highlights/index.html",
+  "head_title": "Tibet Highlights — TransHimalaya",
+  "description": "International developments on Tibet, and happenings in Dharamshala.",
+  "content": "dreshey/tibet-highlights.html",
+  "legacy": "tibet-highlights.html"
+ },
+ {
+  "type": "dreshey",
+  "slug": "trans-himalaya-lexicon",
+  "url": "/dreshey/trans-himalaya-lexicon/",
+  "out": "dreshey/trans-himalaya-lexicon/index.html",
+  "head_title": "Trans Himalaya Lexicon — TransHimalaya",
+  "description": "Tibetan, Chinese and policy terms, defined.",
+  "content": "dreshey/trans-himalaya-lexicon.html",
+  "legacy": "trans-himalaya-lexicon.html"
  },
  {
   "type": "dreshey-hub",

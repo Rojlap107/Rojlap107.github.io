@@ -21,27 +21,27 @@ MONTH = {'01': 'January', '02': 'February', '03': 'March', '04': 'April', '05': 
 
 # slug, title, description shown on the hub card
 SUBS = [
-    ('archives', 'Archives',
+    ('from-the-archives', 'From the Archives',
      'Everything TransHimalaya has published, by date.'),
     ('data-visuals', 'Data &amp; Visuals',
      'Maps, charts and tables drawn from the essays.'),
-    ('must-reads', 'Must Reads',
+    ('recommended-readings', 'Recommended Readings',
      'A standing selection of the pieces to start with.'),
-    ('glossary-of-terms', 'Glossary of Terms',
+    ('trans-himalaya-lexicon', 'Trans Himalaya Lexicon',
      'Tibetan, Chinese and policy terms, defined.'),
-    ('china-jargon', 'China Jargon',
+    ('decoding-beijings-terminology', 'Decoding Beijing’s Terminology',
      'The vocabulary of Party documents, translated and explained.'),
     ('book-reviews', 'Book Reviews',
      'New writing on Tibet, China and the Himalaya.'),
-    ('snippets', 'Snippets',
+    ('snippets-of-interesting-info', 'Snippets of Interesting Info.',
      'Short items of note from across the region.'),
-    ('dharamshala', 'Developments in Dharamshala',
-     'International developments and happenings in Dharamshala.'),
-    ('tibet-then-and-now', 'Tibet Then and Now',
+    ('tibet-highlights', 'Tibet Highlights',
+     'International developments on Tibet, and happenings in Dharamshala.'),
+    ('photographs-then-and-now', 'Photographs Then and Now',
      'Visual records of a changing plateau.'),
 ]
 
-FILLED = {'archives', 'data-visuals', 'must-reads'}
+FILLED = {'from-the-archives', 'data-visuals', 'recommended-readings'}
 
 
 def esc(s):
@@ -72,7 +72,7 @@ def empty(title):
     return ('        <div class="cat-empty">\n'
             '          <p class="ttl">Nothing published here yet</p>\n'
             f'          <p>{title} is part of Dreshey but has no entries so far. '
-            'Browse the <a href="/dreshey/archives/">archive</a> or read the '
+            'Browse the <a href="/dreshey/from-the-archives/">archive</a> or read the '
             '<a href="/journal-editions/">current issue</a> in the meantime.</p>\n'
             '        </div>\n')
 
@@ -118,14 +118,14 @@ def main():
                 f'<span class="mt">{esc(a["author"])} · {esc(a["section"])}</span></a></li>')
         rows.append('          </ul>')
     archive = f'''      <div class="dy">
-{head('Dreshey', 'Archives', 'Everything TransHimalaya has published, most recent first.',
+{head('Dreshey', 'From the Archives', 'Everything TransHimalaya has published, most recent first.',
       f'<p class="dy-count">{len(arts)} articles</p>')}
         <div class="dy-archive">
 {chr(10).join(rows)}
         </div>
       </div>
 '''
-    print(f"  {'archives':26} {len(arts):3d} articles  {page('dreshey', 'archives', 'Archives', 'The complete TransHimalaya archive.', archive)}")
+    print(f"  {'from-the-archives':26} {len(arts):3d} articles  {page('dreshey', 'from-the-archives', 'From the Archives', 'The complete TransHimalaya archive.', archive)}")
 
     # ---------------------------------------------------------------- must reads
     picks, seen = [], set()
@@ -144,13 +144,13 @@ def main():
             </div>
           </li>''' for a in picks)
     must = f'''      <div class="dy">
-{head('Dreshey', 'Must Reads', 'Where to begin — one essay from each section of the magazine.')}
+{head('Dreshey', 'Recommended Readings', 'Where to begin — one essay from each section of the magazine.')}
         <ul class="dy-picks">
 {items}
         </ul>
       </div>
 '''
-    print(f"  {'must-reads':26} {len(picks):3d} picks     {page('dreshey', 'must-reads', 'Must Reads', 'Where to begin with TransHimalaya.', must)}")
+    print(f"  {'recommended-readings':26} {len(picks):3d} picks     {page('dreshey', 'recommended-readings', 'Recommended Readings', 'Where to begin with TransHimalaya.', must)}")
 
     # ---------------------------------------------------------------- data & visuals
     figs = []
@@ -197,6 +197,7 @@ def main():
 '''
         print(f"  {s:26} empty          {page('dreshey', s, plain, d, body)}")
 
+    C.prune('dreshey', {sub[0] for sub in SUBS}, MANIFEST)
     C.save(MANIFEST)
 
 
