@@ -19,6 +19,7 @@ import argparse, difflib, html, json, os, re, subprocess, sys
 import bios as B
 import content as C
 import paths as P
+import videos as V
 import sections as S
 
 ISSUE = os.path.expanduser("~/Desktop/Tenzin Paljor/FNVA/1st Issue")
@@ -125,36 +126,6 @@ HERO = {
 
 
 
-# A filmed interview shows its video, not a transcript. `youtube` is the video
-# id; until one is supplied the still is shown on its own, with no play badge
-# promising something that would not happen. `thumb` is served from our own
-# assets so the page does not depend on YouTube being reachable.
-VIDEO = {
-  'interview-with-sikyong-penpa-tsering': dict(
-      youtube='',
-      thumb='assets/img/issue/interview-with-sikyong-penpa-tsering/lede.jpg',
-      caption='Sikyong Penpa Tsering in conversation, India International Centre, New Delhi.'),
-}
-
-
-def video_block(slug):
-    """The interview's video still, at a readable width, linking to YouTube."""
-    v = VIDEO.get(slug)
-    if not v:
-        return ''
-    cap = (f'\n          <figcaption>{esc(v["caption"])}</figcaption>'
-           if v.get('caption') else '')
-    img = (f'<img src="{P.asset(v["thumb"])}" alt="" width="1280" height="720">')
-    if v.get('youtube'):
-        url = f'https://www.youtube.com/watch?v={v["youtube"]}'
-        inner = (f'<a class="play" href="{url}" target="_blank" rel="noopener" '
-                 f'aria-label="Watch on YouTube">{img}'
-                 f'<span class="badge" aria-hidden="true"></span></a>')
-    else:
-        inner = img
-    return (f'        <figure class="art-video">\n'
-            f'          {inner}{cap}\n'
-            f'        </figure>\n')
 
 def hero_bits(hero):
     """(skip_img, skip_texts, lede_cap) for a HERO entry, or (None, None, '')."""
@@ -682,7 +653,7 @@ def rails(meta, arts):
     same = [p for p in others if p['section'] == meta['section']]
     rel_posts = (same + [p for p in others if p not in same])[:3]
     rel = '\n'.join(f'''            <article class="th-card">
-              <a class="ph" href="{S.piece_url(p)}" style="background-image:url({P.asset(p.get('lede','assets/img/hero-bg.jpg'))})"></a>
+              <a class="ph" href="{S.piece_url(p)}" style="background-image:url({P.asset(S.card_image(p) or 'assets/img/hero-bg.jpg')})"></a>
               <div class="b">
                 {S.chip(p['section'], 'th-chip card-chip')}
                 <h3><a href="{S.piece_url(p)}">{esc(p['title'])}</a></h3>
@@ -750,7 +721,7 @@ def render_interview(meta, _tpl, arts):
             .replace('{{SECTION_CHIP}}', S.chip_link(meta['section'], 'th-chip'))
             .replace('{{DATE_ISO}}', meta['date'])
             .replace('{{DATE}}', pretty(meta['date']))
-            .replace('{{VIDEO}}', video_block(slug))
+            .replace('{{VIDEO}}', V.panel(slug))
             .replace('{{MUSTREAD}}', mr)
             .replace('{{RELATED}}', rel))
     C.write('interview', slug, esc(meta['title']),

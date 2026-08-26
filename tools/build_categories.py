@@ -82,7 +82,7 @@ def data_attrs(a):
 
 def lead_card(a):
     return f'''        <article class="cat-lead"{data_attrs(a)}>
-          <a class="ph" href="{S.piece_url(a)}" style="background-image:url({P.asset(a['lede'])})"></a>
+          <a class="ph" href="{S.piece_url(a)}" style="background-image:url({P.asset(S.card_image(a))})"></a>
           <div class="b">
             <p class="k">{esc(a['section'])}</p>
             <h2><a href="{S.piece_url(a)}">{esc(a['title'])}</a></h2>
@@ -96,7 +96,7 @@ def lead_card(a):
 
 def card(a):
     return f'''          <article class="th-card"{data_attrs(a)}>
-            <a class="ph" href="{S.piece_url(a)}" style="background-image:url({P.asset(a['lede'])})"></a>
+            <a class="ph" href="{S.piece_url(a)}" style="background-image:url({P.asset(S.card_image(a))})"></a>
             <div class="b">
               {S.chip(a['section'], 'th-chip card-chip')}
               <h3><a href="{S.piece_url(a)}">{esc(a['title'])}</a></h3>

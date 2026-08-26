@@ -137,7 +137,7 @@ def main():
         picks.append(a)
     picks += [a for a in arts if a not in picks][:1]
     items = '\n'.join(f'''          <li class="dy-pick">
-            <a class="ph" href="{S.piece_url(a)}" style="background-image:url({P.asset(a['lede'])})"></a>
+            <a class="ph" href="{S.piece_url(a)}" style="background-image:url({P.asset(S.card_image(a))})"></a>
             <div class="b">
               <p class="k">{esc(a['section'])}</p>
               <h2><a href="{S.piece_url(a)}">{esc(a['title'])}</a></h2>

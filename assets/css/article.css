@@ -175,7 +175,9 @@
 .art-video img{ display:block; width:100%; height:auto; border-radius:6px; }
 .art-video figcaption{ font-size:13px; line-height:1.5; color:var(--muted);
   margin-top:10px; text-align:center; }
-.art-video .play{ display:block; position:relative; }
+.art-video .play{ display:block; position:relative; border-radius:6px; overflow:hidden; }
+.art-video .play.frame{ aspect-ratio:16/9;
+  background:linear-gradient(140deg,#1c4b5f,#0d2634); }
 .art-video .play .badge{ position:absolute; inset:0; margin:auto; width:74px; height:52px;
   border-radius:12px; background:rgba(0,0,0,.72); transition:background .18s; }
 .art-video .play .badge::after{ content:""; position:absolute; inset:0; margin:auto;

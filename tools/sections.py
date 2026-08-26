@@ -15,6 +15,7 @@ import re
 import unicodedata
 
 import paths as P
+import videos as V
 
 # section name -> (chip colour, text colour on that chip)
 COLOURS = {
@@ -72,6 +73,14 @@ def piece_url(article):
         return P.url('interview', article['slug'])
     return P.url('article', article['slug'])
 
+
+def card_image(article):
+    """The picture a card shows for a piece.
+
+    A filmed conversation shows its video still, so the card matches what
+    the piece itself opens with. Everything else shows its lede.
+    """
+    return V.thumb(article['slug']) or article.get('lede') or ''
 
 def by_meta(article):
     """The "By <author>" half of a card's meta line.

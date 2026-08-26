@@ -117,3 +117,33 @@
 /* From the Field: topic box sits with the date on its own line */
 .th-field .r{ gap:12px; flex-wrap:wrap; }
 .th-field .r .th-chip{ flex:none; }
+
+/* ---- latest filmed conversation ----
+   Still on the left, the piece on the right. `.frame` is the placeholder
+   state: proportions and play badge with no still behind them. */
+.th-watch{ max-width:1000px; margin:0 auto; display:grid;
+  grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);
+  gap:clamp(22px,3.5vw,40px); align-items:center; }
+.th-watch-vid{ margin:0; }
+.th-watch-vid .play{ display:block; position:relative; border-radius:6px; overflow:hidden; }
+.th-watch-vid img{ display:block; width:100%; height:auto; }
+.th-watch-vid .play.frame{ aspect-ratio:16/9;
+  background:linear-gradient(140deg,#1c4b5f,#0d2634); }
+.th-watch-vid .badge{ position:absolute; inset:0; margin:auto; width:74px; height:52px;
+  border-radius:12px; background:rgba(0,0,0,.72); transition:background .18s; }
+.th-watch-vid .badge::after{ content:""; position:absolute; inset:0; margin:auto;
+  width:0; height:0; border-style:solid; border-width:11px 0 11px 19px;
+  border-color:transparent transparent transparent #fff; }
+.th-watch-vid .play:hover .badge{ background:#c00; }
+.th-watch .b h3{ font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  font-size:clamp(23px,2.7vw,30px); line-height:1.2; color:var(--ink);
+  margin:0 0 10px; font-weight:600; }
+.th-watch .b h3 a{ color:inherit; text-decoration:none; }
+.th-watch .b h3 a:hover{ color:var(--orange); }
+.th-watch .b p{ font-size:15px; line-height:1.6; color:#4b5a63; margin:0 0 18px; }
+.th-watch .b .btn{ display:inline-block; background:var(--orange); color:#fff;
+  font-weight:700; font-size:14px; padding:11px 20px; border-radius:6px;
+  text-decoration:none; }
+.th-watch .b .btn:hover{ background:#d17d22; }
+
+@media (max-width:820px){ .th-watch{ grid-template-columns:1fr; } }

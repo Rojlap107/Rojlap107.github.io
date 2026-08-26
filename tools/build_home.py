@@ -18,6 +18,7 @@ index.html. Run from the site root.
 import html, json, os, re, sys
 import paths as P
 import sections as S
+import videos as V
 
 # The generated region runs from the first of these markers to END. "Opening"
 # is preferred because it is the first thing this script emits — anchoring on
@@ -50,7 +51,7 @@ def opening_card(a):
 
 def featured_card(a):
     return f'''          <article class="th-card">
-            <a class="ph" href="{S.piece_url(a)}" style="background-image:url({P.asset(a['lede'])})"></a>
+            <a class="ph" href="{S.piece_url(a)}" style="background-image:url({P.asset(S.card_image(a))})"></a>
             <div class="b">
               {S.chip(a['section'], 'th-chip card-chip')}
               <h3><a href="{S.piece_url(a)}">{esc(a['title'])}</a></h3>
@@ -61,11 +62,38 @@ def featured_card(a):
 
 
 def field_item(a):
-    return (f'            <div class="item"><div class="thumb" style="background-image:url({P.asset(a["lede"])})"></div>'
+    return (f'            <div class="item"><div class="thumb" style="background-image:url({P.asset(S.card_image(a))})"></div>'
             f'<div><h4><a href="{S.piece_url(a)}">{esc(a["title"])}</a></h4>'
             f'<div class="r">{S.chip(a["section"])}'
             f'<span class="date">{short(a["date"])}</span></div></div></div>')
 
+
+
+def interview_band(arts):
+    """The latest filmed conversation: its still on the left, and on the right
+    the title, a trimmed description and a way straight into it."""
+    filmed = [a for a in arts
+              if a['section'] == 'Interviews' and V.has(a['slug'])]
+    if not filmed:
+        return ''
+    a = max(filmed, key=lambda x: x['date'])
+    url = S.piece_url(a)
+    blurb = S.excerpt(a['slug'], 165)
+    return f'''      <!-- Latest interview -->
+      <section class="th-sec" style="padding-top:0">
+        <h2 class="th-h2">In Conversation</h2>
+        <div class="th-div"><i></i><b></b><i></i></div>
+        <div class="th-watch">
+{V.panel(a['slug'], cls='th-watch-vid', caption=False)}          <div class="b">
+            {S.chip(a['section'], 'th-chip card-chip')}
+            <h3><a href="{url}">{esc(a['title'])}</a></h3>
+            <p>{esc(blurb)}</p>
+            <a class="btn" href="{url}">Watch the interview</a>
+          </div>
+        </div>
+      </section>
+
+'''
 
 def main():
     if not os.path.exists('content/manifest.json'):
@@ -122,7 +150,7 @@ def main():
         </div>
       </section>
 
-'''
+{interview_band(arts)}'''
 
     src = 'content/home/home.html'
     page = open(src, encoding='utf-8').read()

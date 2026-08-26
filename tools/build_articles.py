@@ -319,7 +319,7 @@ def build(post, posts, tpl, author_img):
     same = [p for p in others if p['section'] == post['section']]
     rel_posts = (same + [p for p in others if p not in same])[:3]
     rel = '\n'.join(f'''            <article class="th-card">
-              <a class="ph" href="{S.piece_url(p)}" style="background-image:url({P.asset(p['lede'])})"></a>
+              <a class="ph" href="{S.piece_url(p)}" style="background-image:url({P.asset(S.card_image(p))})"></a>
               <div class="b">
                 <h3><a href="{S.piece_url(p)}">{esc(p['title'])}</a></h3>
                 <div class="meta"><span><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {pretty(p['date'])}</span>{S.by_meta(p)}</div>
