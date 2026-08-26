@@ -111,6 +111,16 @@
  },
  {
   "type": "article",
+  "slug": "kunga-norbu",
+  "url": "/articles/kunga-norbu/",
+  "out": "articles/kunga-norbu/index.html",
+  "head_title": "Kunga Norbu — TransHimalaya",
+  "description": "How the Tibetan community in your region has contributed to your host country.",
+  "content": "article/kunga-norbu.html",
+  "legacy": "kunga-norbu.html"
+ },
+ {
+  "type": "article",
   "slug": "living-between-giants-lessons-from-bhutans-strategic-experience",
   "url": "/articles/living-between-giants-lessons-from-bhutans-strategic-experience/",
   "out": "articles/living-between-giants-lessons-from-bhutans-strategic-experience/index.html",
@@ -148,6 +158,36 @@
   "description": "On 11th March 2026, Tibet Support Groups (TSGs) from across India gathered in Dharamshala to offer a Tenshug to His Holiness the 14th Dalai Lama, Tenzin Gyatso.",
   "content": "article/tenshug-offering-by-civil-society-in-dharamshala-ritual-as-action-for-the-tibet-cause.html",
   "legacy": "tenshug-offering-by-civil-society-in-dharamshala-ritual-as-action-for-the-tibet-cause.html"
+ },
+ {
+  "type": "article",
+  "slug": "tenzin-woesel",
+  "url": "/articles/tenzin-woesel/",
+  "out": "articles/tenzin-woesel/index.html",
+  "head_title": "Tenzin Woesel — TransHimalaya",
+  "description": "How the Tibetan community in your region has contributed to your host country.",
+  "content": "article/tenzin-woesel.html",
+  "legacy": "tenzin-woesel.html"
+ },
+ {
+  "type": "article",
+  "slug": "tenzin-yangchen",
+  "url": "/articles/tenzin-yangchen/",
+  "out": "articles/tenzin-yangchen/index.html",
+  "head_title": "Tenzin Yangchen — TransHimalaya",
+  "description": "How the Tibetan community in your region has contributed to your host country.",
+  "content": "article/tenzin-yangchen.html",
+  "legacy": "tenzin-yangchen.html"
+ },
+ {
+  "type": "article",
+  "slug": "tenzin-yanki",
+  "url": "/articles/tenzin-yanki/",
+  "out": "articles/tenzin-yanki/index.html",
+  "head_title": "Tenzin Yanki — TransHimalaya",
+  "description": "How the Tibetan community in your region has contributed to your host country.",
+  "content": "article/tenzin-yanki.html",
+  "legacy": "tenzin-yanki.html"
  },
  {
   "type": "article",
@@ -288,16 +328,6 @@
   "description": "The Chinese Communist leader Xi Jinping believes he is an epoch-making thinker. Unsurprisingly, being transformative, he has imprinted his signature on socio-economic, political, and geostrategic realms and beyond with the mantra: \"East, West, South, North, and the Center; the Party, government, army, civilians, and intellectuals, the Party commands all!\".",
   "content": "article/xi-jinpings-ten-commandments-for-governing-tibet.html",
   "legacy": "xi-jinpings-ten-commandments-for-governing-tibet.html"
- },
- {
-  "type": "article",
-  "slug": "youth-voices",
-  "url": "/articles/youth-voices/",
-  "out": "articles/youth-voices/index.html",
-  "head_title": "Youth Voices — TransHimalaya",
-  "description": "Four young Tibetans reflect on exile, identity and what their community gives back to the places that gave it refuge.",
-  "content": "article/youth-voices.html",
-  "legacy": "youth-voices.html"
  },
  {
   "type": "author",
@@ -451,6 +481,16 @@
  },
  {
   "type": "author",
+  "slug": "kunga-norbu",
+  "url": "/authors/kunga-norbu/",
+  "out": "authors/kunga-norbu/index.html",
+  "head_title": "Kunga Norbu — TransHimalaya",
+  "description": "I am a science and English teacher based in Dharamshala and serve as the main manager at Tibet World, as well as a secretary at the Middle Way Initiat",
+  "content": "author/kunga-norbu.html",
+  "legacy": "kunga-norbu.html"
+ },
+ {
+  "type": "author",
   "slug": "lt-general-vinod-bhatia",
   "url": "/authors/lt-general-vinod-bhatia/",
   "out": "authors/lt-general-vinod-bhatia/index.html",
@@ -538,6 +578,36 @@
   "description": "Tenzin Thinley serves as the Fundraising Officer and Operations Lead at Monlam Charitable Trust, where he works to advance the preservation and promot",
   "content": "author/tenzin-thinley.html",
   "legacy": "author-tenzin-thinley.html"
+ },
+ {
+  "type": "author",
+  "slug": "tenzin-woesel",
+  "url": "/authors/tenzin-woesel/",
+  "out": "authors/tenzin-woesel/index.html",
+  "head_title": "Tenzin Woesel — TransHimalaya",
+  "description": "Tenzin Woesel is Regional Coordinator of the Voluntary Tibetan Advocacy Group (VTAG),Dharamshala, dedicated to advancing Tibetan advocacy and youth en",
+  "content": "author/tenzin-woesel.html",
+  "legacy": "tenzin-woesel.html"
+ },
+ {
+  "type": "author",
+  "slug": "tenzin-yangchen",
+  "url": "/authors/tenzin-yangchen/",
+  "out": "authors/tenzin-yangchen/index.html",
+  "head_title": "Tenzin Yangchen — TransHimalaya",
+  "description": "Tenzin Yangchen is a member of the Students for a Free Tibet France, Paris.",
+  "content": "author/tenzin-yangchen.html",
+  "legacy": "tenzin-yangchen.html"
+ },
+ {
+  "type": "author",
+  "slug": "tenzin-yanki",
+  "url": "/authors/tenzin-yanki/",
+  "out": "authors/tenzin-yanki/index.html",
+  "head_title": "Tenzin Yanki — TransHimalaya",
+  "description": "Tenzin Yanki is a member of the Students for a Free Tibet France, Paris.",
+  "content": "author/tenzin-yanki.html",
+  "legacy": "tenzin-yanki.html"
  },
  {
   "type": "author",

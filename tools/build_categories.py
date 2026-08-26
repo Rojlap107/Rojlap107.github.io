@@ -109,6 +109,32 @@ def card(a):
           </article>'''
 
 
+
+def initials(name):
+    parts = [w for w in re.split(r'\s+', name) if w]
+    return esc((parts[0][:1] + (parts[-1][:1] if len(parts) > 1 else '')).upper())
+
+
+def people_grid(items):
+    """Youth Voices is a set of contributors answering one question, so its
+    section page introduces the people rather than listing headlines."""
+    cards = []
+    for a in items:
+        img = a.get('lede')
+        av = (f'<span class="pt"><img src="{P.asset(img)}" alt="" width="96" '
+              f'height="96" loading="lazy"></span>' if img else
+              f'<span class="pt ini" aria-hidden="true">{initials(a["title"])}</span>')
+        cards.append(f"""          <li class="cat-person">
+            <a href="{S.article_url(a['slug'])}">
+              {av}
+              <span class="nm">{esc(a['title'])}</span>
+              <span class="rl">{esc(a.get('place') or a['author'])}</span>
+            </a>
+          </li>""")
+    return ('        <ul class="cat-people">\n' + '\n'.join(cards)
+            + '\n        </ul>\n')
+
+
 def filter_bar(items):
     """Topic filter + search, shown on In Focus where several topics gather."""
     topics = []
@@ -145,7 +171,11 @@ def main():
             items = [a for a in arts if a['section'] == title]
         items.sort(key=lambda a: a['date'], reverse=True)
 
-        if items and children:
+        if items and slug == 'youth':
+            body = people_grid(items)
+            count = (f'<p class="cat-count">{len(items)} '
+                     f'{"contributor" if len(items) == 1 else "contributors"}</p>')
+        elif items and children:
             # a gathering page (In Focus): filter + search over uniform cards,
             # newest first, so more topics can be added in later editions
             grid = ('        <div class="th-cards cat-grid">\n' +

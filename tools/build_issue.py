@@ -640,7 +640,10 @@ def build_interview(md):
 def render_page(meta, body, bio, tpl, arts, author_img, author_href, notes='', lede_cap=''):
     from build_articles import author_slug
     slug = meta['slug']
-    lede = meta.get('lede') or 'assets/img/hero-bg.jpg'
+    # An explicit empty lede means the piece opens on its title, with no
+    # photograph above it; a missing key still falls back to the hero image.
+    lede = meta.get('lede')
+    lede = 'assets/img/hero-bg.jpg' if lede is None else lede
     others = [p for s, p in arts.items() if s != slug]
     mr = '\n'.join(
         f'            <li><a href="{P.url("article", p["slug"])}"><span class="t">{esc(p["title"])}</span>'
@@ -671,12 +674,15 @@ def render_page(meta, body, bio, tpl, arts, author_img, author_href, notes='', l
             .replace('{{DATE_ISO}}', meta['date'])
             .replace('{{DATE}}', pretty(meta['date']))
             .replace('{{MINS}}', str(max(2, round(words / 200))))
-            .replace('{{LEDE}}', P.asset(lede))
+            .replace('{{LEDE_FIG}}',
+                     '' if not lede else
+                     f'        <figure class="art-lede">\n'
+                     f'          <img src="{P.asset(lede)}" alt="">{lede_cap}\n'
+                     f'        </figure>\n')
             .replace('{{AVATAR}}', avatar)
             .replace('{{AUTHOR_PIC}}', author_pic)
             .replace('{{BIO}}', esc(bio) or 'Contributor to TransHimalaya.')
             .replace('{{BODY}}', body)
-            .replace('{{LEDE_CAP}}', lede_cap)
             .replace('{{NOTES}}', notes)
             .replace('{{MUSTREAD}}', mr)
             .replace('{{RELATED}}', rel))
