@@ -61,8 +61,11 @@
 /* ---- footer ---- */
 .th-foot { background:var(--navy); color:#b7c4cb; }
 .th-foot .cols { max-width:1200px; margin:0 auto; padding:40px clamp(16px,4vw,40px); display:grid; grid-template-columns:1.35fr 1fr 1.25fr 1fr; gap:30px; }
-.th-foot .nm { font-weight:700; color:#fff; font-size:18px; letter-spacing:.03em; }
-.th-foot .nm small { display:block; font-family:system-ui,sans-serif; font-weight:600; font-size:9px; letter-spacing:.22em; color:#8fa2ab; margin-top:3px; }
+/* The reversed mark: the supplied logo is navy on transparent, which the navy
+   footer would swallow, so assets/img/logo-full-reverse.png carries the
+   wordmark and strapline in cream with the emblem left in full colour. */
+.th-footlogo { display:block; width:clamp(168px,15vw,206px); }
+.th-footlogo img { display:block; width:100%; height:auto; }
 .th-foot .sub { font-style:italic; font-size:12px; color:#8fa2ab; margin:12px 0; }
 .th-foot .contact div { display:flex; gap:9px; align-items:baseline; font-size:13px; margin:7px 0; }
 .th-foot .contact .ic { opacity:.7; }
