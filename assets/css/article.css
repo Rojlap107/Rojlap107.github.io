@@ -6,9 +6,6 @@
 
 /* ---- head ---- */
 .art-head{ max-width:44rem; margin:0 auto; padding:clamp(30px,5vw,52px) 0 26px; }
-.art-cat a{ font-size:12px; letter-spacing:.16em; text-transform:uppercase;
-  color:var(--orange); text-decoration:none; font-weight:700; }
-.art-cat a:hover{ color:var(--navy); }
 .art-head h1{ font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
   font-size:clamp(30px,4.6vw,50px); line-height:1.1; font-weight:600; color:var(--ink);
   margin:14px 0 0; text-wrap:balance; }
@@ -154,9 +151,14 @@
 .art-notes .fn-back{ text-decoration:none; margin-left:5px; color:var(--muted); }
 
 /* topic chip in the article header — same colour system as the cards */
+/* The section chip in the article head. It reads exactly as it does on a card:
+   the section's own background with its own text colour. The kicker that used
+   to sit here was plain orange text, and its `.art-cat a` colour outranked the
+   .cat-* class (one class plus an element beats one class), which left the chip
+   with orange lettering on its coloured ground. */
 .art-cat{ margin:0 0 14px; }
 .art-cat .th-chip{ display:inline-block; text-decoration:none; padding:5px 11px;
-  font-size:11px; border-radius:3px; }
+  font-size:11px; border-radius:3px; color:var(--cat-fg,#fff); }
 .art-cat .th-chip:hover{ filter:brightness(1.08); }
 
 /* The author's own notes sit under the references, unnumbered — they belong to

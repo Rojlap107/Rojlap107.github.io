@@ -180,6 +180,16 @@ def inline(s):
     # pandoc underline/mark-wrapped links: [[text]{.underline}](url) -> link
     s = re.sub(r'\[?\[([^\]]+)\]\{\.[a-z]+\}\]\((https?://[^)]+)\)', stash_link, s)
     s = re.sub(r'\[([^\]]+)\]\((https?://[^)]+)\)', stash_link, s)
+
+    def stash_bare_host(m):
+        links.append((m.group(1), 'https://' + m.group(2)))
+        return f'\x00{len(links)-1}\x00'
+    # A target that lost its scheme — "[Citizen Lab](example.ca/path)" — matched
+    # none of the link rules and fell through to the bracket cleanup, which left
+    # the raw URL sitting in the middle of the sentence.
+    s = re.sub(r'\[([^\]]+)\]\((?!https?://|#|mailto:|/)'
+               r'([a-z0-9][a-z0-9.-]*\.[a-z]{2,}/[^)\s]*)\)',
+               stash_bare_host, s, flags=re.I)
     s = re.sub(r'\[\]\{[^}]*\}', '', s)                   # empty pandoc spans
     s = re.sub(r'\[([^\]]*)\]\{[^}]*\}', r'\1', s)        # [text]{.underline} -> text
     s = s.replace('[]', '')
@@ -200,7 +210,8 @@ def inline(s):
     s = re.sub(r'\^([^^]+)\^', r'<sup>\1</sup>', s)         # superscripts (km^2^, 14^th^)
     def put_link(m):
         t, u = links[int(m.group(1))]
-        return f'<a href="{esc(u)}" rel="noopener">{esc(t)}</a>'
+        return (f'<a href="{esc(u)}" target="_blank" rel="noopener">'
+                f'{esc(t)}</a>')
     s = re.sub(r'\x00(\d+)\x00', put_link, s)
     # clean up any leftover pandoc attribute spans / brackets from nested links
     s = re.sub(r'\{\.[^}]*\}', '', s)                     # {.mark} {.underline}
@@ -210,7 +221,7 @@ def inline(s):
     s = re.sub(r'\[+(?=\s*https?://)', '', s)             # '[' before a URL
     s = re.sub(r'(?<=[a-zA-Z0-9/])\]+(?=[\s,.;)]|$)', '', s)   # ']' right after a URL
     s = re.sub(r'(?<![">])\b(https?://[^\s<>)\]]+[a-zA-Z0-9/])',
-               r'<a href="\1" rel="noopener">\1</a>', s)  # linkify bare URLs
+               r'<a href="\1" target="_blank" rel="noopener">\1</a>', s)
     s = re.sub(r'\[([^\[\]<>]{1,120})\]', r'\1', s)       # [orphan text] -> text
     return s
 
