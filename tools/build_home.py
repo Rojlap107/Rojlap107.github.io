@@ -50,10 +50,10 @@ def opening_card(a):
 
 def featured_card(a):
     return f'''          <article class="th-card">
-            <a class="ph" href="{S.article_url(a['slug'])}" style="background-image:url({P.asset(a['lede'])})"></a>
+            <a class="ph" href="{S.piece_url(a)}" style="background-image:url({P.asset(a['lede'])})"></a>
             <div class="b">
               {S.chip(a['section'], 'th-chip card-chip')}
-              <h3><a href="{S.article_url(a['slug'])}">{esc(a['title'])}</a></h3>
+              <h3><a href="{S.piece_url(a)}">{esc(a['title'])}</a></h3>
               <p>{esc(S.excerpt(a['slug']))}</p>
               <div class="meta"><span><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {short(a['date'])}</span><span>·</span><span>By {esc(a['author'])}</span></div>
             </div>
@@ -62,7 +62,7 @@ def featured_card(a):
 
 def field_item(a):
     return (f'            <div class="item"><div class="thumb" style="background-image:url({P.asset(a["lede"])})"></div>'
-            f'<div><h4><a href="{S.article_url(a["slug"])}">{esc(a["title"])}</a></h4>'
+            f'<div><h4><a href="{S.piece_url(a)}">{esc(a["title"])}</a></h4>'
             f'<div class="r">{S.chip(a["section"])}'
             f'<span class="date">{short(a["date"])}</span></div></div></div>')
 

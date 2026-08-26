@@ -12,6 +12,7 @@ needs no extension — the same shape WordPress produces from
     issue           /journal-editions/         journal-editions/index.html
     article         /articles/<slug>/          articles/<slug>/index.html
     section         /sections/<slug>/          sections/<slug>/index.html
+    interview       /interviews/<slug>/        interviews/<slug>/index.html
     dreshey-hub     /dreshey/                  dreshey/index.html
     dreshey         /dreshey/<slug>/           dreshey/<slug>/index.html
     authors-index   /authors/                  authors/index.html
@@ -39,6 +40,9 @@ TYPES = {
     'issue':         ('journal-editions',  'issue.html',         'issues.css',   'journal-editions'),
     'article':       ('articles',          'article.html',       'article.css',  None),
     'section':       ('sections',          'section.html',       'category.css', None),
+    # An interview lives at /interviews/<slug>/, not under /articles/. Its
+    # listing stays with every other section, at /sections/interviews/.
+    'interview':     ('interviews',        'interview.html',     'article.css',  'interviews'),
     'dreshey-hub':   ('dreshey',           'dreshey-hub.html',   'dreshey.css',  'dreshey'),
     'dreshey':       ('dreshey',           'dreshey-sub.html',   'dreshey.css',  'dreshey'),
     'authors-index': ('authors',           'authors-index.html', 'authors.css',  NAV_ABOUT),

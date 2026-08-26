@@ -646,16 +646,16 @@ def render_page(meta, body, bio, tpl, arts, author_img, author_href, notes='', l
     lede = 'assets/img/hero-bg.jpg' if lede is None else lede
     others = [p for s, p in arts.items() if s != slug]
     mr = '\n'.join(
-        f'            <li><a href="{P.url("article", p["slug"])}"><span class="t">{esc(p["title"])}</span>'
+        f'            <li><a href="{S.piece_url(p)}"><span class="t">{esc(p["title"])}</span>'
         f'<span class="m">{esc(p["author"])} · {esc(p["section"])}</span></a></li>'
         for p in others[:5])
     same = [p for p in others if p['section'] == meta['section']]
     rel_posts = (same + [p for p in others if p not in same])[:3]
     rel = '\n'.join(f'''            <article class="th-card">
-              <a class="ph" href="{P.url('article', p['slug'])}" style="background-image:url({P.asset(p.get('lede','assets/img/hero-bg.jpg'))})"></a>
+              <a class="ph" href="{S.piece_url(p)}" style="background-image:url({P.asset(p.get('lede','assets/img/hero-bg.jpg'))})"></a>
               <div class="b">
                 {S.chip(p['section'], 'th-chip card-chip')}
-                <h3><a href="{P.url('article', p['slug'])}">{esc(p['title'])}</a></h3>
+                <h3><a href="{S.piece_url(p)}">{esc(p['title'])}</a></h3>
                 <div class="meta"><span><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {pretty(p['date'])}</span><span>·</span><span>By {esc(p['author'])}</span></div>
               </div>
             </article>''' for p in rel_posts)
@@ -686,8 +686,8 @@ def render_page(meta, body, bio, tpl, arts, author_img, author_href, notes='', l
             .replace('{{NOTES}}', notes)
             .replace('{{MUSTREAD}}', mr)
             .replace('{{RELATED}}', rel))
-    C.write('article', slug, esc(meta['title']), esc(sf), page,
-            manifest=MANIFEST)
+    kind = 'interview' if meta.get('section') == 'Interviews' else 'article'
+    C.write(kind, slug, esc(meta['title']), esc(sf), page, manifest=MANIFEST)
     return words, page.count('art-fig')
 
 

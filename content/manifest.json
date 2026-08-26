@@ -101,16 +101,6 @@
  },
  {
   "type": "article",
-  "slug": "interview-with-sikyong-penpa-tsering",
-  "url": "/articles/interview-with-sikyong-penpa-tsering/",
-  "out": "articles/interview-with-sikyong-penpa-tsering/index.html",
-  "head_title": "Interview with Sikyong Penpa Tsering — TransHimalaya",
-  "description": "In this wide-ranging interview, Sikyong Penpa Tsering outlines the Central Tibetan Administration's priorities for the coming five years, focusing on resolving the Sino-Tibet conflict through the Middle Way Approach, strengthening Tibetan communities in exile, and modernising governance through technology and institutional reform. He discusses China's policies in Tibet under Xi Jinping, warning of increasing assimilation, surveillance, and restrictions on Tibetan identity, religion, and language. The Sikyong emphasises the importance of safeguarding the succession of the Dalai Lama from political interference and highlights Tibet's growing strategic relevance as a source of Asia's major rivers and a critical environmental region. He also reflects on India--China relations, Tibet's role as a potential bridge between the two civilizations, the enduring importance of non-violence, and the need for greater international awareness, Tibetan unity, and youth leadership. Finally, he underscores the universal relevance of Hi",
-  "content": "article/interview-with-sikyong-penpa-tsering.html",
-  "legacy": "interview-with-sikyong-penpa-tsering.html"
- },
- {
-  "type": "article",
   "slug": "kunga-norbu",
   "url": "/articles/kunga-norbu/",
   "out": "articles/kunga-norbu/index.html",
@@ -758,6 +748,16 @@
   "description": "TransHimalaya is a magazine of ideas, policy and perspectives on Tibet, the Himalaya and Inner Asia, published by the Foundation for Non-violent Alternatives.",
   "content": "home/home.html",
   "legacy": "index.html"
+ },
+ {
+  "type": "interview",
+  "slug": "interview-with-sikyong-penpa-tsering",
+  "url": "/interviews/interview-with-sikyong-penpa-tsering/",
+  "out": "interviews/interview-with-sikyong-penpa-tsering/index.html",
+  "head_title": "Interview with Sikyong Penpa Tsering — TransHimalaya",
+  "description": "In this wide-ranging interview, Sikyong Penpa Tsering outlines the Central Tibetan Administration's priorities for the coming five years, focusing on resolving the Sino-Tibet conflict through the Middle Way Approach, strengthening Tibetan communities in exile, and modernising governance through technology and institutional reform. He discusses China's policies in Tibet under Xi Jinping, warning of increasing assimilation, surveillance, and restrictions on Tibetan identity, religion, and language. The Sikyong emphasises the importance of safeguarding the succession of the Dalai Lama from political interference and highlights Tibet's growing strategic relevance as a source of Asia's major rivers and a critical environmental region. He also reflects on India--China relations, Tibet's role as a potential bridge between the two civilizations, the enduring importance of non-violence, and the need for greater international awareness, Tibetan unity, and youth leadership. Finally, he underscores the universal relevance of Hi",
+  "content": "interview/interview-with-sikyong-penpa-tsering.html",
+  "legacy": "interview-with-sikyong-penpa-tsering.html"
  },
  {
   "type": "issue",

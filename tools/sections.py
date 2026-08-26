@@ -62,6 +62,26 @@ def article_url(slug):
     return P.url('article', slug)
 
 
+def piece_url(article):
+    """Where one published piece lives.
+
+    Interviews are on their own branch, so every card, rail and list has to
+    ask here rather than assume /articles/.
+    """
+    if article.get('section') == 'Interviews':
+        return P.url('interview', article['slug'])
+    return P.url('article', article['slug'])
+
+
+def fragment(slug):
+    """The content fragment for a piece, whichever branch it is filed under."""
+    for kind in ('article', 'interview'):
+        path = f'content/{kind}/{slug}.html'
+        if os.path.exists(path):
+            return path
+    return ''
+
+
 def chip_link(section, cls='th-chip'):
     """A coloured section label that navigates to that section's page."""
     return (f'<a class="{cls} cat-{slug(section)}" href="{page_for(section)}">'
@@ -93,7 +113,10 @@ def excerpt(slug, limit=115):
         return _EXCERPT_CACHE[slug]
     out = ''
     try:
-        page = open(f'content/article/{slug}.html', encoding='utf-8').read()
+        path = fragment(slug)
+        if not path:
+            raise FileNotFoundError(slug)
+        page = open(path, encoding='utf-8').read()
         m = re.search(r'<p class="art-standfirst">(.*?)</p>', page, re.S)
         if m:
             t = re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', '', m.group(1))).strip()

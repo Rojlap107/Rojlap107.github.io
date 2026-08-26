@@ -14,6 +14,7 @@ import html, json, os, re, sys, unicodedata
 import bios as B
 import content as C
 import paths as P
+import sections as S
 import xml.etree.ElementTree as ET
 
 XML = os.path.expanduser("~/Downloads/transhimalaya.WordPress.2026-08-03.xml")
@@ -125,7 +126,7 @@ def main():
                     f'{esc(first_name(name)[0])}{esc(name.split()[-1][0])}</span>')
 
         items = '\n'.join(f'''          <li>
-            <a href="{P.url('article', a['slug'])}">
+            <a href="{S.piece_url(a)}">
               <span class="sec">{esc(a['section'])}</span>
               <span class="t">{esc(a['title'])}</span>
               <span class="d"><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {pretty(a['date'])}</span>

@@ -20,6 +20,7 @@ import xml.etree.ElementTree as ET
 
 import content as C
 import paths as P
+import sections as S
 
 XML = os.path.expanduser("~/Downloads/transhimalaya.WordPress.2026-08-03.xml")
 NS = {'wp': 'http://wordpress.org/export/1.2/',
@@ -310,7 +311,7 @@ def build(post, posts, tpl, author_img):
     # must-reads: the most recent other articles
     others = [p for p in posts if p['slug'] != post['slug']]
     mr = '\n'.join(
-        f'            <li><a href="{P.url("article", p["slug"])}"><span class="t">{esc(p["title"])}</span>'
+        f'            <li><a href="{S.piece_url(p)}"><span class="t">{esc(p["title"])}</span>'
         f'<span class="m">{esc(p["author"])} · {esc(p["section"])}</span></a></li>'
         for p in others[:5])
 
@@ -318,9 +319,9 @@ def build(post, posts, tpl, author_img):
     same = [p for p in others if p['section'] == post['section']]
     rel_posts = (same + [p for p in others if p not in same])[:3]
     rel = '\n'.join(f'''            <article class="th-card">
-              <a class="ph" href="{P.url('article', p['slug'])}" style="background-image:url({P.asset(p['lede'])})"></a>
+              <a class="ph" href="{S.piece_url(p)}" style="background-image:url({P.asset(p['lede'])})"></a>
               <div class="b">
-                <h3><a href="{P.url('article', p['slug'])}">{esc(p['title'])}</a></h3>
+                <h3><a href="{S.piece_url(p)}">{esc(p['title'])}</a></h3>
                 <div class="meta"><span><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {pretty(p['date'])}</span><span>·</span><span>By {esc(p['author'])}</span></div>
               </div>
             </article>''' for p in rel_posts)

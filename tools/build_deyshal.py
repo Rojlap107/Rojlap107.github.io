@@ -14,6 +14,7 @@ afterwards to assemble the pages. Run from the site root, after the articles.
 import html, json, os, re, sys
 import content as C
 import paths as P
+import sections as S
 
 MONTH = {'01': 'January', '02': 'February', '03': 'March', '04': 'April', '05': 'May',
          '06': 'June', '07': 'July', '08': 'August', '09': 'September',
@@ -112,7 +113,7 @@ def main():
         rows.append('          <ul class="dy-list">')
         for a in by_month[ym]:
             rows.append(
-                f'            <li><a href="{P.url('article', a["slug"])}">'
+                f'            <li><a href="{S.piece_url(a)}">'
                 f'<span class="dt">{int(a["date"][8:10])}</span>'
                 f'<span class="tt">{esc(a["title"])}</span>'
                 f'<span class="mt">{esc(a["author"])} · {esc(a["section"])}</span></a></li>')
@@ -136,10 +137,10 @@ def main():
         picks.append(a)
     picks += [a for a in arts if a not in picks][:1]
     items = '\n'.join(f'''          <li class="dy-pick">
-            <a class="ph" href="{P.url('article', a['slug'])}" style="background-image:url({P.asset(a['lede'])})"></a>
+            <a class="ph" href="{S.piece_url(a)}" style="background-image:url({P.asset(a['lede'])})"></a>
             <div class="b">
               <p class="k">{esc(a['section'])}</p>
-              <h2><a href="{P.url('article', a['slug'])}">{esc(a['title'])}</a></h2>
+              <h2><a href="{S.piece_url(a)}">{esc(a['title'])}</a></h2>
               <p class="mt">By {esc(a['author'])} · {pretty(a['date'])}</p>
             </div>
           </li>''' for a in picks)
@@ -155,7 +156,10 @@ def main():
     # ---------------------------------------------------------------- data & visuals
     figs = []
     for a in arts:
-        s = open(f"content/article/{a['slug']}.html", encoding='utf-8').read()
+        path = S.fragment(a['slug'])
+        if not path:
+            continue
+        s = open(path, encoding='utf-8').read()
         for m in re.finditer(r'<figure class="art-fig">\s*<img src="([^"]+)"[^>]*>\s*'
                              r'<figcaption>(.*?)</figcaption>', s, re.S):
             cap = re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', '', m.group(2)))).strip()
@@ -164,13 +168,13 @@ def main():
             figs.append((a, None, 'Table'))
     tiles = '\n'.join(
         (f'''          <li class="dy-fig">
-            <a href="{P.url('article', a['slug'])}">
+            <a href="{S.piece_url(a)}">
               <span class="im" style="background-image:url({P.asset(src)})"></span>
               <span class="cp">{esc(cap)}</span>
               <span class="src">{esc(a['title'])}</span>
             </a>
           </li>''' if src else f'''          <li class="dy-fig is-table">
-            <a href="{P.url('article', a['slug'])}">
+            <a href="{S.piece_url(a)}">
               <span class="im"><span class="lbl">Table</span></span>
               <span class="cp">Data table</span>
               <span class="src">{esc(a['title'])}</span>

@@ -82,10 +82,10 @@ def data_attrs(a):
 
 def lead_card(a):
     return f'''        <article class="cat-lead"{data_attrs(a)}>
-          <a class="ph" href="{S.article_url(a['slug'])}" style="background-image:url({P.asset(a['lede'])})"></a>
+          <a class="ph" href="{S.piece_url(a)}" style="background-image:url({P.asset(a['lede'])})"></a>
           <div class="b">
             <p class="k">{esc(a['section'])}</p>
-            <h2><a href="{S.article_url(a['slug'])}">{esc(a['title'])}</a></h2>
+            <h2><a href="{S.piece_url(a)}">{esc(a['title'])}</a></h2>
             <div class="meta">
               <span><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {pretty(a['date'])}</span>
               <span>·</span><span>By {esc(a['author'])}</span>
@@ -96,10 +96,10 @@ def lead_card(a):
 
 def card(a):
     return f'''          <article class="th-card"{data_attrs(a)}>
-            <a class="ph" href="{S.article_url(a['slug'])}" style="background-image:url({P.asset(a['lede'])})"></a>
+            <a class="ph" href="{S.piece_url(a)}" style="background-image:url({P.asset(a['lede'])})"></a>
             <div class="b">
               {S.chip(a['section'], 'th-chip card-chip')}
-              <h3><a href="{S.article_url(a['slug'])}">{esc(a['title'])}</a></h3>
+              <h3><a href="{S.piece_url(a)}">{esc(a['title'])}</a></h3>
               <p>{esc(S.excerpt(a['slug']))}</p>
               <div class="meta">
                 <span><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {short(a['date'])}</span>
@@ -125,7 +125,7 @@ def people_grid(items):
               f'height="96" loading="lazy"></span>' if img else
               f'<span class="pt ini" aria-hidden="true">{initials(a["title"])}</span>')
         cards.append(f"""          <li class="cat-person">
-            <a href="{S.article_url(a['slug'])}">
+            <a href="{S.piece_url(a)}">
               {av}
               <span class="nm">{esc(a['title'])}</span>
               <span class="rl">{esc(a.get('place') or a['author'])}</span>

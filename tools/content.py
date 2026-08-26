@@ -57,9 +57,28 @@ def write(page_type, slug, title, description, body,
             break
     else:
         manifest.append(entry)
+
+    # The same slug filed under a different type means the page has moved
+    # branch — an interview leaving /articles/ for /interviews/, say. Retire the
+    # old one, or the site keeps serving both at once.
+    for e in [x for x in manifest
+              if x['slug'] == slug and x['type'] != page_type and slug]:
+        manifest.remove(e)
+        _discard(e)
+        print(f"    - moved {e['url']} -> {entry['url']}")
     if own:
         save(manifest)
     return entry
+
+
+def _discard(entry):
+    """Delete a retired page's fragment and its built output."""
+    import shutil
+    for p in (f"content/{entry['content']}", os.path.dirname(entry['out'])):
+        if os.path.isdir(p):
+            shutil.rmtree(p, ignore_errors=True)
+        elif os.path.exists(p):
+            os.remove(p)
 
 
 def prune(page_type, keep_slugs, manifest):
