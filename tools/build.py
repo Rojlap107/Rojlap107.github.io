@@ -13,7 +13,7 @@ all ~90 pages.
 Run from the site root.
 """
 
-import argparse, json, os, shutil, sys
+import argparse, glob, hashlib, json, os, shutil, sys
 import paths as P
 import render as R
 
@@ -22,7 +22,20 @@ def load_manifest():
     return json.load(open('content/manifest.json', encoding='utf-8'))
 
 
-def build_page(entry):
+def asset_version():
+    """A short digest of every stylesheet and script.
+
+    Appended to their URLs so that changing one is enough — a browser holding
+    the previous copy fetches the new one instead of showing stale styling,
+    which is otherwise indistinguishable from the change not having worked.
+    """
+    h = hashlib.sha256()
+    for f in sorted(glob.glob('assets/css/*.css') + glob.glob('assets/js/*.js')):
+        h.update(open(f, 'rb').read())
+    return h.hexdigest()[:8]
+
+
+def build_page(entry, version=''):
     body = open(f"content/{entry['content']}", encoding='utf-8').read()
     tpl = R.template(P.template(entry['type'])) or R.template('base.html')
     css = P.stylesheet(entry['type'])
@@ -30,7 +43,9 @@ def build_page(entry):
         'HEAD_TITLE': entry['head_title'],
         'DESCRIPTION': entry['description'],
         'URL': entry['url'],
-        'PAGE_CSS': f'<link rel="stylesheet" href="/assets/css/{css}">' if css else '',
+        'PAGE_CSS': (f'<link rel="stylesheet" href="/assets/css/{css}?v={version}">'
+                     if css else ''),
+        'ASSETVER': version,
         'BODY': body,
     })
     page = R.mark_active(page, P.nav_active(entry['type'], entry['slug']))
@@ -60,14 +75,15 @@ def main():
     if not todo:
         sys.exit(f'nothing matches --only {args.only}')
 
+    version = asset_version()
     bad = 0
     for e in todo:
-        page = build_page(e)
+        page = build_page(e, version)
         o, c = page.count('<div'), page.count('</div>')
         if o != c:
             print(f"  MISMATCH {o}/{c}  {e['out']}")
             bad += 1
-    print(f'  built {len(todo)} pages' + (f', {bad} with unbalanced divs' if bad else ', divs balanced'))
+    print(f'  built {len(todo)} pages at asset version {version}' + (f', {bad} with unbalanced divs' if bad else ', divs balanced'))
     return 1 if bad else 0
 
 
