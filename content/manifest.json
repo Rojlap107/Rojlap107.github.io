@@ -791,6 +791,16 @@
  },
  {
   "type": "page",
+  "slug": "faqs",
+  "url": "/faqs/",
+  "out": "faqs/index.html",
+  "head_title": "FAQs — TransHimalaya",
+  "description": "How to cite TransHimalaya, how copyright works, and how footnotes should be written.",
+  "content": "page/faqs.html",
+  "legacy": "faqs.html"
+ },
+ {
+  "type": "page",
   "slug": "contact",
   "url": "/contact/",
   "out": "contact/index.html",
