@@ -100,3 +100,16 @@ def asset(path):
     as a protocol-relative host. Always route through here instead.
     """
     return '/' + str(path).lstrip('/')
+
+# The site's own address, needed for the absolute URLs that Open Graph asks
+# for — a share card cannot resolve "/assets/img/x.jpg" on its own. Left empty
+# the tags fall back to root-relative paths, which most crawlers do resolve
+# against the page they fetched; set it to the live origin, no trailing slash,
+# for previews that behave everywhere.
+SITE_URL = ''
+
+
+def absolute(path):
+    """A full URL for a share card, if we know where the site lives."""
+    path = '/' + str(path).lstrip('/')
+    return f'{SITE_URL}{path}' if SITE_URL else path

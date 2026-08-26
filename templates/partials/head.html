@@ -3,6 +3,23 @@
 <title>{{HEAD_TITLE}}</title>
 <meta name="description" content="{{DESCRIPTION}}">
 <link rel="canonical" href="{{URL}}">
+
+<!-- share cards. Without og:image a crawler picks an image out of the page
+     itself, and the byline portrait is the first one it meets. -->
+<meta property="og:type" content="{{OG_TYPE}}">
+<meta property="og:site_name" content="TransHimalaya">
+<meta property="og:locale" content="en_GB">
+<meta property="og:title" content="{{OG_TITLE}}">
+<meta property="og:description" content="{{DESCRIPTION}}">
+<meta property="og:url" content="{{OG_URL}}">
+<meta property="og:image" content="{{OG_IMAGE}}">
+<meta property="og:image:width" content="{{OG_W}}">
+<meta property="og:image:height" content="{{OG_H}}">
+<meta property="og:image:alt" content="{{OG_TITLE}}">
+<meta name="twitter:card" content="{{TW_CARD}}">
+<meta name="twitter:title" content="{{OG_TITLE}}">
+<meta name="twitter:description" content="{{DESCRIPTION}}">
+<meta name="twitter:image" content="{{OG_IMAGE}}">
 <link rel="icon" href="/assets/img/logo-mark.png">
 <link rel="stylesheet" href="/assets/css/tokens.css?v={{ASSETVER}}">
 <link rel="stylesheet" href="/assets/css/chrome.css?v={{ASSETVER}}">

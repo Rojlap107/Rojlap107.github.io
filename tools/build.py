@@ -13,9 +13,10 @@ all ~90 pages.
 Run from the site root.
 """
 
-import argparse, glob, hashlib, json, os, shutil, sys
+import argparse, glob, hashlib, json, os, shutil, subprocess, sys
 import paths as P
 import render as R
+import sections as S
 
 
 def load_manifest():
@@ -35,11 +36,55 @@ def asset_version():
     return h.hexdigest()[:8]
 
 
-def build_page(entry, version=''):
+# what a share card shows for a page with no picture of its own
+DEFAULT_SHARE_IMAGE = 'assets/img/hero-bg.jpg'
+SUFFIX = ' — TransHimalaya'
+_dims = {}
+
+
+def image_size(path):
+    """(width, height) of a local image, measured once per file."""
+    if path not in _dims:
+        out = subprocess.run(['magick', 'identify', '-format', '%w %h', path],
+                             capture_output=True, text=True).stdout.split()
+        _dims[path] = tuple(out[:2]) if len(out) >= 2 else ('', '')
+    return _dims[path]
+
+
+def share_card(entry, arts):
+    """The Open Graph values for one page.
+
+    Stated outright rather than left to the crawler, which otherwise takes the
+    first large image in the document — the author's portrait in the byline.
+    """
+    piece = arts.get(entry['slug']) if entry['type'] in ('article', 'interview') else None
+    img = (S.card_image(piece) if piece else '') or DEFAULT_SHARE_IMAGE
+    if not os.path.exists(img.lstrip('/')):
+        img = DEFAULT_SHARE_IMAGE
+    w, h = image_size(img.lstrip('/'))
+    title = entry['head_title']
+    if title.endswith(SUFFIX):
+        title = title[:-len(SUFFIX)]
+    # A wide lede fills a large card; a square portrait would be cropped
+    # through the face by one, so it gets the small card instead.
+    wide = w and h and (int(w) / int(h)) >= 1.45
+    return {
+        'OG_TYPE': 'article' if piece else 'website',
+        'OG_TITLE': title,
+        'OG_URL': P.absolute(entry['url']),
+        'OG_IMAGE': P.absolute(img),
+        'OG_W': w,
+        'OG_H': h,
+        'TW_CARD': 'summary_large_image' if wide else 'summary',
+    }
+
+
+def build_page(entry, version='', arts=None):
     body = open(f"content/{entry['content']}", encoding='utf-8').read()
     tpl = R.template(P.template(entry['type'])) or R.template('base.html')
     css = P.stylesheet(entry['type'])
     page = R.render(tpl, {
+        **share_card(entry, arts or {}),
         'HEAD_TITLE': entry['head_title'],
         'DESCRIPTION': entry['description'],
         'URL': entry['url'],
@@ -76,9 +121,10 @@ def main():
         sys.exit(f'nothing matches --only {args.only}')
 
     version = asset_version()
+    arts = {a['slug']: a for a in json.load(open('tools/articles.json', encoding='utf-8'))}
     bad = 0
     for e in todo:
-        page = build_page(e, version)
+        page = build_page(e, version, arts)
         o, c = page.count('<div'), page.count('</div>')
         if o != c:
             print(f"  MISMATCH {o}/{c}  {e['out']}")
