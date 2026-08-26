@@ -122,3 +122,24 @@
   .th-sub a{ transition:none; }
   .th-sub a{ padding:11px 12px; border-radius:4px; font-size:14.5px; white-space:normal; }
 }
+
+/* ---- back to top ----
+   A real link to #top, so it works before the script loads and for anyone
+   without JavaScript. The script only decides when it is worth showing. */
+.th-top{ position:fixed; right:clamp(14px,2.5vw,28px); bottom:clamp(14px,2.5vw,28px);
+  z-index:60; width:44px; height:44px; border-radius:50%;
+  display:grid; place-items:center; background:var(--navy); color:#fff;
+  box-shadow:0 6px 18px rgba(18,40,55,.28); text-decoration:none;
+  opacity:0; visibility:hidden; transform:translateY(8px);
+  transition:opacity .2s ease, transform .2s ease, visibility .2s, background .18s; }
+.th-top.is-on{ opacity:1; visibility:visible; transform:none; }
+.th-top:hover{ background:var(--orange); }
+.th-top:focus-visible{ outline:2px solid var(--orange); outline-offset:3px; }
+.th-top .ic{ width:19px; height:19px; opacity:1; }
+
+/* it would otherwise sit on top of the footer's last line on narrow screens */
+@media (max-width:560px){ .th-top{ width:40px; height:40px; } }
+
+@media (prefers-reduced-motion: reduce){
+  .th-top{ transition:opacity .2s ease, visibility .2s; transform:none; }
+}

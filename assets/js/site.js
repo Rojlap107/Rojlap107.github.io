@@ -187,3 +187,42 @@
   });
   input.addEventListener('input', apply);
 })();
+
+/* Back to top — shown once there is enough scrolled past to be worth it.
+   The link works on its own; this adds the appearance and the smooth glide,
+   and honours a reduced-motion preference by jumping instead. */
+(function () {
+  var btn = document.querySelector('.th-top');
+  if (!btn) return;
+
+  var SHOW_AFTER = 600;                     /* about one screen down */
+  var shown = false;
+
+  function sync() {
+    var past = (window.scrollY || document.documentElement.scrollTop) > SHOW_AFTER;
+    if (past !== shown) {
+      shown = past;
+      btn.classList.toggle('is-on', past);
+    }
+  }
+
+  var waiting = false;
+  window.addEventListener('scroll', function () {
+    if (waiting) return;                    /* one check per frame, not per event */
+    waiting = true;
+    window.requestAnimationFrame(function () { waiting = false; sync(); });
+  }, { passive: true });
+  sync();
+
+  btn.addEventListener('click', function (e) {
+    var still = window.matchMedia &&
+                window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (still) return;                      /* let the anchor jump */
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    /* the anchor would have moved focus to the masthead; do it here too, so a
+       keyboard user carries on from the top rather than from the button */
+    var top = document.getElementById('top');
+    if (top) { top.setAttribute('tabindex', '-1'); top.focus({ preventScroll: true }); }
+  });
+})();
