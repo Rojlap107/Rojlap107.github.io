@@ -79,6 +79,84 @@
 .dy-fig.is-table .lbl{ font-size:11px; letter-spacing:.16em; text-transform:uppercase;
   color:var(--teal); font-weight:700; }
 
+/* ---- prose (archive documents, book review, jargon, snippets) ---- */
+.dy-prose{ max-width:44rem; margin:0 auto; font-size:17px; line-height:1.75; color:#3a464d; }
+.dy-prose > p{ margin:0 0 1.3em; }
+.dy-prose h2{ font-family:"Iowan Old Style",Palatino,Georgia,serif; font-size:25px;
+  color:var(--ink); margin:1.6em 0 .6em; }
+.dy-prose a{ color:var(--teal); }
+.dy-prose a:hover{ color:var(--orange); }
+.dy-prose strong{ color:var(--ink); }
+.dy-prose ul{ margin:0 0 1.3em; padding-left:1.2em; }
+.dy-prose li{ margin:0 0 .5em; }
+.dy-doc + .dy-doc{ margin-top:clamp(30px,4vw,46px); padding-top:clamp(28px,4vw,42px);
+  border-top:1px solid var(--line); }
+.dy-doc .k{ font-size:11px; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--orange); font-weight:700; margin:0 0 8px; }
+.dy-doc h2{ margin-top:0; }
+.dy-byline{ font-size:13.5px; color:var(--muted); margin:-.8em 0 1.6em; }
+.dy-cover{ float:right; width:180px; margin:0 0 16px 24px; border-radius:5px;
+  border:1px solid var(--line); }
+@media (max-width:560px){ .dy-cover{ float:none; width:100%; max-width:220px; margin:0 auto 20px; display:block; } }
+
+/* ---- recommended readings (books) ---- */
+.dy-books{ list-style:none; margin:0; padding:0; max-width:56rem; margin-inline:auto;
+  display:flex; flex-direction:column; gap:clamp(28px,4vw,40px); }
+.dy-book{ display:grid; grid-template-columns:160px 1fr; gap:clamp(20px,3vw,30px);
+  padding-bottom:clamp(28px,4vw,40px); border-bottom:1px solid var(--line); }
+.dy-book:last-child{ border-bottom:0; padding-bottom:0; }
+.dy-book .cv{ width:100%; border-radius:5px; border:1px solid var(--line); align-self:start; }
+.dy-book h2{ font-family:"Iowan Old Style",Palatino,Georgia,serif; font-size:22px;
+  line-height:1.25; color:var(--ink); font-weight:600; margin:0; }
+.dy-book .by{ font-size:14px; color:var(--teal); font-weight:600; margin:4px 0 0; }
+.dy-book .mt{ font-size:12.5px; color:var(--muted); margin:8px 0 0; line-height:1.6; }
+.dy-book .bf{ font-size:15px; line-height:1.65; color:#3a464d; margin:12px 0 0; }
+.dy-book .au{ font-size:13.5px; line-height:1.6; color:#5b6870; margin:10px 0 0; }
+.dy-book .au b{ color:var(--ink); }
+@media (max-width:560px){ .dy-book{ grid-template-columns:110px 1fr; } }
+
+/* ---- trans himalaya lexicon ---- */
+.dy-terms{ max-width:52rem; margin:0 auto; }
+.dy-term-grp{ margin:0 0 clamp(30px,4vw,42px); }
+.dy-term-grp > h2{ font-size:13px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--orange); font-weight:700; margin:0 0 4px;
+  padding-bottom:8px; border-bottom:2px solid var(--ink); }
+.dy-term-grp > p{ font-size:14px; color:var(--muted); margin:10px 0 18px; max-width:60ch; }
+.dy-term{ padding:16px 0; border-bottom:1px solid var(--line); }
+.dy-term:last-child{ border-bottom:0; }
+.dy-term dt{ font-family:"Iowan Old Style",Palatino,Georgia,serif; font-size:17.5px;
+  font-weight:600; color:var(--ink); }
+.dy-term dd{ margin:6px 0 0; font-size:15px; line-height:1.65; color:#3a464d; }
+
+/* ---- tibet highlights ---- */
+.dy-news{ max-width:58rem; margin:0 auto; }
+.dy-news-grp{ margin:0 0 clamp(30px,4vw,44px); }
+.dy-news-grp > h2{ font-size:13px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--orange); font-weight:700; margin:0 0 18px;
+  padding-bottom:8px; border-bottom:2px solid var(--ink); }
+.dy-news-item{ display:grid; grid-template-columns:1fr; gap:14px;
+  padding:18px 0; border-bottom:1px solid var(--line); }
+.dy-news-item:last-child{ border-bottom:0; }
+.dy-news-item.has-img{ grid-template-columns:180px 1fr; align-items:start; }
+.dy-news-item img{ width:100%; border-radius:5px; border:1px solid var(--line); }
+.dy-news-item .dt{ font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--teal); font-weight:700; margin:0 0 4px; }
+.dy-news-item h3{ font-family:"Iowan Old Style",Palatino,Georgia,serif; font-size:18.5px;
+  line-height:1.3; color:var(--ink); font-weight:600; margin:0 0 6px; }
+.dy-news-item p{ font-size:14.5px; line-height:1.65; color:#3a464d; margin:0; }
+.dy-news-item .cr{ display:block; font-size:12px; color:var(--muted); margin-top:6px; }
+@media (max-width:560px){ .dy-news-item.has-img{ grid-template-columns:1fr; } }
+
+/* ---- photographs then and now ---- */
+.dy-gallery{ list-style:none; margin:0; padding:0; max-width:1000px; margin-inline:auto;
+  display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(20px,3vw,30px); }
+.dy-gitem img{ width:100%; aspect-ratio:3/4; object-fit:cover; border-radius:6px;
+  border:1px solid var(--line); }
+.dy-gitem .cp{ display:block; font-size:14px; color:var(--ink); margin-top:10px; line-height:1.5; }
+.dy-gitem .cr{ display:block; font-size:12px; color:var(--muted); margin-top:3px; }
+.dy-gallery + .dy-prose{ max-width:44rem; margin:clamp(34px,5vw,50px) auto 0; }
+@media (max-width:560px){ .dy-gallery{ grid-template-columns:1fr; max-width:340px; } }
+
 /* ---- empty state (shared with the section pages) ---- */
 .cat-empty{ max-width:46rem; margin:0 auto; text-align:center;
   border:1px dashed var(--line); border-radius:8px; background:var(--sand);

@@ -675,7 +675,7 @@
   "url": "/dreshey/from-the-archives/",
   "out": "dreshey/from-the-archives/index.html",
   "head_title": "From the Archives — TransHimalaya",
-  "description": "The complete TransHimalaya archive.",
+  "description": "The 1913 Proclamation of the XIII Dalai Lama, and the 1992 PRC White Paper on Tibet.",
   "content": "dreshey/from-the-archives.html",
   "legacy": "from-the-archives.html"
  },
@@ -695,7 +695,7 @@
   "url": "/dreshey/recommended-readings/",
   "out": "dreshey/recommended-readings/index.html",
   "head_title": "Recommended Readings — TransHimalaya",
-  "description": "Where to begin with TransHimalaya.",
+  "description": "Seven books on Tibet, China and the wider Himalaya, chosen by the editors.",
   "content": "dreshey/recommended-readings.html",
   "legacy": "recommended-readings.html"
  },
@@ -791,16 +791,6 @@
  },
  {
   "type": "page",
-  "slug": "faqs",
-  "url": "/faqs/",
-  "out": "faqs/index.html",
-  "head_title": "FAQs — TransHimalaya",
-  "description": "How to cite TransHimalaya, how copyright works, and how footnotes should be written.",
-  "content": "page/faqs.html",
-  "legacy": "faqs.html"
- },
- {
-  "type": "page",
   "slug": "contact",
   "url": "/contact/",
   "out": "contact/index.html",
@@ -808,6 +798,16 @@
   "description": "Contact the Foundation for Non-violent Alternatives in New Delhi.",
   "content": "page/contact.html",
   "legacy": "contact.html"
+ },
+ {
+  "type": "page",
+  "slug": "faqs",
+  "url": "/faqs/",
+  "out": "faqs/index.html",
+  "head_title": "FAQs — TransHimalaya",
+  "description": "How to cite TransHimalaya, how copyright works, and how footnotes should be written.",
+  "content": "page/faqs.html",
+  "legacy": "faqs.html"
  },
  {
   "type": "page",

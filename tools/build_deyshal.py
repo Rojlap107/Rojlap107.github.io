@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
-"""Generate the Dreshey hub and its nine sub-sections.
+"""Generate the Dreshey hub, and the one sub-section drawn from the articles.
 
-Three of them can be filled from the magazine's own material — the archive,
-a reading selection, and the figures and tables drawn from the articles. The
-rest have no source content yet and get an honest empty state.
+Eight of the nine sub-sections are curated from the 1st issue's own Dreshey
+source material (~/Desktop/Tenzin Paljor/FNVA/1st Issue/S9_ Dreshey) and are
+hand-maintained fragments under content/dreshey/ — this script registers
+their manifest entries once but does not regenerate their bodies, the same
+way content/page/about.html is hand-maintained. Only Data & Visuals is built
+here every run: its figures and tables are drawn live from the essays, with
+three CTA organograms from the source folder appended. A sub-section with no
+source content yet gets an honest empty state instead.
 
     python3 tools/build_deyshal.py
 
@@ -16,18 +21,14 @@ import content as C
 import paths as P
 import sections as S
 
-MONTH = {'01': 'January', '02': 'February', '03': 'March', '04': 'April', '05': 'May',
-         '06': 'June', '07': 'July', '08': 'August', '09': 'September',
-         '10': 'October', '11': 'November', '12': 'December'}
-
 # slug, title, description shown on the hub card
 SUBS = [
     ('from-the-archives', 'From the Archives',
-     'Everything TransHimalaya has published, by date.'),
+     'Primary documents that frame the dispute over Tibet&#39;s status.'),
     ('data-visuals', 'Data &amp; Visuals',
-     'Maps, charts and tables drawn from the essays.'),
+     'Maps, charts, organograms and tables drawn from the essays.'),
     ('recommended-readings', 'Recommended Readings',
-     'A standing selection of the pieces to start with.'),
+     'Seven books on Tibet, China and the wider Himalaya.'),
     ('trans-himalaya-lexicon', 'Trans Himalaya Lexicon',
      'Tibetan, Chinese and policy terms, defined.'),
     ('decoding-beijings-terminology', 'Decoding Beijing’s Terminology',
@@ -42,15 +43,27 @@ SUBS = [
      'Visual records of a changing plateau.'),
 ]
 
-FILLED = {'from-the-archives', 'data-visuals', 'recommended-readings'}
+# hub card status: every sub-section has real content now, bar none still
+# awaiting its source material — kept as a set in case that changes again
+FILLED = {s for s, _, _ in SUBS}
+
+# CTA organograms from the source folder, appended to the live article
+# figures below — not drawn from any article body, so listed by hand
+CTA_DIAGRAMS = [
+    ('assets/img/dreshey/data-visuals/cta-kashag.jpg',
+     'Executive Branch — organisation of the Kashag and the principal '
+     'departments of the Central Tibetan Administration.'),
+    ('assets/img/dreshey/data-visuals/cta-tpie.jpg',
+     'Tibetan Parliament-in-Exile — composition, constitutional role and '
+     'principal responsibilities.'),
+    ('assets/img/dreshey/data-visuals/cta-sjc.jpg',
+     'Tibetan Supreme Justice Commission — structure, jurisdiction and '
+     'responsibilities of the judicial branch.'),
+]
 
 
 def esc(s):
     return html.escape(s, quote=False)
-
-
-def pretty(d):
-    return f"{int(d[8:10])} {MONTH[d[5:7]]} {d[:4]}"
 
 
 def page(page_type, slug, title, desc, body):
@@ -103,56 +116,6 @@ def main():
 '''
     print(f"  {'deyshal':26} hub            {page('dreshey-hub', '', 'Dreshey', 'The Foundation reference shelf: archive, data, glossary and reading.', hub)}")
 
-    # ---------------------------------------------------------------- archive
-    by_month = {}
-    for a in arts:
-        by_month.setdefault(a['date'][:7], []).append(a)
-    rows = []
-    for ym in sorted(by_month, reverse=True):
-        rows.append(f'          <h2 class="dy-month">{MONTH[ym[5:7]]} {ym[:4]}</h2>')
-        rows.append('          <ul class="dy-list">')
-        for a in by_month[ym]:
-            rows.append(
-                f'            <li><a href="{S.piece_url(a)}">'
-                f'<span class="dt">{int(a["date"][8:10])}</span>'
-                f'<span class="tt">{esc(a["title"])}</span>'
-                f'<span class="mt">{S.by_line(a, esc(a["section"]))}</span></a></li>')
-        rows.append('          </ul>')
-    archive = f'''      <div class="dy">
-{head('Dreshey', 'From the Archives', 'Everything TransHimalaya has published, most recent first.',
-      f'<p class="dy-count">{len(arts)} articles</p>')}
-        <div class="dy-archive">
-{chr(10).join(rows)}
-        </div>
-      </div>
-'''
-    print(f"  {'from-the-archives':26} {len(arts):3d} articles  {page('dreshey', 'from-the-archives', 'From the Archives', 'The complete TransHimalaya archive.', archive)}")
-
-    # ---------------------------------------------------------------- must reads
-    picks, seen = [], set()
-    for a in arts:                       # one from each section, longest first
-        if a['section'] in seen:
-            continue
-        seen.add(a['section'])
-        picks.append(a)
-    picks += [a for a in arts if a not in picks][:1]
-    items = '\n'.join(f'''          <li class="dy-pick">
-            <a class="ph" href="{S.piece_url(a)}" style="background-image:url({P.asset(S.card_image(a))})"></a>
-            <div class="b">
-              <p class="k">{esc(a['section'])}</p>
-              <h2><a href="{S.piece_url(a)}">{esc(a['title'])}</a></h2>
-              <p class="mt">{S.by_line(a, pretty(a['date']))}</p>
-            </div>
-          </li>''' for a in picks)
-    must = f'''      <div class="dy">
-{head('Dreshey', 'Recommended Readings', 'Where to begin — one essay from each section of the magazine.')}
-        <ul class="dy-picks">
-{items}
-        </ul>
-      </div>
-'''
-    print(f"  {'recommended-readings':26} {len(picks):3d} picks     {page('dreshey', 'recommended-readings', 'Recommended Readings', 'Where to begin with TransHimalaya.', must)}")
-
     # ---------------------------------------------------------------- data & visuals
     figs = []
     for a in arts:
@@ -180,17 +143,30 @@ def main():
               <span class="src">{esc(a['title'])}</span>
             </a>
           </li>''') for a, src, cap in figs)
+    cta_href = P.url('article', 'beyond-exile-governance-the-strategic-evolution-of-the-central-tibetan-administration')
+    cta_tiles = '\n'.join(f'''          <li class="dy-fig">
+            <a href="{cta_href}">
+              <span class="im" style="background-image:url({P.asset(src)})"></span>
+              <span class="cp">{esc(cap)}</span>
+              <span class="src">Central Tibetan Administration</span>
+            </a>
+          </li>''' for src, cap in CTA_DIAGRAMS)
+    item_count = len(figs) + len(CTA_DIAGRAMS)
     dv = f'''      <div class="dy">
 {head('Dreshey', 'Data &amp; Visuals', 'The maps, charts, photographs and tables that appear in the essays, gathered in one place.',
-      f'<p class="dy-count">{len(figs)} items</p>')}
+      f'<p class="dy-count">{item_count} items</p>')}
         <ul class="dy-figs">
 {tiles}
+{cta_tiles}
         </ul>
       </div>
 '''
-    print(f"  {'data-visuals':26} {len(figs):3d} items     {page('dreshey', 'data-visuals', 'Data & Visuals', 'Maps, charts and tables from the essays.', dv)}")
+    print(f"  {'data-visuals':26} {item_count:3d} items     {page('dreshey', 'data-visuals', 'Data & Visuals', 'Maps, charts and tables from the essays.', dv)}")
 
-    # ---------------------------------------------------------------- the rest
+    # ------------------------------------------------- still awaiting content
+    # only reached by a sub-section that is neither generated above nor
+    # already a hand-maintained fragment — i.e. one with no source material
+    # yet, same as Youth and Tibet Monitor elsewhere on the site
     for s, t, d in SUBS:
         if s in FILLED:
             continue
