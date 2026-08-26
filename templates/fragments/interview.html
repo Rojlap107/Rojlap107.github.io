@@ -1,0 +1,40 @@
+
+      <article class="art art-interview">
+
+        <header class="art-head">
+          <p class="art-cat">{{SECTION_CHIP}}</p>
+          <h1>{{TITLE}}</h1>
+          <p class="art-standfirst">{{STANDFIRST}}</p>
+          <div class="art-byline">
+            <div class="who">
+              <span class="dt"><time datetime="{{DATE_ISO}}">{{DATE}}</time></span>
+            </div>
+            <div class="art-share">
+              <span class="lbl">Share</span>
+              <a class="sh sh-fb" href="#" data-share="facebook" aria-label="Share on Facebook"><svg class="ic" aria-hidden="true"><use href="#ic-facebook"/></svg></a>
+              <a class="sh sh-em" href="#" data-share="email" aria-label="Share by email"><svg class="ic" aria-hidden="true"><use href="#ic-mail"/></svg></a>
+              <button class="sh sh-cp" type="button" data-share="copy" aria-label="Copy link"><svg class="ic" aria-hidden="true"><use href="#ic-link"/></svg><span class="done"><svg class="ic" aria-hidden="true"><use href="#ic-check"/></svg> Copied</span></button>
+            </div>
+          </div>
+        </header>
+
+{{VIDEO}}
+        <div class="art-lower">
+          <aside class="art-mustread">
+            <h2 class="th-h3">Must Read</h2>
+            <div class="th-divL"><i></i><b></b></div>
+            <ol>
+{{MUSTREAD}}
+            </ol>
+          </aside>
+
+          <section class="art-related">
+            <h2 class="th-h3">You may also like</h2>
+            <div class="th-divL"><i></i><b></b></div>
+            <div class="th-cards">
+{{RELATED}}
+            </div>
+          </section>
+        </div>
+
+      </article>

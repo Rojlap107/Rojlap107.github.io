@@ -13,6 +13,9 @@ import json, os
 import paths as P
 
 MANIFEST = 'content/manifest.json'
+
+# page types that are alternative filings of the same thing
+FAMILIES = [{'article', 'interview'}]
 SUFFIX = ' — TransHimalaya'
 
 
@@ -58,14 +61,19 @@ def write(page_type, slug, title, description, body,
     else:
         manifest.append(entry)
 
-    # The same slug filed under a different type means the page has moved
-    # branch — an interview leaving /articles/ for /interviews/, say. Retire the
-    # old one, or the site keeps serving both at once.
-    for e in [x for x in manifest
-              if x['slug'] == slug and x['type'] != page_type and slug]:
-        manifest.remove(e)
-        _discard(e)
-        print(f"    - moved {e['url']} -> {entry['url']}")
+    # A piece can be filed as an article or as an interview but never both, so
+    # writing one retires the other — that is how the Sikyong interview left
+    # /articles/. Types outside a family share slugs quite legitimately: a
+    # contributor has an author page and, if they wrote one, a piece at the
+    # same slug, and those must not delete each other.
+    for family in FAMILIES:
+        if page_type not in family:
+            continue
+        for e in [x for x in manifest if x['slug'] == slug
+                  and x['type'] in family and x['type'] != page_type]:
+            manifest.remove(e)
+            _discard(e)
+            print(f"    - moved {e['url']} -> {entry['url']}")
     if own:
         save(manifest)
     return entry

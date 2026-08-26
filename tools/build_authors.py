@@ -95,6 +95,8 @@ def main():
     # group articles by author
     by_author = {}
     for a in arts:
+        if not (a.get('author') or '').strip():
+            continue          # a piece with no author credits nobody
         by_author.setdefault(a['author'], []).append(a)
     for v in by_author.values():
         v.sort(key=lambda a: a['date'], reverse=True)

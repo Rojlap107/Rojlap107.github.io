@@ -88,7 +88,7 @@ def lead_card(a):
             <h2><a href="{S.piece_url(a)}">{esc(a['title'])}</a></h2>
             <div class="meta">
               <span><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {pretty(a['date'])}</span>
-              <span>·</span><span>By {esc(a['author'])}</span>
+              {S.by_meta(a)}
             </div>
           </div>
         </article>'''
@@ -103,7 +103,7 @@ def card(a):
               <p>{esc(S.excerpt(a['slug']))}</p>
               <div class="meta">
                 <span><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {short(a['date'])}</span>
-                <span>·</span><span>By {esc(a['author'])}</span>
+                {S.by_meta(a)}
               </div>
             </div>
           </article>'''

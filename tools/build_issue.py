@@ -124,6 +124,38 @@ HERO = {
 }
 
 
+
+# A filmed interview shows its video, not a transcript. `youtube` is the video
+# id; until one is supplied the still is shown on its own, with no play badge
+# promising something that would not happen. `thumb` is served from our own
+# assets so the page does not depend on YouTube being reachable.
+VIDEO = {
+  'interview-with-sikyong-penpa-tsering': dict(
+      youtube='',
+      thumb='assets/img/issue/interview-with-sikyong-penpa-tsering/lede.jpg',
+      caption='Sikyong Penpa Tsering in conversation, India International Centre, New Delhi.'),
+}
+
+
+def video_block(slug):
+    """The interview's video still, at a readable width, linking to YouTube."""
+    v = VIDEO.get(slug)
+    if not v:
+        return ''
+    cap = (f'\n          <figcaption>{esc(v["caption"])}</figcaption>'
+           if v.get('caption') else '')
+    img = (f'<img src="{P.asset(v["thumb"])}" alt="" width="1280" height="720">')
+    if v.get('youtube'):
+        url = f'https://www.youtube.com/watch?v={v["youtube"]}'
+        inner = (f'<a class="play" href="{url}" target="_blank" rel="noopener" '
+                 f'aria-label="Watch on YouTube">{img}'
+                 f'<span class="badge" aria-hidden="true"></span></a>')
+    else:
+        inner = img
+    return (f'        <figure class="art-video">\n'
+            f'          {inner}{cap}\n'
+            f'        </figure>\n')
+
 def hero_bits(hero):
     """(skip_img, skip_texts, lede_cap) for a HERO entry, or (None, None, '')."""
     if not hero:
@@ -637,17 +669,15 @@ def build_interview(md):
     return '\n'.join(out), standf
 
 
-def render_page(meta, body, bio, tpl, arts, author_img, author_href, notes='', lede_cap=''):
-    from build_articles import author_slug
+
+def rails(meta, arts):
+    """The Must Read list and the You-may-also-like cards, shared by every
+    kind of piece."""
     slug = meta['slug']
-    # An explicit empty lede means the piece opens on its title, with no
-    # photograph above it; a missing key still falls back to the hero image.
-    lede = meta.get('lede')
-    lede = 'assets/img/hero-bg.jpg' if lede is None else lede
     others = [p for s, p in arts.items() if s != slug]
     mr = '\n'.join(
         f'            <li><a href="{S.piece_url(p)}"><span class="t">{esc(p["title"])}</span>'
-        f'<span class="m">{esc(p["author"])} · {esc(p["section"])}</span></a></li>'
+        f'<span class="m">{S.by_line(p, esc(p["section"]))}</span></a></li>'
         for p in others[:5])
     same = [p for p in others if p['section'] == meta['section']]
     rel_posts = (same + [p for p in others if p not in same])[:3]
@@ -656,9 +686,21 @@ def render_page(meta, body, bio, tpl, arts, author_img, author_href, notes='', l
               <div class="b">
                 {S.chip(p['section'], 'th-chip card-chip')}
                 <h3><a href="{S.piece_url(p)}">{esc(p['title'])}</a></h3>
-                <div class="meta"><span><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {pretty(p['date'])}</span><span>·</span><span>By {esc(p['author'])}</span></div>
+                <div class="meta"><span><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {pretty(p['date'])}</span>{S.by_meta(p)}</div>
               </div>
             </article>''' for p in rel_posts)
+    return mr, rel
+
+def render_page(meta, body, bio, tpl, arts, author_img, author_href, notes='', lede_cap=''):
+    if meta.get('section') == 'Interviews':
+        return render_interview(meta, tpl, arts)
+    from build_articles import author_slug
+    slug = meta['slug']
+    # An explicit empty lede means the piece opens on its title, with no
+    # photograph above it; a missing key still falls back to the hero image.
+    lede = meta.get('lede')
+    lede = 'assets/img/hero-bg.jpg' if lede is None else lede
+    mr, rel = rails(meta, arts)
     av = author_img.get(meta['author'], '')
     avatar = (f'<img class="av" src="{P.asset(av)}" alt="" width="44" height="44">' if av else '')
     author_pic = (f'<img src="{P.asset(av)}" alt="" width="96" height="96">' if av else '')
@@ -690,6 +732,30 @@ def render_page(meta, body, bio, tpl, arts, author_img, author_href, notes='', l
     C.write(kind, slug, esc(meta['title']), esc(sf), page, manifest=MANIFEST)
     return words, page.count('art-fig')
 
+
+
+def render_interview(meta, _tpl, arts):
+    """An interview is its video, its title and its description.
+
+    No transcript, and no byline naming whoever conducted it — the
+    conversation is with the subject, and crediting an interviewer here would
+    also file it under their name on their own author page.
+    """
+    slug = meta['slug']
+    tpl = open('templates/fragments/interview.html', encoding='utf-8').read()
+    mr, rel = rails(meta, arts)
+    page = (tpl
+            .replace('{{TITLE}}', esc(meta['title']))
+            .replace('{{STANDFIRST}}', esc(meta.get('standfirst', '')))
+            .replace('{{SECTION_CHIP}}', S.chip_link(meta['section'], 'th-chip'))
+            .replace('{{DATE_ISO}}', meta['date'])
+            .replace('{{DATE}}', pretty(meta['date']))
+            .replace('{{VIDEO}}', video_block(slug))
+            .replace('{{MUSTREAD}}', mr)
+            .replace('{{RELATED}}', rel))
+    C.write('interview', slug, esc(meta['title']),
+            esc(meta.get('standfirst', '')), page, manifest=MANIFEST)
+    return 0, 0
 
 def resolve_href(author):
     """An author's own page if they have one, the author index if not."""

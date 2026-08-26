@@ -55,7 +55,7 @@ def featured_card(a):
               {S.chip(a['section'], 'th-chip card-chip')}
               <h3><a href="{S.piece_url(a)}">{esc(a['title'])}</a></h3>
               <p>{esc(S.excerpt(a['slug']))}</p>
-              <div class="meta"><span><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {short(a['date'])}</span><span>·</span><span>By {esc(a['author'])}</span></div>
+              <div class="meta"><span><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {short(a['date'])}</span>{S.by_meta(a)}</div>
             </div>
           </article>'''
 

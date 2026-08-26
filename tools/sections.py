@@ -73,6 +73,22 @@ def piece_url(article):
     return P.url('article', article['slug'])
 
 
+def by_meta(article):
+    """The "By <author>" half of a card's meta line.
+
+    Empty for a piece with no author — a filmed interview stands on its own
+    rather than being credited to whoever conducted it.
+    """
+    who = (article.get('author') or '').strip()
+    return f'<span>·</span><span>By {esc(who)}</span>' if who else ''
+
+
+def by_line(article, tail=''):
+    """Author and one more field for a compact list row, author omitted
+    where there is none."""
+    who = (article.get('author') or '').strip()
+    return ' · '.join(x for x in (esc(who), tail) if x)
+
 def fragment(slug):
     """The content fragment for a piece, whichever branch it is filed under."""
     for kind in ('article', 'interview'):

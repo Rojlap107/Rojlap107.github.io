@@ -116,7 +116,7 @@ def main():
                 f'            <li><a href="{S.piece_url(a)}">'
                 f'<span class="dt">{int(a["date"][8:10])}</span>'
                 f'<span class="tt">{esc(a["title"])}</span>'
-                f'<span class="mt">{esc(a["author"])} · {esc(a["section"])}</span></a></li>')
+                f'<span class="mt">{S.by_line(a, esc(a["section"]))}</span></a></li>')
         rows.append('          </ul>')
     archive = f'''      <div class="dy">
 {head('Dreshey', 'From the Archives', 'Everything TransHimalaya has published, most recent first.',
@@ -141,7 +141,7 @@ def main():
             <div class="b">
               <p class="k">{esc(a['section'])}</p>
               <h2><a href="{S.piece_url(a)}">{esc(a['title'])}</a></h2>
-              <p class="mt">By {esc(a['author'])} · {pretty(a['date'])}</p>
+              <p class="mt">{S.by_line(a, pretty(a['date']))}</p>
             </div>
           </li>''' for a in picks)
     must = f'''      <div class="dy">

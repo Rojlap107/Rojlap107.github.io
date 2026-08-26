@@ -312,7 +312,7 @@ def build(post, posts, tpl, author_img):
     others = [p for p in posts if p['slug'] != post['slug']]
     mr = '\n'.join(
         f'            <li><a href="{S.piece_url(p)}"><span class="t">{esc(p["title"])}</span>'
-        f'<span class="m">{esc(p["author"])} · {esc(p["section"])}</span></a></li>'
+        f'<span class="m">{S.by_line(p, esc(p["section"]))}</span></a></li>'
         for p in others[:5])
 
     # related: same section first, then anything else
@@ -322,7 +322,7 @@ def build(post, posts, tpl, author_img):
               <a class="ph" href="{S.piece_url(p)}" style="background-image:url({P.asset(p['lede'])})"></a>
               <div class="b">
                 <h3><a href="{S.piece_url(p)}">{esc(p['title'])}</a></h3>
-                <div class="meta"><span><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {pretty(p['date'])}</span><span>·</span><span>By {esc(p['author'])}</span></div>
+                <div class="meta"><span><svg class="ic" aria-hidden="true"><use href="#ic-cal"/></svg> {pretty(p['date'])}</span>{S.by_meta(p)}</div>
               </div>
             </article>''' for p in rel_posts)
 
