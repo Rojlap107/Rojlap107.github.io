@@ -124,14 +124,14 @@ def people_grid(items):
         av = (f'<span class="pt"><img src="{P.asset(img)}" alt="" width="96" '
               f'height="96" loading="lazy"></span>' if img else
               f'<span class="pt ini" aria-hidden="true">{initials(a["title"])}</span>')
-        cards.append(f"""          <li class="cat-person">
+        cards.append(f"""          <li class="th-person">
             <a href="{S.piece_url(a)}">
               {av}
               <span class="nm">{esc(a['title'])}</span>
               <span class="rl">{esc(a.get('place') or a['author'])}</span>
             </a>
           </li>""")
-    return ('        <ul class="cat-people">\n' + '\n'.join(cards)
+    return ('        <ul class="th-people">\n' + '\n'.join(cards)
             + '\n        </ul>\n')
 
 

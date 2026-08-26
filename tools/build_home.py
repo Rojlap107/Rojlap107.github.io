@@ -7,7 +7,8 @@ Replaces everything between the "Featured stories" marker and the
     Opening            — Foreword, Editor's Note, Strategic Foresight
     Featured Stories   — one piece each from History, Tibet Today,
                          Tibet Beyond Borders (the newest of each)
-    From the Field     — the most recent essays, with their topic chips
+    In Conversation    — the most recent filmed interview
+    Youth Voices       — the contributors, as people rather than titles
 
     python3 tools/build_home.py
 
@@ -61,12 +62,46 @@ def featured_card(a):
           </article>'''
 
 
-def field_item(a):
-    return (f'            <div class="item"><div class="thumb" style="background-image:url({P.asset(S.card_image(a))})"></div>'
-            f'<div><h4><a href="{S.piece_url(a)}">{esc(a["title"])}</a></h4>'
-            f'<div class="r">{S.chip(a["section"])}'
-            f'<span class="date">{short(a["date"])}</span></div></div></div>')
+def initials(name):
+    parts = [w for w in name.split() if w]
+    return esc((parts[0][:1] + (parts[-1][:1] if len(parts) > 1 else '')).upper())
 
+
+def voice_card(a):
+    """A Youth Voices contributor: portrait or initials, name, host country."""
+    img = S.card_image(a)
+    face = (f'<span class="pt"><img src="{P.asset(img)}" alt="" width="96" '
+            f'height="96" loading="lazy"></span>' if img else
+            f'<span class="pt ini" aria-hidden="true">{initials(a["title"])}</span>')
+    return f'''            <li class="th-person">
+              <a href="{S.piece_url(a)}">
+                {face}
+                <span class="nm">{esc(a['title'])}</span>
+                <span class="rl">{esc(a.get('place') or a['section'])}</span>
+              </a>
+            </li>'''
+
+
+def youth_band(arts):
+    """Four contributors answering one question. Titles alone left most of the
+    row empty, so the home page introduces the people, as the section does."""
+    voices = sorted([a for a in arts if a['section'] == 'Youth'],
+                    key=lambda x: x['slug'])
+    if not voices:
+        return ''
+    cards = '\n'.join(voice_card(a) for a in voices)
+    return f'''      <!-- Youth Voices -->
+      <section class="th-sec" style="padding-top:0">
+        <h2 class="th-h2">Youth Voices</h2>
+        <div class="th-div"><i></i><b></b><i></i></div>
+        <p class="th-lede">Young Tibetans on what their community gives back to the countries that gave it refuge.</p>
+        <ul class="th-people">
+{cards}
+        </ul>
+        <div class="th-viewall"><a href="{S.page_for('Youth')}">All Youth Voices →</a></div>
+      </section>
+
+'''
 
 
 def interview_band(arts):
@@ -114,12 +149,6 @@ def main():
             feat.append(pick)
     feat_html = '\n'.join(featured_card(a) for a in feat)
 
-    # ---- From the Field: newest essays, excluding the opening pieces ----
-    skip = set(OPENING) | {a['slug'] for a in feat}
-    field = [a for a in newest
-             if a['slug'] not in skip and a['section'] in S.PAGES][:4]
-    field_html = '\n'.join(field_item(a) for a in field)
-
     block = f'''      <!-- Opening -->
       <section class="th-sec th-opening-sec">
         <h2 class="th-h2">Opening</h2>
@@ -138,19 +167,7 @@ def main():
         </div>
       </section>
 
-      <!-- From the field -->
-      <section class="th-sec" style="padding-top:0">
-        <div class="th-field">
-          <h3 class="th-h3">From the Field</h3>
-          <div class="th-divL"><i></i><b></b></div>
-          <div class="th-fieldlist">
-{field_html}
-          </div>
-          <div style="margin-top:16px"><a href="/sections/in-focus/" style="color:var(--teal);font-weight:600;font-size:14px;text-decoration:none">Browse In Focus →</a></div>
-        </div>
-      </section>
-
-{interview_band(arts)}'''
+{interview_band(arts)}{youth_band(arts)}'''
 
     src = 'content/home/home.html'
     page = open(src, encoding='utf-8').read()
@@ -163,7 +180,7 @@ def main():
 
     print(f"  opening   {len(opening)} pieces: " + ', '.join(a['section'] for a in opening))
     print(f"  featured  {len(feat)} cards:   " + ', '.join(a['section'] for a in feat))
-    print(f"  field     {len(field)} items")
+    print(f"  youth     {sum(1 for a in arts if a['section'] == 'Youth')} voices")
 
 
 if __name__ == '__main__':

@@ -14,7 +14,7 @@ img{ max-width:100%; }
     --paper:#fff; --sand:#F4F0E7; --line:#E4E0D5; --body:#454a4d; --muted:#7c8286;
     background:var(--paper); color:var(--body);
     font-family:system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif; }
-.th-site .serif, .th-card h3, .th-hero h1, .th-logo .nm, .th-field h4, .th-photo h3, .th-news h3, .th-foot .nm {
+.th-site .serif, .th-card h3, .th-hero h1, .th-logo .nm, .th-photo h3, .th-news h3, .th-foot .nm {
     font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif; }
 .th-site .ph, .th-site .thumb, .th-collage i {
     background-color:#e6ebed;

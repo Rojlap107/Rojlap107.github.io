@@ -28,7 +28,7 @@
     cur.style.opacity = '1';
   }, { passive: true });
 
-  var CLICKABLE = 'a, button, input, label, .th-card, .th-field .item';
+  var CLICKABLE = 'a, button, input, label, .th-card, .th-person';
   document.addEventListener('mouseover', function (e) {
     if (e.target.closest && e.target.closest(CLICKABLE)) cur.classList.add('is-hover');
   });
