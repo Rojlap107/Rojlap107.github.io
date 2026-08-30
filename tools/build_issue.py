@@ -122,6 +122,78 @@ HERO = {
               'Tibetan plateau, with strategic geomantic temples like the '
               'Jokhang Monastery to pin her down and tame the land for Buddhism.',
       source='Utsang Culture'),
+  # The rest below were added after the fact: each piece's own first figure,
+  # promoted to the front instead of a generic stock photo unrelated to the
+  # piece. See content/article/<slug>.html for the caption actually shown —
+  # the ones with a link in their source keep it there; hero_bits() below
+  # escapes markup, so this plain-text copy is the fallback for a full
+  # --content regeneration only.
+  'a-brief-overview-of-india-tibet-cultural-relations-and-its-legacies': dict(
+      img='assets/img/issue/a-brief-overview-of-india-tibet-cultural-relations-and-its-legacies/media/lede.jpg',
+      caption='Rahul Sankrityayan, photographed in 1934 during his second visit to Tibet.',
+      source='ResearchGate'),
+  'beyond-exile-governance-the-strategic-evolution-of-the-central-tibetan-administration': dict(
+      img='assets/img/issue/beyond-exile-governance-the-strategic-evolution-of-the-central-tibetan-administration/media/image1.jpeg'),
+  'chinas-colonial-polices-and-its-practice-in-tibet': dict(
+      img='assets/img/issue/chinas-colonial-polices-and-its-practice-in-tibet/media/image3.jpg',
+      caption='Sinicisation of Tibetan children — they are seen wearing Chinese '
+              'military-style uniforms while the elderly Tibetan lady continues '
+              'to wear a Tibetan chupa with other garments.',
+      source="Author's own collection"),
+  'chinas-politics-of-toponyms-in-tibet-and-beyond-strategic-concern-for-india': dict(
+      img='assets/img/issue/chinas-politics-of-toponyms-in-tibet-and-beyond-strategic-concern-for-india/media/image4.jpg',
+      caption='The 60th anniversary of the Tibet Autonomous Region logo displayed '
+              'in a floral artwork at Barkhor in Lhasa.',
+      source='China Global Television Network (CGTN)'),
+  'high-altitude-high-stakes-military-posture-and-escalation-dynamics-along-the-himalayan-frontier': dict(
+      img='assets/img/issue/high-altitude-high-stakes-military-posture-and-escalation-dynamics-along-the-himalayan-frontier/media/image4.png',
+      caption="Sino-Indian border deployments. Note: units located via IHS Jane's "
+              'Database, August 2016; does not include paramilitary units, the '
+              "People's Armed Police (PAP), or infrastructure still under "
+              'construction. Graphical construction superimposed on Google Maps.',
+      source='Rehman (2017)'),
+  'nepals-strategic-reality-outlasts-its-political-upheaval': dict(
+      img='assets/img/issue/nepals-strategic-reality-outlasts-its-political-upheaval/media/image1.jpeg'),
+  'sacred-authority-state-power-and-indias-strategic-geometry-the-dalai-lama-institution-in-a-global-context': dict(
+      img='assets/img/issue/sacred-authority-state-power-and-indias-strategic-geometry-the-dalai-lama-institution-in-a-global-context/media/image5.jpg',
+      caption='His Holiness the Dalai Lama reading the statement on his '
+              'reincarnation, 2 July 2025, at his residence in Dharamshala, India.',
+      source='dalailama.com'),
+  'the-dalai-lamas-reincarnation-future-dynamics-in-sino-tibetan-conflict-and-geo-political-consequences': dict(
+      img='assets/img/issue/the-dalai-lamas-reincarnation-future-dynamics-in-sino-tibetan-conflict-and-geo-political-consequences/media/image1.jpeg',
+      caption='Kelsang Gyaltsen in talks with Liu Yandong, 2003.',
+      source='DIIR, CTA'),
+  'the-mcmahon-shatra-line': dict(
+      img='assets/img/issue/the-mcmahon-shatra-line/media/image7.jpg',
+      caption='The McMahon-Shatra Line.',
+      source="Author's personal collection"),
+  'the-middle-way-as-statecraft-tibetan-political-philosophy-in-an-age-of-power-asymmetry': dict(
+      img='assets/img/issue/the-middle-way-as-statecraft-tibetan-political-philosophy-in-an-age-of-power-asymmetry/media/image1.png'),
+  'the-plateaus-quiet-revolt-geography-identity-and-the-elusive-quest-to-close-tibet': dict(
+      img='assets/img/issue/the-plateaus-quiet-revolt-geography-identity-and-the-elusive-quest-to-close-tibet/media/image3.jpg',
+      caption='A map of the Tibet Autonomous Region (TAR), which comprises '
+              'roughly only half of historic Tibet.',
+      source='Free Tibet'),
+  'the-political-economy-of-tibet-under-the-peoples-republic-of-china': dict(
+      img='assets/img/issue/the-political-economy-of-tibet-under-the-peoples-republic-of-china/media/lede.jpg',
+      caption='Table 1 · Basic conditions of the rural households in the Tibet '
+              'Autonomous Region. Note: transfer payments, which are paid only '
+              'when Tibetans stay at their official household registration '
+              'address, are a substantial portion of actual cash disposable income.',
+      source="TAR 2021, People's Living Conditions, p.110"),
+  'the-role-of-monlam-in-preserving-tibetan-language-in-the-digital-space': dict(
+      img='assets/img/issue/the-role-of-monlam-in-preserving-tibetan-language-in-the-digital-space/media/image1.jpg',
+      caption='The Monlam AI team at work.',
+      source="Author's own collection"),
+  'tibet-under-watch-chinas-digital-repression': dict(
+      img='assets/img/issue/tibet-under-watch-chinas-digital-repression/media/image1.jpeg',
+      source="Author's own collection"),
+  'what-the-fire-knew': dict(
+      img='assets/img/issue/what-the-fire-knew/media/image1.jpeg'),
+  'xi-jinpings-ten-commandments-for-governing-tibet': dict(
+      img='assets/img/issue/xi-jinpings-ten-commandments-for-governing-tibet/media/image1.jpg',
+      caption='Xi Jinping’s magnum opus, "The Governance of China."',
+      source='China Global Television Network'),
 }
 
 
@@ -584,7 +656,10 @@ def standfirst(body_html):
     m = re.search(r'<p[^>]*>(.*?)</p>', body_html, re.S)
     if not m:
         return ''
-    s = text(m.group(1))
+    # drop footnote markers entirely — stripping only their tags would leave
+    # the bare digit glued to the surrounding word (e.g. "rights,1 geopolitics")
+    para = re.sub(r'<sup class="fn">.*?</sup>', '', m.group(1), flags=re.S)
+    s = text(para)
     parts = re.split(r'(?<=[a-z)’"])\.\s+(?=[A-Z])', s)
     out = parts[0]
     if len(out) < 110 and len(parts) > 1:

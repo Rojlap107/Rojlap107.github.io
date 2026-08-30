@@ -515,7 +515,7 @@
   "url": "/authors/shyam-saran/",
   "out": "authors/shyam-saran/index.html",
   "head_title": "Shyam Saran — TransHimalaya",
-  "description": "Shyam Saran, contributor to TransHimalaya.",
+  "description": "Shyam Saran is a former Foreign Secretary of India and former Chairman of the National Security Advisory Board.",
   "content": "author/shyam-saran.html",
   "legacy": "author-shyam-saran.html"
  },
@@ -655,7 +655,7 @@
   "url": "/dreshey/data-visuals/",
   "out": "dreshey/data-visuals/index.html",
   "head_title": "Data &amp; Visuals — TransHimalaya",
-  "description": "Maps, charts and tables from the essays.",
+  "description": "Organograms and reference diagrams on the institutional structure of the Central Tibetan Administration.",
   "content": "dreshey/data-visuals.html",
   "legacy": "data-visuals.html"
  },
@@ -778,16 +778,6 @@
   "description": "TransHimalaya is an independent, interdisciplinary research and policy journal examining the forces and transformations shaping Tibet and Asia’s upland regions.",
   "content": "page/about.html",
   "legacy": "about.html"
- },
- {
-  "type": "page",
-  "slug": "career",
-  "url": "/career/",
-  "out": "career/index.html",
-  "head_title": "Career & Contribute — TransHimalaya",
-  "description": "Write for FNVA, apply for an internship, or get in touch about working with the Foundation.",
-  "content": "page/career.html",
-  "legacy": "career.html"
  },
  {
   "type": "page",

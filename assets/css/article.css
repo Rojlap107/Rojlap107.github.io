@@ -47,20 +47,26 @@
 /* ---- body ---- */
 .art-body{ max-width:44rem; margin:0 auto; font-size:18px; line-height:1.75; color:#2f3a40; }
 .art-body p{ margin:0 0 1.35em; }
-.art-body p:first-of-type::first-letter{ float:left; font-family:"Iowan Old Style",Palatino,Georgia,serif;
+.art-body > p:first-of-type::first-letter{ float:left; font-family:"Iowan Old Style",Palatino,Georgia,serif;
   font-size:4.1em; line-height:.82; padding:.06em .12em 0 0; color:var(--navy); font-weight:600; }
 .art-body a{ color:var(--teal); text-underline-offset:3px; }
 .art-body a:hover{ color:var(--orange); }
 .art-body h2{ font-family:"Iowan Old Style",Palatino,Georgia,serif; font-size:29px;
   line-height:1.2; color:var(--ink); font-weight:600; margin:2em 0 .6em; }
+.art-body .art-sig{ margin:2.2em 0 0; padding-top:1.8em; border-top:1px solid var(--line); }
+.art-body .art-sig span{ display:block; margin:0 0 4px; font-size:15px; line-height:1.5; color:#5b6870; }
+.art-body .art-sig .nm{ font-weight:700; color:var(--ink); font-size:16px; }
+.art-body .art-sig .dt{ margin-top:6px; font-size:13.5px; color:var(--muted); }
 .art-body ol,.art-body ul{ margin:0 0 1.35em; padding-left:1.3em; }
 .art-body li{ margin:.5em 0; }
 .art-body sup{ font-size:.68em; line-height:0; }
 
-/* highlighted passages, set larger */
+/* highlighted passages, set off with the body's own type */
 .art-body .art-pull{ margin:1.8em 0; padding:0 0 0 22px; border-left:3px solid var(--orange); }
-.art-body .art-pull p{ font-family:"Iowan Old Style",Palatino,Georgia,serif;
-  font-size:clamp(21px,2.5vw,26px); line-height:1.45; color:var(--navy); margin:0; }
+.art-body .art-pull p{ font-style:italic; font-size:18px; line-height:1.75; color:var(--navy); margin:0; }
+.art-body .art-pull ol{ margin:0; padding-left:1.2em; }
+.art-body .art-pull li{ font-style:italic; font-size:18px; line-height:1.75; color:var(--navy); margin:0 0 .3em; }
+.art-body .art-pull li:last-child{ margin-bottom:0; }
 
 /* figures inside the article may run wider than the text column */
 .art-body .art-fig{ margin:2em 0; }
@@ -74,6 +80,14 @@
 .art-notes ol{ margin:0; padding-left:1.4em; }
 .art-notes li{ font-size:14px; line-height:1.6; color:#55636b; margin:.6em 0; }
 .art-notes a{ color:var(--teal); word-break:break-word; }
+
+/* ---- an aside in the author's own voice, set off from the body — used
+   both inline within .art-body and standalone after it, near art-author ---- */
+.art-callout{ max-width:44rem; margin:1.8em auto; padding:18px 22px;
+  background:var(--sand); border-radius:6px; }
+.art-callout .k{ font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--orange); margin:0 0 8px; font-weight:700; }
+.art-callout p{ font-style:italic; font-size:16px; line-height:1.65; color:#4b5a63; margin:0; }
 
 /* ---- author ---- */
 .art-author{ max-width:44rem; margin:36px auto 0; padding:26px; background:var(--sand);
