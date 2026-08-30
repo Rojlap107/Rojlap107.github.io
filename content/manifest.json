@@ -614,8 +614,8 @@
   "slug": "the-editors",
   "url": "/authors/the-editors/",
   "out": "authors/the-editors/index.html",
-  "head_title": "The Editors — TransHimalaya",
-  "description": "The Editors, contributor to TransHimalaya.",
+  "head_title": "Team FNVA — TransHimalaya",
+  "description": "Team FNVA, contributor to TransHimalaya.",
   "content": "author/the-editors.html",
   "legacy": "author-the-editors.html"
  },
