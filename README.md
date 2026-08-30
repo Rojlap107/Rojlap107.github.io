@@ -53,7 +53,7 @@ they bracket, and the per-type templates are `single.php` / `archive.php`.
 | Dreshey | `/dreshey/` and `/dreshey/<slug>/` | … |
 | author | `/authors/` and `/authors/<slug>/` | … |
 | team | `/team/` | `team/index.html` |
-| page | `/about/` `/career/` `/contact/` | … |
+| page | `/about/` `/contact/` | … |
 
 `tools/paths.py` is the single source of truth for this. The scheme matches
 WordPress's `/articles/%postname%/`, so the migration is a rename, not a rewrite.
@@ -92,7 +92,7 @@ python3 tools/build_sections_css.py   # section colours into components.css
 Run them in that order — the section, author, Dreshey and home pages all
 summarise the articles.
 
-`/about/`, `/team/`, `/governing-council/`, `/career/` and `/contact/` are
+`/about/`, `/team/`, `/governing-council/` and `/contact/` are
 hand-maintained: edit their fragments under `content/page/` (and
 `content/team-index/`) directly.
 

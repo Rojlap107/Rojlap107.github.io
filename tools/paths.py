@@ -24,7 +24,7 @@ needs no extension — the same shape WordPress produces from
 # The top-level navigation keys, as marked with data-nav="..." in
 # templates/partials/header.html. A page names the one it sits under and the
 # build gives that link the `active` class — WordPress's current-menu-item.
-NAV_ABOUT = 'about'          # the About submenu: about, team, authors, career, contact
+NAV_ABOUT = 'about'          # the About submenu: about, team, authors, contact
 NAV_IN_FOCUS = 'in-focus'    # In Focus gathers History, Tibet Today, Tibet Beyond Borders
 
 # section slug -> the nav key it belongs under; the rest are nav items themselves

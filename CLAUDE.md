@@ -64,7 +64,8 @@ in a slash and carry no extension, matching `/articles/%postname%/` in WordPress
 
 ```
 home /  ·  issue /journal-editions/  ·  article /articles/<slug>/
-section /sections/<slug>/  ·  dreshey-hub /dreshey/  ·  dreshey /dreshey/<slug>/
+section /sections/<slug>/  ·  interview /interviews/<slug>/
+dreshey-hub /dreshey/  ·  dreshey /dreshey/<slug>/
 authors-index /authors/  ·  author /authors/<slug>/
 team-index /team/  ·  page /<slug>/
 ```
@@ -97,6 +98,13 @@ exist before anything that renders a card.
 `tools/build_articles.py` is the **superseded** WordPress-export path. It rebuilds the same
 articles from older text and rewrites `tools/articles.json`. Don't run it incidentally.
 
+`build_issue.py` also produces `interview` pages (`/interviews/<slug>/`) alongside articles —
+there is no separate generator. `article` and `interview` are a *family* in `tools/content.py`
+(`FAMILIES`): a piece can be filed as one or the other but never both, so re-filing it (e.g. the
+Sikyong piece moving from article to interview) deletes the old fragment and its built output
+automatically. Other same-slug types (an author page and an article by that author) are not a
+family and don't do this.
+
 ### tools/sections.py owns section identity
 
 Colour, slug, and the page that lists each section. Chips carry a class (`cat-<slug>`),
@@ -112,7 +120,7 @@ idempotently.
 Without them, `content/` as committed is the only copy. Prefer editing a fragment directly
 over re-running a generator whose source you cannot see.
 
-`/about/`, `/team/`, `/governing-council/`, `/career/` and `/contact/` have no generator at
+`/about/`, `/team/`, `/governing-council/` and `/contact/` have no generator at
 all — they are hand-maintained fragments under `content/page/` and `content/team-index/`.
 `/team/` is the journal's masthead (Editor, Editorial Board, Executive Editor, Copyright
 Editor); FNVA's own patrons, trustees and research team are deliberately not listed there,
