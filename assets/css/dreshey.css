@@ -79,6 +79,22 @@
 .dy-fig.is-table .lbl{ font-size:11px; letter-spacing:.16em; text-transform:uppercase;
   color:var(--teal); font-weight:700; }
 
+.dy-diagrams{ list-style:none; margin:clamp(28px,4vw,44px) auto 0; padding:0;
+  max-width:52rem; display:flex; flex-direction:column; gap:clamp(30px,4vw,40px); }
+.dy-diagram{ margin:0; }
+.dy-diagram figure{ margin:0; }
+.dy-diagram a.im{ display:block; text-decoration:none; }
+.dy-diagram img{ display:block; width:100%; height:auto; border:1px solid var(--line);
+  border-radius:6px; background:#f4f4f2; }
+.dy-diagram figcaption{ font-size:13px; line-height:1.55; color:var(--muted);
+  margin-top:10px; }
+.dy-diagram figcaption b{ color:var(--ink); }
+.dy-diagram figcaption em{ color:var(--ink); font-style:normal; }
+.dy-diagram figcaption a{ color:var(--teal); text-decoration:none; }
+.dy-diagram figcaption a:hover{ color:var(--orange); }
+.dy-diagrams-note{ max-width:52rem; margin:10px auto 0; text-align:right;
+  font-size:12px; color:var(--muted); }
+
 /* ---- prose (archive documents, book review, jargon, snippets) ---- */
 .dy-prose{ max-width:44rem; margin:0 auto; font-size:17px; line-height:1.75; color:#3a464d; }
 .dy-prose > p{ margin:0 0 1.3em; }
@@ -128,24 +144,68 @@
   font-weight:600; color:var(--ink); }
 .dy-term dd{ margin:6px 0 0; font-size:15px; line-height:1.65; color:#3a464d; }
 
-/* ---- tibet highlights ---- */
-.dy-news{ max-width:58rem; margin:0 auto; }
-.dy-news-grp{ margin:0 0 clamp(30px,4vw,44px); }
-.dy-news-grp > h2{ font-size:13px; letter-spacing:.14em; text-transform:uppercase;
-  color:var(--orange); font-weight:700; margin:0 0 18px;
-  padding-bottom:8px; border-bottom:2px solid var(--ink); }
-.dy-news-item{ display:grid; grid-template-columns:1fr; gap:14px;
-  padding:18px 0; border-bottom:1px solid var(--line); }
-.dy-news-item:last-child{ border-bottom:0; }
-.dy-news-item.has-img{ grid-template-columns:180px 1fr; align-items:start; }
-.dy-news-item img{ width:100%; border-radius:5px; border:1px solid var(--line); }
-.dy-news-item .dt{ font-size:11px; letter-spacing:.1em; text-transform:uppercase;
-  color:var(--teal); font-weight:700; margin:0 0 4px; }
-.dy-news-item h3{ font-family:"Iowan Old Style",Palatino,Georgia,serif; font-size:18.5px;
-  line-height:1.3; color:var(--ink); font-weight:600; margin:0 0 6px; }
-.dy-news-item p{ font-size:14.5px; line-height:1.65; color:#3a464d; margin:0; }
-.dy-news-item .cr{ display:block; font-size:12px; color:var(--muted); margin-top:6px; }
-@media (max-width:560px){ .dy-news-item.has-img{ grid-template-columns:1fr; } }
+/* ---- tibet highlights: category cards ---- */
+.dy-cat-grid{ list-style:none; margin:0 0 clamp(34px,5vw,50px); padding:0;
+  display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(14px,2vw,20px);
+  max-width:58rem; margin-inline:auto; }
+.dy-cat-card{ display:flex; flex-direction:column; text-decoration:none;
+  border:1px solid var(--line); border-radius:8px; background:#fff;
+  padding:22px 24px; transition:.18s; }
+.dy-cat-card:hover{ border-color:var(--orange); transform:translateY(-2px);
+  box-shadow:0 10px 24px rgba(18,40,55,.09); }
+.dy-cat-card .nm{ font-family:"Iowan Old Style",Palatino,Georgia,serif; font-size:19px;
+  line-height:1.32; color:var(--ink); font-weight:600; }
+.dy-cat-card .ct{ font-size:12px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--muted); margin-top:9px; }
+.dy-cat-card .go{ margin-top:14px; font-size:11px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--teal); font-weight:700; }
+.dy-cat-card:hover .go{ color:var(--orange); }
+.dy-cat-grid.is-hidden{ display:none; }
+@media (max-width:640px){ .dy-cat-grid{ grid-template-columns:1fr; } }
+
+/* ---- tibet highlights: timeline ---- */
+.js-cats .dy-timeline{ display:none; }
+.js-cats .dy-timeline.is-active{ display:block; }
+.dy-timeline{ scroll-margin-top:96px; }
+.dy-timeline + .dy-timeline{ margin-top:clamp(34px,5vw,50px); }
+
+.dy-tl-head{ display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  max-width:64rem; margin:0 auto clamp(22px,3vw,32px); }
+.dy-tl-back{ appearance:none; border:1px solid var(--line); background:#fff;
+  border-radius:20px; padding:7px 16px; font-size:12.5px; color:var(--teal);
+  font-weight:600; cursor:pointer; transition:.15s; }
+.dy-tl-back:hover{ border-color:var(--orange); color:var(--orange); }
+.dy-tl-head h2{ font-family:"Iowan Old Style",Palatino,Georgia,serif; font-size:22px;
+  color:var(--ink); margin:0; }
+
+.dy-tl{ position:relative; max-width:64rem; margin:0 auto; padding-top:6px; }
+.dy-tl::before{ content:''; position:absolute; left:50%; top:0; bottom:0; width:2px;
+  background:var(--line); transform:translateX(-50%); }
+.dy-tl-item{ position:relative; width:50%; padding:0 44px 46px; box-sizing:border-box; }
+.dy-tl-item:last-child{ padding-bottom:0; }
+.dy-tl-item:nth-child(odd){ left:0; text-align:right; }
+.dy-tl-item:nth-child(even){ left:50%; text-align:left; }
+.dy-tl-dot{ position:absolute; top:6px; width:13px; height:13px; border-radius:50%;
+  background:var(--orange); border:3px solid #fff; box-shadow:0 0 0 1px var(--line); }
+.dy-tl-item:nth-child(odd) .dy-tl-dot{ right:-7.5px; }
+.dy-tl-item:nth-child(even) .dy-tl-dot{ left:-7.5px; }
+.dy-tl-card{ display:inline-block; text-align:left; background:#fff; border:1px solid var(--line);
+  border-radius:8px; padding:18px 20px; max-width:100%; }
+.dy-tl-date{ font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--orange); font-weight:700; margin:0; }
+.dy-tl-card h3{ font-family:"Iowan Old Style",Palatino,Georgia,serif; font-size:17.5px;
+  line-height:1.32; color:var(--ink); font-weight:600; margin:6px 0 0; }
+.dy-tl-card img{ display:block; width:100%; border-radius:5px; border:1px solid var(--line);
+  margin-top:12px; }
+.dy-tl-card p{ font-size:14.5px; line-height:1.65; color:#3a464d; margin:10px 0 0; }
+.dy-tl-card .cr{ display:block; font-size:12px; color:var(--muted); margin-top:6px; }
+
+@media (max-width:720px){
+  .dy-tl::before{ left:20px; }
+  .dy-tl-item{ width:100%; left:0!important; padding:0 0 40px 50px; text-align:left!important; }
+  .dy-tl-item .dy-tl-dot{ left:13.5px!important; right:auto!important; }
+  .dy-tl-card{ display:block; }
+}
 
 /* ---- photographs then and now ---- */
 .dy-gallery{ list-style:none; margin:0; padding:0; max-width:1000px; margin-inline:auto;

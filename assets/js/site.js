@@ -188,6 +188,60 @@
   input.addEventListener('input', apply);
 })();
 
+/* Tibet Highlights — category cards reveal a timeline underneath; without
+   JS the page still reads fine as four stacked timelines. */
+(function () {
+  var grid = document.querySelector('.dy-cat-grid');
+  var timelines = Array.prototype.slice.call(document.querySelectorAll('.dy-timeline'));
+  if (!grid || !timelines.length) return;
+
+  document.body.classList.add('js-cats');
+
+  function activate(slug) {
+    var target = null;
+    timelines.forEach(function (t) {
+      var on = t.getAttribute('data-cat') === slug;
+      t.classList.toggle('is-active', on);
+      if (on) target = t;
+    });
+    grid.classList.toggle('is-hidden', !!target);
+    return target;
+  }
+
+  function reset() {
+    timelines.forEach(function (t) { t.classList.remove('is-active'); });
+    grid.classList.remove('is-hidden');
+  }
+
+  grid.addEventListener('click', function (e) {
+    var card = e.target.closest('.dy-cat-card');
+    if (!card) return;
+    e.preventDefault();
+    var slug = card.getAttribute('data-cat');
+    var target = activate(slug);
+    if (target) {
+      history.replaceState(null, '', '#cat-' + slug);
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+
+  timelines.forEach(function (t) {
+    var back = t.querySelector('.dy-tl-back');
+    if (!back) return;
+    back.addEventListener('click', function () {
+      reset();
+      history.replaceState(null, '', location.pathname + location.search);
+      grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  var initial = (location.hash || '').replace('#cat-', '');
+  if (initial) {
+    var target = activate(initial);
+    if (target) target.scrollIntoView({ block: 'start' });
+  }
+})();
+
 /* Back to top — shown once there is enough scrolled past to be worth it.
    The link works on its own; this adds the appearance and the smooth glide,
    and honours a reduced-motion preference by jumping instead. */
